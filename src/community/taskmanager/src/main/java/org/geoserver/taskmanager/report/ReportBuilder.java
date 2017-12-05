@@ -7,14 +7,13 @@ package org.geoserver.taskmanager.report;
 import org.geoserver.taskmanager.data.BatchRun;
 
 /**
- * A report builder generates a report from a batch.
- * One could write a custom one.
+ * A report builder generates a report from a batch. One could write a custom one.
  * 
  * @author Niels Charlier
  *
  */
 public interface ReportBuilder {
-    
+
     Report buildBatchRunReport(BatchRun batchRun);
 
 }

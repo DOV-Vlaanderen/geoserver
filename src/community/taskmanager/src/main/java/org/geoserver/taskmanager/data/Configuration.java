@@ -8,8 +8,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * A configuration exists of tasks which are somehow related to each other and share
- * attributes which are used as task parameters.
+ * A configuration exists of tasks which are somehow related to each other and share attributes which are used as task parameters.
  * 
  * @author Niels Charlier
  *
@@ -25,7 +24,7 @@ public interface Configuration extends SoftRemove, Serializable, Identifiable {
     void setWorkspace(String workspace);
 
     Map<String, Attribute> getAttributes();
-    
+
     Map<String, Task> getTasks();
 
     Map<String, Batch> getBatches();

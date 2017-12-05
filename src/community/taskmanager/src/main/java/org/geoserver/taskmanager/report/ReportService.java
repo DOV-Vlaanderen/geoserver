@@ -7,45 +7,44 @@ package org.geoserver.taskmanager.report;
 import org.apache.commons.lang.ArrayUtils;
 
 /**
- * A report service sends a report to a particular destination.
- * One can add an unlimited amount of report services which will all be used.
+ * A report service sends a report to a particular destination. One can add an unlimited amount of report services which will all be used.
  * 
  * @author Niels Charlier
  *
  */
 public interface ReportService {
-    
+
     /**
      * Enumeration for filter.
      *
      */
     public enum Filter {
         /** All batch runs are reported **/
-        ALL (Report.Type.FAILED, Report.Type.CANCELLED, Report.Type.SUCCESS),
+        ALL(Report.Type.FAILED, Report.Type.CANCELLED, Report.Type.SUCCESS),
         /** Only failed and cancelled batch runs are reported **/
-        FAILED_AND_CANCELLED (Report.Type.FAILED, Report.Type.CANCELLED), 
+        FAILED_AND_CANCELLED(Report.Type.FAILED, Report.Type.CANCELLED),
         /** Only failed batch runs are reported **/
-        FAILED_ONLY (Report.Type.FAILED);
-        
+        FAILED_ONLY(Report.Type.FAILED);
+
         Report.Type[] types;
-        
+
         private Filter(Report.Type... types) {
             this.types = types;
         }
-        
+
         public boolean matches(Report.Type type) {
             return ArrayUtils.contains(types, type);
         }
-        
+
     }
-    
+
     /**
      * Return the filter of the report.
      * 
      * @return the filter of the report.
      */
     public Filter getFilter();
-    
+
     /**
      * Send a report.
      * 

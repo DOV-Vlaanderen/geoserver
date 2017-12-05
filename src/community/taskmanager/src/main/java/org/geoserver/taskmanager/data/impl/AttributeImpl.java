@@ -17,7 +17,7 @@ import javax.persistence.UniqueConstraint;
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Configuration;
 
-@Entity 
+@Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "configuration" }) })
 public class AttributeImpl extends BaseImpl implements Attribute {
 
@@ -25,19 +25,19 @@ public class AttributeImpl extends BaseImpl implements Attribute {
 
     @Id
     @Column
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @Column(nullable = false)
     private String name;
-    
+
     @Column(nullable = false)
     private String value;
-    
+
     @ManyToOne
     @JoinColumn(name = "configuration")
     private ConfigurationImpl configuration;
-    
+
     @Override
     public String getName() {
         return name;

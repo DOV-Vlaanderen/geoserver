@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskManagerSecurityUtil {
-        
+
     @Autowired
     @Qualifier("rawCatalog")
     private Catalog catalog;
-   
+
     @Autowired
     private SecureCatalogImpl secureCatalog;
 
@@ -28,13 +28,14 @@ public class TaskManagerSecurityUtil {
             return catalog.getWorkspaceByName(workspaceName);
         }
     }
-        
+
     public boolean isReadable(Authentication user, Configuration config) {
         WorkspaceInfo wi = getWorkspace(config.getWorkspace());
         if (wi == null) {
             return false;
         } else {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager()
+                    .getAccessLimits(user, wi);
             return limits == null || limits.isReadable();
         }
     }
@@ -47,11 +48,13 @@ public class TaskManagerSecurityUtil {
         }
         boolean check1 = false, check2 = batch.getConfiguration() == null;
         if (wi != null) {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager()
+                    .getAccessLimits(user, wi);
             check1 = limits == null || limits.isReadable();
         }
         if (wif != null) {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wif);
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager()
+                    .getAccessLimits(user, wif);
             check2 = limits == null || limits.isReadable();
         }
         return check1 && check2;
@@ -62,7 +65,8 @@ public class TaskManagerSecurityUtil {
         if (wi == null) {
             return false;
         } else {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager()
+                    .getAccessLimits(user, wi);
             return limits == null || limits.isWritable();
         }
     }
@@ -75,11 +79,13 @@ public class TaskManagerSecurityUtil {
         }
         boolean check1 = false, check2 = batch.getConfiguration() == null;
         if (wi != null) {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wi);
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager()
+                    .getAccessLimits(user, wi);
             check1 = limits == null || limits.isWritable();
         }
         if (wif != null) {
-            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(user, wif);
+            WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager()
+                    .getAccessLimits(user, wif);
             check2 = limits == null || limits.isWritable();
         }
         return check1 && check2;

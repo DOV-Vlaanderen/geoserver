@@ -1,0 +1,5 @@
+DROP SCHEMA IF EXISTS temp CASCADE;
+
+CREATE SCHEMA temp;
+
+GRANT ALL ON SCHEMA temp TO taskmanager;

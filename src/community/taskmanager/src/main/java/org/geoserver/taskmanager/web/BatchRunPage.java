@@ -26,31 +26,32 @@ public class BatchRunPage extends GeoServerSecuredPage {
     private IModel<Batch> batchModel;
 
     private IModel<BatchRun> batchRunModel;
-    
+
     private GeoServerTablePanel<Run> runsPanel;
-        
+
     public BatchRunPage(IModel<Batch> batchModel, IModel<BatchRun> batchRunModel, Page parentPage) {
         this.batchModel = batchModel;
         this.batchRunModel = batchRunModel;
         setReturnPage(parentPage);
     }
-    
+
     @Override
     public void onInitialize() {
         super.onInitialize();
-        
-        add(new SimpleAjaxLink<String>("nameLink", new PropertyModel<String>(batchModel, "fullName")) {
+
+        add(new SimpleAjaxLink<String>("nameLink",
+                new PropertyModel<String>(batchModel, "fullName")) {
             private static final long serialVersionUID = -9184383036056499856L;
-            
+
             @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(new BatchPage(batchModel, getPage()));
             }
         });
-        
+
         add(new Label("startLabel", new PropertyModel<String>(batchRunModel, "start")));
-        
-        //the tasks panel
+
+        // the tasks panel
         add(runsPanel = runPanel());
         runsPanel.setSelectable(false);
 
@@ -60,18 +61,16 @@ public class BatchRunPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 doReturn();
-            }            
+            }
         });
-        
+
     }
-    
-    
+
     protected GeoServerTablePanel<Run> runPanel() {
-        return new GeoServerTablePanel<Run>("runPanel", 
-                new RunsModel(batchRunModel), true) {
+        return new GeoServerTablePanel<Run>("runPanel", new RunsModel(batchRunModel), true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
-            
+
             @Override
             protected Component getComponentForProperty(String id, IModel<Run> runModel,
                     Property<Run> property) {
@@ -79,6 +78,5 @@ public class BatchRunPage extends GeoServerSecuredPage {
             }
         };
     }
-    
 
 }

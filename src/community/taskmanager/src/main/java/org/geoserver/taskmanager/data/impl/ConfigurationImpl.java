@@ -28,54 +28,51 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 
-@Entity 
+@Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "removeStamp" }) })
-@FilterDefs({
-    @FilterDef(name="activeTaskFilter", defaultCondition="removeStamp = 0"),
-    @FilterDef(name="activeBatchFilter", defaultCondition="removeStamp = 0")
-})
+@FilterDefs({ @FilterDef(name = "activeTaskFilter", defaultCondition = "removeStamp = 0"),
+        @FilterDef(name = "activeBatchFilter", defaultCondition = "removeStamp = 0") })
 public class ConfigurationImpl extends BaseImpl implements Configuration {
 
     private static final long serialVersionUID = 7562166441281067057L;
 
     @Id
     @Column
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @Column(nullable = false)
     private String name;
-    
+
     @Column(nullable = false)
     private Boolean template = false;
-    
+
     @Column
     private String workspace;
-    
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = AttributeImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL, 
-            orphanRemoval = true)
+
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = AttributeImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @MapKey(name = "name")
     private Map<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
-    
+
     @OneToMany(fetch = FetchType.EAGER, targetEntity = TaskImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL)
     @OrderBy("id")
     @MapKey(name = "name")
-    @Filter(name="activeTaskFilter")
+    @Filter(name = "activeTaskFilter")
     private Map<String, Task> tasks = new LinkedHashMap<String, Task>();
-    
+
     @OneToMany(fetch = FetchType.EAGER, targetEntity = BatchImpl.class, mappedBy = "configuration", cascade = CascadeType.ALL)
     @OrderBy("id")
     @MapKey(name = "name")
-    @Filter(name="activeBatchFilter")
+    @Filter(name = "activeBatchFilter")
     private Map<String, Batch> batches = new LinkedHashMap<String, Batch>();
 
     @Column(nullable = false)
     Long removeStamp = 0L;
-    
+
     @Column
     private String description;
-    
+
     @Override
     public Long getId() {
         return id;
@@ -138,7 +135,7 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @Override
     public void setDescription(String description) {
         this.description = description;
-    }    
+    }
 
     @Override
     public void setRemoveStamp(long removeStamp) {
@@ -149,5 +146,5 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     public long getRemoveStamp() {
         return removeStamp;
     }
-    
+
 }

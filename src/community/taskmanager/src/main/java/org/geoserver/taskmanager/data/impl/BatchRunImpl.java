@@ -27,20 +27,19 @@ import org.geoserver.taskmanager.data.Run;
 @Entity
 @Table
 public class BatchRunImpl extends BaseImpl implements BatchRun {
-   
+
     private static final long serialVersionUID = 2468505054020768482L;
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "batch")
     private BatchImpl batch;
-        
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun", 
-            cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun", cascade = CascadeType.ALL)
     @OrderBy("start")
     List<Run> runs = new ArrayList<Run>();
 
@@ -48,7 +47,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     public Long getId() {
         return id;
     }
-    
+
     @Override
     public BatchImpl getBatch() {
         return batch;

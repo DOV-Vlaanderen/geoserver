@@ -3,6 +3,7 @@ package org.geoserver.taskmanager.schedule;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.Calendar;
 
@@ -27,18 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Tests the batch job service.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class BatchJobServiceTest extends AbstractTaskManagerTest {
-    
+
     @Autowired
     private TaskManagerDao dao;
-    
+
     @Autowired
     private TaskManagerFactory fac;
-    
+
     @Autowired
     private TaskManagerDataUtil util;
 
@@ -47,30 +47,30 @@ public class BatchJobServiceTest extends AbstractTaskManagerTest {
 
     @Autowired
     private Scheduler scheduler;
-    
+
     private Configuration config;
-    
+
     private Batch batch;
-        
+
     @Before
     public void setupBatch() {
-        config = fac.createConfiguration();  
+        config = fac.createConfiguration();
         config.setName("my_config");
         config.setWorkspace("some_ws");
-        
+
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(TestTaskTypeImpl.NAME);
         util.addTaskToConfiguration(config, task1);
-        
+
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
-        
+
         batch = fac.createBatch();
-        
+
         batch.setName("my_batch");
         util.addBatchElement(batch, task1);
-        
+
         batch = bjService.saveAndSchedule(batch);
     }
 
@@ -79,17 +79,17 @@ public class BatchJobServiceTest extends AbstractTaskManagerTest {
         dao.delete(batch);
         dao.delete(config);
     }
-    
+
     @Test
     public void testBatchJobService() throws SchedulerException {
         JobKey jobKey = new JobKey(batch.getFullName());
         TriggerKey triggerKey = new TriggerKey(batch.getFullName());
-        
-        //not scheduled yet        
+
+        // not scheduled yet
         assertTrue(scheduler.checkExists(jobKey));
         assertFalse(scheduler.checkExists(triggerKey));
-                
-        //give it a frequency
+
+        // give it a frequency
         batch.setFrequency("0 0 * * * ?");
         batch.setEnabled(true);
         bjService.saveAndSchedule(batch);
@@ -100,7 +100,7 @@ public class BatchJobServiceTest extends AbstractTaskManagerTest {
         Date nextFireTime = DateUtils.ceiling(new Date(), Calendar.HOUR);
         assertEquals(nextFireTime, trigger.getNextFireTime());
 
-        //change the frequency
+        // change the frequency
         batch.setFrequency("0 30 * * * ?");
         bjService.saveAndSchedule(batch);
 
@@ -109,17 +109,17 @@ public class BatchJobServiceTest extends AbstractTaskManagerTest {
         trigger = scheduler.getTrigger(triggerKey);
         nextFireTime = DateUtils.addMinutes(DateUtils.round(new Date(), Calendar.HOUR), 30);
         assertEquals(nextFireTime, trigger.getNextFireTime());
-        
-        //de-activate it
+
+        // de-activate it
         batch.setEnabled(false);
         bjService.saveAndSchedule(batch);
 
         assertTrue(scheduler.checkExists(jobKey));
         assertFalse(scheduler.checkExists(triggerKey));
-        
-        //delete it
+
+        // delete it
         batch.setActive(false);
-        bjService.saveAndSchedule(batch);    
+        bjService.saveAndSchedule(batch);
 
         assertFalse(scheduler.checkExists(jobKey));
         assertFalse(scheduler.checkExists(triggerKey));

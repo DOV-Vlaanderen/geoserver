@@ -14,27 +14,27 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 public class TaskParameterPanel extends Panel {
-    
+
     public static final String CONFIGURATION_NAME = "configurationName";
+
     public static final String TASK_NAME = "taskName";
 
     private static final long serialVersionUID = 3902645494421966388L;
-        
+
     private IModel<Task> taskModel;
-    
+
     public TaskParameterPanel(String id, IModel<Task> taskModel) {
         super(id);
         this.taskModel = taskModel;
     }
-    
+
     @Override
     public void onInitialize() {
-        super.onInitialize();                        
-                        
-        //the parameters panel
-        GeoServerTablePanel<Parameter> parametersPanel =
-                new GeoServerTablePanel<Parameter>("parametersPanel", 
-                new ParametersModel(taskModel), true) {
+        super.onInitialize();
+
+        // the parameters panel
+        GeoServerTablePanel<Parameter> parametersPanel = new GeoServerTablePanel<Parameter>(
+                "parametersPanel", new ParametersModel(taskModel), true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
 
@@ -53,7 +53,7 @@ public class TaskParameterPanel extends Panel {
         parametersPanel.setPageable(false);
         parametersPanel.setSortable(false);
         parametersPanel.setOutputMarkupId(true);
-        add(parametersPanel);          
+        add(parametersPanel);
     }
 
 }

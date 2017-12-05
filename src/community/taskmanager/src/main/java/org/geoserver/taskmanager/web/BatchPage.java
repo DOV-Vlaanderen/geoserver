@@ -53,41 +53,40 @@ public class BatchPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = -5111795911981486778L;
 
     private static final Logger LOGGER = Logging.getLogger(BatchPage.class);
-    
+
     private IModel<Batch> batchModel;
-    
+
     private Set<BatchElement> removedElements = new HashSet<BatchElement>();
-    
+
     private Set<Task> addedTasks = new HashSet<Task>();
-    
+
     private GeoServerDialog dialog;
-    
+
     private AjaxSubmitLink remove;
-    
+
     private GeoServerTablePanel<BatchElement> elementsPanel;
-        
+
     public BatchPage(IModel<Batch> batchModel, Page parentPage) {
-        if (batchModel.getObject().getId() != null
-                && !TaskManagerBeans.get().getSecUtil().isReadable(getSession().getAuthentication(), 
-                batchModel.getObject())) {
-            throw new RestartResponseException(UnauthorizedPage.class); 
-        } 
+        if (batchModel.getObject().getId() != null && !TaskManagerBeans.get().getSecUtil()
+                .isReadable(getSession().getAuthentication(), batchModel.getObject())) {
+            throw new RestartResponseException(UnauthorizedPage.class);
+        }
         this.batchModel = batchModel;
         setReturnPage(parentPage);
     }
-    
+
     @Override
     public void onInitialize() {
         super.onInitialize();
-        
+
         add(dialog = new GeoServerDialog("dialog"));
-                
+
         Form<Batch> form = new Form<Batch>("batchForm", batchModel);
         add(form);
-  
-        AjaxSubmitLink saveButton = saveButton();  
+
+        AjaxSubmitLink saveButton = saveButton();
         form.add(saveButton);
-                
+
         form.add(new TextField<String>("name", new PropertyModel<String>(batchModel, "name")) {
             private static final long serialVersionUID = -3736209422699508894L;
 
@@ -96,36 +95,37 @@ public class BatchPage extends GeoServerSecuredPage {
                 return form.findSubmittingButton() == saveButton;
             }
         });
-        
+
         List<String> workspaces = new ArrayList<String>();
         for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
             workspaces.add(wi.getName());
         }
-                
-        form.add(new DropDownChoice<String>("workspace", 
-                new PropertyModel<String>(batchModel, "workspace"), workspaces)
-                .setNullValid(true));
-        
-        form.add(new TextField<String>("description", 
+
+        form.add(new DropDownChoice<String>("workspace",
+                new PropertyModel<String>(batchModel, "workspace"), workspaces).setNullValid(true));
+
+        form.add(new TextField<String>("description",
                 new PropertyModel<String>(batchModel, "description")));
-        
-        form.add(new TextField<String>("configuration",
-                new Model<String>(batchModel.getObject().getConfiguration() == null ? "" : 
-                    batchModel.getObject().getConfiguration().getName()))
-                .setEnabled(false));
-        
-        form.add(new FrequencyPanel("frequency", new PropertyModel<String>(batchModel, "frequency")));
-        
+
+        form.add(
+                new TextField<String>("configuration",
+                        new Model<String>(batchModel.getObject().getConfiguration() == null ? ""
+                                : batchModel.getObject().getConfiguration().getName()))
+                                        .setEnabled(false));
+
+        form.add(new FrequencyPanel("frequency",
+                new PropertyModel<String>(batchModel, "frequency")));
+
         form.add(new CheckBox("enabled", new PropertyModel<Boolean>(batchModel, "enabled")));
-        
+
         form.add(addButton());
-        
+
         // the removal button
         form.add(remove = removeButton());
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
-        
-        //the tasks panel
+
+        // the tasks panel
         form.add(elementsPanel = elementsPanel());
         elementsPanel.setFilterVisible(false);
         elementsPanel.setPageable(false);
@@ -138,12 +138,11 @@ public class BatchPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 doReturn();
-            }            
+            }
         });
-        
-        if (batchModel.getObject().getId() != null
-                && !TaskManagerBeans.get().getSecUtil().isWritable(
-                getSession().getAuthentication(), batchModel.getObject())) {
+
+        if (batchModel.getObject().getId() != null && !TaskManagerBeans.get().getSecUtil()
+                .isWritable(getSession().getAuthentication(), batchModel.getObject())) {
             form.get("name").setEnabled(false);
             form.get("workspace").setEnabled(false);
             form.get("description").setEnabled(false);
@@ -155,9 +154,9 @@ public class BatchPage extends GeoServerSecuredPage {
             saveButton.setEnabled(false);
             elementsPanel.setEnabled(false);
         }
-        
+
     }
-    
+
     protected AjaxSubmitLink saveButton() {
         return new AjaxSubmitLink("save") {
             private static final long serialVersionUID = 3735176778941168701L;
@@ -166,18 +165,19 @@ public class BatchPage extends GeoServerSecuredPage {
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 try {
                     Configuration config = batchModel.getObject().getConfiguration();
-                    batchModel.setObject(
-                            TaskManagerBeans.get().getDataUtil().saveScheduleAndRemove(batchModel.getObject(), removedElements));
-                    //update the old config (still used on configuration page)
+                    batchModel.setObject(TaskManagerBeans.get().getDataUtil()
+                            .saveScheduleAndRemove(batchModel.getObject(), removedElements));
+                    // update the old config (still used on configuration page)
                     if (config != null) {
-                        config.getBatches().put(batchModel.getObject().getName(), batchModel.getObject());
+                        config.getBatches().put(batchModel.getObject().getName(),
+                                batchModel.getObject());
                     }
-                    doReturn();                    
+                    doReturn();
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                     Throwable rootCause = ExceptionUtils.getRootCause(e);
-                    form.error(rootCause == null ? e.getLocalizedMessage() : 
-                        rootCause.getLocalizedMessage());
+                    form.error(rootCause == null ? e.getLocalizedMessage()
+                            : rootCause.getLocalizedMessage());
                     target.add(feedbackPanel);
                 }
             }
@@ -192,7 +192,7 @@ public class BatchPage extends GeoServerSecuredPage {
         return new AjaxSubmitLink("addNew") {
 
             private static final long serialVersionUID = 7320342263365531859L;
-            
+
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 dialog.setTitle(new ParamResourceModel("newTaskDialog.title", getPage()));
@@ -201,14 +201,16 @@ public class BatchPage extends GeoServerSecuredPage {
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
                     private static final long serialVersionUID = 7410393012930249966L;
-                    
+
                     private DropDownPanel panel;
+
                     private Map<String, Task> tasks;
 
                     @Override
                     protected Component getContents(String id) {
                         tasks = new TreeMap<String, Task>();
-                        for (Task task : TaskManagerBeans.get().getDao().getTasksAvailableForBatch(batchModel.getObject())) {
+                        for (Task task : TaskManagerBeans.get().getDao()
+                                .getTasksAvailableForBatch(batchModel.getObject())) {
                             if (!addedTasks.contains(task)) {
                                 tasks.put(task.getFullName(), task);
                             }
@@ -226,25 +228,26 @@ public class BatchPage extends GeoServerSecuredPage {
                     @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                         Task task = tasks.get(panel.getDropDownChoice().getModelObject());
-                        BatchElement be = TaskManagerBeans.get().getDataUtil().addBatchElement(batchModel.getObject(), task);
+                        BatchElement be = TaskManagerBeans.get().getDataUtil()
+                                .addBatchElement(batchModel.getObject(), task);
                         if (!removedElements.remove(be)) {
-                            addedTasks.add(task);                            
-                        } 
+                            addedTasks.add(task);
+                        }
 
-                        //bit of a hack - updates the selected array inside the panel
-                        //with the new count
-                        elementsPanel.setPageable(false);  
-                        
+                        // bit of a hack - updates the selected array inside the panel
+                        // with the new count
+                        elementsPanel.setPageable(false);
+
                         target.add(elementsPanel);
                         return true;
                     }
 
                 });
             }
-            
+
         };
     }
-    
+
     protected AjaxSubmitLink removeButton() {
         return new AjaxSubmitLink("removeSelected") {
             private static final long serialVersionUID = 3581476968062788921L;
@@ -257,23 +260,23 @@ public class BatchPage extends GeoServerSecuredPage {
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
                     private static final long serialVersionUID = -5552087037163833563L;
-                    
+
                     @Override
                     protected Component getContents(String id) {
                         StringBuilder sb = new StringBuilder();
-                        sb.append(new ParamResourceModel("confirmDeleteDialog.content",
-                                getPage()).getString());
+                        sb.append(new ParamResourceModel("confirmDeleteDialog.content", getPage())
+                                .getString());
                         for (BatchElement be : elementsPanel.getSelection()) {
                             sb.append("\n&nbsp;&nbsp;");
                             sb.append(escapeHtml(be.getTask().getName()));
                         }
-                        return new MultiLineLabel(id, sb.toString())
-                                .setEscapeModelStrings(false);
+                        return new MultiLineLabel(id, sb.toString()).setEscapeModelStrings(false);
                     }
 
                     @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        batchModel.getObject().getElements().removeAll(elementsPanel.getSelection());
+                        batchModel.getObject().getElements()
+                                .removeAll(elementsPanel.getSelection());
                         for (BatchElement be : elementsPanel.getSelection()) {
                             if (!addedTasks.remove(be.getTask())) {
                                 removedElements.add(be);
@@ -285,17 +288,17 @@ public class BatchPage extends GeoServerSecuredPage {
                         return true;
                     }
                 });
-                
-            }  
+
+            }
         };
     }
-    
+
     protected GeoServerTablePanel<BatchElement> elementsPanel() {
-        return new GeoServerTablePanel<BatchElement>("tasksPanel", 
+        return new GeoServerTablePanel<BatchElement>("tasksPanel",
                 new BatchElementsModel(batchModel), true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
-            
+
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 remove.setEnabled(elementsPanel.getSelection().size() > 0);
@@ -312,6 +315,5 @@ public class BatchPage extends GeoServerSecuredPage {
             }
         };
     }
-    
 
 }

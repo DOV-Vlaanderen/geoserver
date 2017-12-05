@@ -21,24 +21,24 @@ public class NewTaskPanel extends Panel {
         super(id);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(new TextField<String>("name", new Model<String>()).setRequired(true));
-        add(new DropDownChoice<String>("type", new Model<String>(), 
-                new Model<ArrayList<String>>(new ArrayList<String>(
-                        TaskManagerBeans.get().getTaskTypes().names())))
-                .setRequired(true));
+        add(new DropDownChoice<String>("type", new Model<String>(),
+                new Model<ArrayList<String>>(
+                        new ArrayList<String>(TaskManagerBeans.get().getTaskTypes().names())))
+                                .setRequired(true));
     }
-    
+
     @SuppressWarnings("unchecked")
     public DropDownChoice<String> getTypeField() {
         return ((DropDownChoice<String>) get("type"));
     }
-    
+
     @SuppressWarnings("unchecked")
     public TextField<String> getNameField() {
         return ((TextField<String>) get("name"));
     }
-    
+
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("feedback");
     }
-    
+
 }

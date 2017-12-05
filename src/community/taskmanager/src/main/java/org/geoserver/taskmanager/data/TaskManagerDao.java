@@ -6,7 +6,6 @@ package org.geoserver.taskmanager.data;
 
 import java.util.List;
 
-
 /**
  * The task manager DAO
  * 
@@ -14,7 +13,7 @@ import java.util.List;
  *
  */
 public interface TaskManagerDao {
-    
+
     /**
      * Save a run.
      * 
@@ -30,7 +29,7 @@ public interface TaskManagerDao {
      * @return list of active configurations.
      */
     List<Configuration> getConfigurations(Boolean templates);
-    
+
     /**
      * Get configuration by name.
      * 
@@ -38,7 +37,7 @@ public interface TaskManagerDao {
      * @return the configuration.
      */
     Configuration getConfiguration(String name);
-    
+
     /**
      * Get configuration by id.
      * 
@@ -46,14 +45,14 @@ public interface TaskManagerDao {
      * @return the configuration.
      */
     Configuration getConfiguration(long id);
-   
+
     /**
      * Save a configuration.
      * 
      * @param config the configuration.
      * @return the saved configuration.
      */
-    Configuration save(Configuration config);    
+    Configuration save(Configuration config);
 
     /**
      * List all active non-template batches.
@@ -61,7 +60,7 @@ public interface TaskManagerDao {
      * @return the list of active batches.
      */
     List<Batch> getBatches();
-    
+
     /**
      * Get a batch by its full name.
      * 
@@ -69,7 +68,7 @@ public interface TaskManagerDao {
      * @return the batch.
      */
     Batch getBatch(String fullName);
-    
+
     /**
      * Get a batch by id.
      * 
@@ -77,7 +76,7 @@ public interface TaskManagerDao {
      * @return the batch.
      */
     Batch getBatch(long id);
-    
+
     /**
      * Save a batch.
      * 
@@ -104,14 +103,13 @@ public interface TaskManagerDao {
     <T extends SoftRemove> T remove(T item);
 
     /**
-     * If a task is currently being run, return the current run.
-     * This method must be protected against concurrency.
+     * If a task is currently being run, return the current run. This method must be protected against concurrency.
      * 
      * @param task the task.
      * @return the current run, or null if it is not being run.
      */
     Run getCurrentRun(Task task);
-    
+
     /**
      * If a task is currently being committed, return the current run.
      * 
@@ -119,33 +117,32 @@ public interface TaskManagerDao {
      * @return the current run, or null if it is not being committed.
      */
     Run getCommittingRun(final Task task);
-    
+
     /**
      * Permanently delete a batch. All historical information (runs) associated with this batch will be removed.
      * 
      * @param batch the batch
      */
     void delete(Batch batch);
-    
+
     /**
-     * Permanently delete a configuration. All historical information (tasks + runs + batches) associated with this 
-     * configuration will be removed.
-     * Note that this will fail if some of the tasks are still used in existing independent batches.
+     * Permanently delete a configuration. All historical information (tasks + runs + batches) associated with this configuration will be removed. Note
+     * that this will fail if some of the tasks are still used in existing independent batches.
      * 
      * @param batch the batch
      */
     void delete(Configuration config);
-    
+
     /**
      * Permanently delete a batch element. All historical information (runs) associated with this batch element will be removed.
      * 
      * @param batchElement the batch element
      */
     void delete(BatchElement batchElement);
-    
+
     /**
-     * Permanently delete a task. All historical information associated with this task will be removed (runs).
-     * Note that this will fail if the task is still used in existing batches.
+     * Permanently delete a task. All historical information associated with this task will be removed (runs). Note that this will fail if the task is
+     * still used in existing batches.
      * 
      * @param task the task
      */
@@ -168,11 +165,9 @@ public interface TaskManagerDao {
     Configuration copyConfiguration(String configName);
 
     /**
-     * List all tasks available for a batch. That means
-     *  - no tasks already in the batch
-     *  - only active tasks     
-     *  - if the batch is part of a configuration or template, only tasks of that configuration or template
-     *  - if the batch is not part of a configuration or template, only tasks in a real configuration (not template).
+     * List all tasks available for a batch. That means - no tasks already in the batch - only active tasks - if the batch is part of a configuration or
+     * template, only tasks of that configuration or template - if the batch is not part of a configuration or template, only tasks in a real
+     * configuration (not template).
      * 
      * @return the list of available tasks.
      */
@@ -184,7 +179,6 @@ public interface TaskManagerDao {
      * @param object the object to be reloaded
      * @return the reloaded object
      */
-    <T extends Identifiable>  T reload(T object);
-
+    <T extends Identifiable> T reload(T object);
 
 }

@@ -5,7 +5,7 @@
 package org.geoserver.taskmanager.data;
 
 public interface Identifiable {
-    
+
     Long getId();
 
 }

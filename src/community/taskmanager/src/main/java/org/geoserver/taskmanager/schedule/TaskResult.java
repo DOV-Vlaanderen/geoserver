@@ -6,9 +6,8 @@ package org.geoserver.taskmanager.schedule;
 
 /**
  * A handle of a task that was run but must still be committed or rolled back.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface TaskResult {
 
@@ -21,5 +20,5 @@ public interface TaskResult {
      * batch has failed - cancel all changes
      */
     void rollback() throws TaskException;
-    
+
 }

@@ -12,28 +12,30 @@ package org.geoserver.taskmanager.report;
  *
  */
 public class Report {
-    
+
     /**
      * Enumeration for over-all result of the report.
      * 
      */
-    public enum Type {FAILED, CANCELLED, SUCCESS};
-    
+    public enum Type {
+        FAILED, CANCELLED, SUCCESS
+    };
+
     /**
      * Title of report.
      */
     private String title;
-    
+
     /**
      * Content of report.
      */
     private String content;
- 
+
     /**
      * Over-all result of the report.
      */
     private Type type;
-    
+
     public Report(String title, String content, Type type) {
         this.type = type;
         this.title = title;
@@ -47,9 +49,9 @@ public class Report {
     public String getContent() {
         return content;
     }
-    
+
     public Type getType() {
         return type;
     }
-    
+
 }

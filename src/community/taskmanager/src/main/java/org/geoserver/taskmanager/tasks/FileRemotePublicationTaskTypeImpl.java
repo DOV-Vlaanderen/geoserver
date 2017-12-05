@@ -24,24 +24,24 @@ import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.UploadMethod;
 public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTaskTypeImpl {
 
     public static final String NAME = "RemoteFilePublication";
-    
-    @Override             
-    protected boolean createStore(ExternalGS extGS, GeoServerRESTManager restManager, 
+
+    @Override
+    protected boolean createStore(ExternalGS extGS, GeoServerRESTManager restManager,
             StoreInfo store, Map<String, Object> parameterValues) throws IOException {
-        final StoreType storeType = store instanceof CoverageStoreInfo ? 
-                StoreType.COVERAGESTORES : StoreType.DATASTORES;
+        final StoreType storeType = store instanceof CoverageStoreInfo ? StoreType.COVERAGESTORES
+                : StoreType.DATASTORES;
         final File file = Resources.fromURL(getURL(store)).file();
-        return restManager.getPublisher().createStore(store.getWorkspace().getName(), storeType, store.getName(), 
-                UploadMethod.FILE, store.getType().toLowerCase(), Files.probeContentType(file.toPath()), 
-                file.toURI(), null);
+        return restManager.getPublisher().createStore(store.getWorkspace().getName(), storeType,
+                store.getName(), UploadMethod.FILE, store.getType().toLowerCase(),
+                Files.probeContentType(file.toPath()), file.toURI(), null);
     }
-    
+
     private String getURL(StoreInfo storeInfo) {
         if (storeInfo instanceof CoverageStoreInfo) {
             return ((CoverageStoreInfo) storeInfo).getURL();
         } else {
-            //this will work for shapefiles, which I believe is the only purely file-based
-            //(non-database) vector store
+            // this will work for shapefiles, which I believe is the only purely file-based
+            // (non-database) vector store
             return ((DataStoreInfo) storeInfo).getConnectionParameters().get("url").toString();
         }
     }
@@ -55,6 +55,5 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     public String getName() {
         return NAME;
     }
-
 
 }

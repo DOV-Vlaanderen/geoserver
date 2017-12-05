@@ -14,7 +14,7 @@ public interface ExternalGS extends Named {
     String getUsername();
 
     String getPassword();
-        
+
     default GeoServerRESTManager getRESTManager() throws MalformedURLException {
         return new GeoServerRESTManager(new URL(getUrl()), getUsername(), getPassword());
     }

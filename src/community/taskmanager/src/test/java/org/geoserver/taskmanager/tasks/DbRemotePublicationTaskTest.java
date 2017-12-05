@@ -1,12 +1,6 @@
 package org.geoserver.taskmanager.tasks;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-
-import javax.xml.namespace.QName;
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
@@ -27,41 +21,49 @@ import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.quartz.Trigger.TriggerState;
+import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import javax.xml.namespace.QName;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
 
-//@Ignore
+import static org.junit.Assert.assertFalse;
+
+@Ignore
 public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
-    
-    //configure these constants
+
+    // configure these constants
     private static final String DB_NAME = "mydb";
-    private static final String TABLE_NAME = "vw_horizonten";
+
+    private static final String TABLE_NAME = "grondwaterlichamen_new";
 
     private static QName MY_TYPE = new QName(DB_NAME, TABLE_NAME, DB_NAME);
-    
+
     private static final String ATT_LAYER = "layer";
+
     private static final String ATT_EXT_GS = "geoserver";
+
     private static final String ATT_FAIL = "fail";
+
     private static final String ATT_DB_NAME = "dbName";
-    
+
     @Autowired
     private LookupService<ExternalGS> extGeoservers;
-        
+
     @Autowired
     private TaskManagerDao dao;
-    
+
     @Autowired
     private TaskManagerFactory fac;
-    
+
     @Autowired
     private TaskManagerDataUtil dataUtil;
 
     @Autowired
     private TaskManagerTaskUtil taskUtil;
-    
+
     @Autowired
     private BatchJobService bjService;
 
@@ -72,9 +74,9 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
     private LookupService<DbSource> dbSources;
 
     private Configuration config;
-    
+
     private Batch batch;
-    
+
     @Override
     public boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addCustomType(MY_TYPE, dbSources.get(DB_NAME).getParameters());
@@ -83,26 +85,29 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     @Before
     public void setupBatch() {
-        config = fac.createConfiguration();  
+        config = fac.createConfiguration();
         config.setName("my_config");
         config.setWorkspace("some_ws");
-        
+
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(DbRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_LAYER,
+                ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_EXT_GS,
+                ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_DB_NAME,
+                ATT_DB_NAME);
         dataUtil.addTaskToConfiguration(config, task1);
-        
+
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
-        
+
         batch = fac.createBatch();
-        
+
         batch.setName("my_batch");
         dataUtil.addBatchElement(batch, task1);
-        
+
         batch = bjService.saveAndSchedule(batch);
     }
 
@@ -111,44 +116,43 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dao.delete(batch);
         dao.delete(config);
     }
-    
-    @Test
-    public void testSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
-        dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
-        dataUtil.setConfigurationAttribute(config, ATT_LAYER, TABLE_NAME);
-        dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
-        config = dao.save(config);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getFullName())
-                .startNow()        
-                .build();
-        scheduler.scheduleJob(trigger);
-        
-        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
-                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
-        GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
-        
-        assertTrue(restManager.getReader().existsDatastore(DB_NAME, DB_NAME));
-        assertTrue(restManager.getReader().existsFeatureType(DB_NAME, DB_NAME, TABLE_NAME));
-        assertTrue(restManager.getReader().existsLayer(DB_NAME, TABLE_NAME, true));
-        
-        assertTrue(taskUtil.cleanup(config));      
-        
-        assertFalse(restManager.getReader().existsDatastore(DB_NAME, DB_NAME));
-        assertFalse(restManager.getReader().existsFeatureType(DB_NAME, DB_NAME, TABLE_NAME));
-        assertFalse(restManager.getReader().existsLayer(DB_NAME, TABLE_NAME, true));
-    }
-    
+    /*
+     * 
+     * @Test public void testSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
+     * dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME); dataUtil.setConfigurationAttribute(config, ATT_LAYER, TABLE_NAME);
+     * dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs"); config = dao.save(config);
+     * 
+     * Trigger trigger = TriggerBuilder.newTrigger() .forJob(batch.getFullName()) .startNow() .build(); scheduler.scheduleJob(trigger);
+     * 
+     * while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+     * //burn the cpu }
+     * 
+     * GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
+     * 
+     * assertTrue(restManager.getReader().existsDatastore(DB_NAME, DB_NAME)); assertTrue(restManager.getReader().existsFeatureType(DB_NAME, DB_NAME,
+     * TABLE_NAME)); assertTrue(restManager.getReader().existsLayer(DB_NAME, TABLE_NAME, true));
+     * 
+     * String result = HTTPUtils.get(
+     * "http://localhost:9090/geoserver/mydb/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=mydb:grondwaterlichamen_new&maxFeatures=50");
+     * assertFalse(result.contains("Exception"));
+     * 
+     * assertTrue(taskUtil.cleanup(config));
+     * 
+     * assertFalse(restManager.getReader().existsDatastore(DB_NAME, DB_NAME)); assertFalse(restManager.getReader().existsFeatureType(DB_NAME, DB_NAME,
+     * TABLE_NAME)); assertFalse(restManager.getReader().existsLayer(DB_NAME, TABLE_NAME, true));
+     * 
+     * 
+     * }
+     */
+
     @Test
     public void testRollback() throws SchedulerException, SQLException, MalformedURLException {
         Task task2 = fac.createTask();
         task2.setName("task2");
         task2.setType(TestTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(task2, TestTaskTypeImpl.PARAM_FAIL, ATT_FAIL);
-        dataUtil.addTaskToConfiguration(config, task2);  
-        
+        dataUtil.addTaskToConfiguration(config, task2);
+
         dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, TABLE_NAME);
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
@@ -157,16 +161,15 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
         task2 = config.getTasks().get("task2");
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getFullName())
-                .startNow()        
+
+        Trigger trigger = TriggerBuilder.newTrigger().forJob(batch.getFullName()).startNow()
                 .build();
         scheduler.scheduleJob(trigger);
-        
+
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
-                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+        }
+
         GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
 
         assertFalse(restManager.getReader().existsDatastore(DB_NAME, DB_NAME));

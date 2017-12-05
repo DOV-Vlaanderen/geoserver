@@ -35,61 +35,65 @@ import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     private static final String ATT_LAYER = "layer";
+
     static final String ATT_EXT_GS = "geoserver";
+
     private static final String ATT_FAIL = "fail";
-        
+
     @Autowired
     private LookupService<ExternalGS> extGeoservers;
-        
+
     @Autowired
     private TaskManagerDao dao;
-    
+
     @Autowired
     private TaskManagerFactory fac;
-    
+
     @Autowired
     private TaskManagerDataUtil dataUtil;
 
     @Autowired
     private TaskManagerTaskUtil taskUtil;
-    
+
     @Autowired
     private BatchJobService bjService;
 
     @Autowired
     private Scheduler scheduler;
-    
+
     private Configuration config;
-    
+
     private Batch batch;
-    
+
     @Override
     public boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addWcs11Coverages();
         return true;
     }
-                        
+
     @Before
-    public void setupBatch() throws Exception {                
-        config = fac.createConfiguration();  
+    public void setupBatch() throws Exception {
+        config = fac.createConfiguration();
         config.setName("my_config");
         config.setWorkspace("some_ws");
-        
+
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(FileRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER,
+                ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS,
+                ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task1);
-        
+
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
-        
+
         batch = fac.createBatch();
-        
+
         batch.setName("my_batch");
         dataUtil.addBatchElement(batch, task1);
-        
+
         batch = bjService.saveAndSchedule(batch);
     }
 
@@ -98,43 +102,43 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dao.delete(batch);
         dao.delete(config);
     }
-    
+
     @Test
-    public void testSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
+    public void testSuccessAndCleanup()
+            throws SchedulerException, SQLException, MalformedURLException {
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getFullName())
-                .startNow()        
+
+        Trigger trigger = TriggerBuilder.newTrigger().forJob(batch.getFullName()).startNow()
                 .build();
         scheduler.scheduleJob(trigger);
-        
+
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
-                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+        }
+
         GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
-        
+
         assertTrue(restManager.getReader().existsCoveragestore("wcs", "DEM"));
         assertTrue(restManager.getReader().existsCoverage("wcs", "DEM", "DEM"));
         assertTrue(restManager.getReader().existsLayer("wcs", "DEM", true));
-        
-        assertTrue(taskUtil.cleanup(config));      
-        
+
+        assertTrue(taskUtil.cleanup(config));
+
         assertFalse(restManager.getReader().existsCoveragestore("wcs", "DEM"));
         assertFalse(restManager.getReader().existsCoverage("wcs", "DEM", "DEM"));
         assertFalse(restManager.getReader().existsLayer("wcs", "DEM", true));
     }
-    
+
     @Test
     public void testRollback() throws SchedulerException, SQLException, MalformedURLException {
         Task task2 = fac.createTask();
         task2.setName("task2");
         task2.setType(TestTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(task2, TestTaskTypeImpl.PARAM_FAIL, ATT_FAIL);
-        dataUtil.addTaskToConfiguration(config, task2);  
-        
+        dataUtil.addTaskToConfiguration(config, task2);
+
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         dataUtil.setConfigurationAttribute(config, ATT_FAIL, Boolean.TRUE.toString());
@@ -142,16 +146,15 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         task2 = config.getTasks().get("task2");
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
-        
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(batch.getFullName())
-                .startNow()        
+
+        Trigger trigger = TriggerBuilder.newTrigger().forJob(batch.getFullName()).startNow()
                 .build();
         scheduler.scheduleJob(trigger);
-        
+
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
-                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-        
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+        }
+
         GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
 
         assertFalse(restManager.getReader().existsCoveragestore("wcs", "DEM"));

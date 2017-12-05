@@ -22,13 +22,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExtTypes {
     private static final Logger LOGGER = Logging.getLogger(ExtTypes.class);
-    
+
     @Autowired
     private LookupService<DbSource> dbSources;
-    
+
     @Autowired
     private LookupService<ExternalGS> extGeoservers;
-    
+
     @Autowired
     private GeoServer geoServer;
 
@@ -45,20 +45,20 @@ public class ExtTypes {
         }
 
     };
-    
+
     public final ParameterType tableName() {
         return new ParameterType() {
             private Set<String> getTables(String databaseName) {
                 Set<String> tables = new TreeSet<String>();
-                tables.add(""); //custom value is possible here
+                tables.add(""); // custom value is possible here
                 if (databaseName != null) {
                     DbSource ds = dbSources.get(databaseName);
                     if (ds != null) {
                         try {
                             Connection conn = ds.getDataSource().getConnection();
                             DatabaseMetaData md = conn.getMetaData();
-                            ResultSet rs = md.getTables(null, ds.getSchema(), "%", 
-                                    new String[]{"TABLE", "VIEW"});
+                            ResultSet rs = md.getTables(null, ds.getSchema(), "%",
+                                    new String[] { "TABLE", "VIEW" });
                             while (rs.next()) {
                                 if (ds.getSchema() != null || rs.getString(2) == null) {
                                     tables.add(rs.getString(3));
@@ -67,33 +67,35 @@ public class ExtTypes {
                                 }
                             }
                         } catch (SQLException e) {
-                            LOGGER.log(Level.WARNING, "Failed to retrieve tables from data source " + databaseName, e);
+                            LOGGER.log(Level.WARNING,
+                                    "Failed to retrieve tables from data source " + databaseName,
+                                    e);
                         }
                     }
                 }
                 return tables;
-            }        
+            }
 
             @Override
             public List<String> getDomain(List<String> dependsOnRawValues) {
                 return new ArrayList<String>(getTables(dependsOnRawValues.get(0)));
             }
-            
+
             @Override
             public boolean validate(String value, List<String> dependsOnRawValues) {
-                //since the table may not yet exist  (could be result of other task
-                //do not validate its existence.
-                return true; 
+                // since the table may not yet exist (could be result of other task
+                // do not validate its existence.
+                return true;
             }
-    
+
             @Override
             public Object parse(String value, List<String> dependsOnRawValues) {
                 return new DbTableImpl(dbSources.get(dependsOnRawValues.get(0)), value);
             }
-    
+
         };
     };
-    
+
     public final ParameterType extGeoserver = new ParameterType() {
 
         @Override
@@ -107,7 +109,7 @@ public class ExtTypes {
         }
 
     };
-    
+
     public final ParameterType internalLayer = new ParameterType() {
 
         @Override
@@ -123,6 +125,6 @@ public class ExtTypes {
         public LayerInfo parse(String value, List<String> dependsOnRawValues) {
             return geoServer.getCatalog().getLayerByName(value);
         }
-        
+
     };
 }

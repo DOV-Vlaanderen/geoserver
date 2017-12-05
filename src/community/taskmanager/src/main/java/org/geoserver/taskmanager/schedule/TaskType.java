@@ -17,16 +17,17 @@ import org.geoserver.taskmanager.util.Named;
  *
  */
 public interface TaskType extends Named {
-    
+
     /**
      * Return parameter info for this task type.
      * 
      * @return the parameter info
      */
     public Map<String, ParameterInfo> getParameterInfo();
-    
+
     /**
      * Run a task, based on these parameter values.
+     * 
      * @param batch TODO
      * @param task TODO
      * @param parameterValues
@@ -35,14 +36,14 @@ public interface TaskType extends Named {
      */
     public TaskResult run(Batch batch, Task task, Map<String, Object> parameterValues,
             Map<Object, Object> tempValues) throws TaskException;
-    
+
     /**
      * Do a clean-up for this task (for example, if this task publishes something, remove it).
+     * 
      * @param parameterValues the parameter values for this task
      * 
-     * @throws TaskException 
+     * @throws TaskException
      */
-    public void cleanup(Task task, Map<String, Object> parameterValues) 
-            throws TaskException;
+    public void cleanup(Task task, Map<String, Object> parameterValues) throws TaskException;
 
 }

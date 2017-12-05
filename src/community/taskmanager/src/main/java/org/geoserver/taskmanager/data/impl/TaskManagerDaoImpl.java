@@ -36,7 +36,7 @@ import java.util.List;
 @Repository
 @Transactional
 public class TaskManagerDaoImpl implements TaskManagerDao {
-    
+
     @Autowired
     private SessionFactory sf;
 
@@ -55,7 +55,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         getSession().flush();
         return o;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Identifiable> T reload(T object) {
@@ -68,7 +68,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     public Run save(final Run run) {
         return saveObject(run);
     }
-    
+
     @Override
     public Configuration save(final Configuration config) {
         return saveObject(config);
@@ -84,7 +84,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                 element.setIndex(null);
             }
         }
-        return saveObject(batch); 
+        return saveObject(batch);
     }
 
     @SuppressWarnings("unchecked")
@@ -93,15 +93,12 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         return getSession().createCriteria(BatchImpl.class)
                 .createAlias("configuration", "configuration", CriteriaSpecification.LEFT_JOIN)
                 .add(Restrictions.eq("removeStamp", 0L))
-                .add(Restrictions.or(
-                        Restrictions.isNull("configuration"),
-                        Restrictions.and(
-                                Restrictions.eq("configuration.removeStamp", 0L),                        
-                                Restrictions.eq("configuration.template", false)
-                        )
-                 )).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+                .add(Restrictions.or(Restrictions.isNull("configuration"),
+                        Restrictions.and(Restrictions.eq("configuration.removeStamp", 0L),
+                                Restrictions.eq("configuration.template", false))))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public List<Configuration> getConfigurations(Boolean templates) {
@@ -121,21 +118,20 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     @Override
     public Batch getBatch(long id) {
         return (Batch) getSession().get(BatchImpl.class, id);
-    }       
+    }
 
     @Override
     public Configuration getConfiguration(final String name) {
         return (Configuration) getSession().createCriteria(ConfigurationImpl.class)
-                .add(Restrictions.eq("removeStamp", 0L))
-                .add(Restrictions.eq("name", name)).uniqueResult();
+                .add(Restrictions.eq("removeStamp", 0L)).add(Restrictions.eq("name", name))
+                .uniqueResult();
     }
-        
+
     @SuppressWarnings("unchecked")
     @Override
     public List<Task> getTasksAvailableForBatch(Batch batch) {
         DetachedCriteria alreadyInBatch = DetachedCriteria.forClass(BatchElementImpl.class)
-                .createAlias("batch", "batch")
-                .createAlias("task", "task")
+                .createAlias("batch", "batch").createAlias("task", "task")
                 .add(Restrictions.eq("batch.id", batch.getId()))
                 .setProjection(Projections.property("task.id"));
         Criteria criteria = getSession().createCriteria(TaskImpl.class)
@@ -161,51 +157,48 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
         if (splitName.length > 1) {
             criteria.createAlias("configuration", "configuration")
-                .add(Restrictions.eq("configuration.name", splitName[0]))
-                .add(Restrictions.eq("name", splitName[1]));
+                    .add(Restrictions.eq("configuration.name", splitName[0]))
+                    .add(Restrictions.eq("name", splitName[1]));
         } else {
             criteria.add(Restrictions.isNull("configuration"))
-            .add(Restrictions.eq("name", splitName[0]));
+                    .add(Restrictions.eq("name", splitName[0]));
         }
-        
-        return (Batch) criteria.uniqueResult();   
+
+        return (Batch) criteria.uniqueResult();
     }
-    
+
     @Override
     public BatchElement getBatchElement(final Batch batch, final Task task) {
         return (BatchElement) getSession().createCriteria(BatchElementImpl.class)
-                .createAlias("batch", "batch")
-                .createAlias("task", "task")
+                .createAlias("batch", "batch").createAlias("task", "task")
                 .add(Restrictions.eq("batch.id", batch.getId()))
-                .add(Restrictions.eq("task.id", task.getId()))
-                .uniqueResult();
+                .add(Restrictions.eq("task.id", task.getId())).uniqueResult();
     }
-        
+
     @Override
     public <T extends SoftRemove> T remove(T item) {
         item.setActive(false);
         return saveObject(item);
     }
-    
+
     @Override
     public Run getCurrentRun(final Task task) {
-        return (Run) (getSession().createCriteria(RunImpl.class).setLockMode(LockMode.PESSIMISTIC_READ)
-                .createAlias("batchElement", "batchElement")
+        return (Run) (getSession().createCriteria(RunImpl.class)
+                .setLockMode(LockMode.PESSIMISTIC_READ).createAlias("batchElement", "batchElement")
                 .createAlias("batchElement.task", "task")
-                .add(Restrictions.eq("task.id", task.getId()))
-                .add(Restrictions.isNull("end"))).uniqueResult();
+                .add(Restrictions.eq("task.id", task.getId())).add(Restrictions.isNull("end")))
+                        .uniqueResult();
     }
-    
+
     @Override
     public Run getCommittingRun(final Task task) {
-        return (Run) (getSession().createCriteria(RunImpl.class).setLockMode(LockMode.PESSIMISTIC_READ)
-                .createAlias("batchElement", "batchElement")
+        return (Run) (getSession().createCriteria(RunImpl.class)
+                .setLockMode(LockMode.PESSIMISTIC_READ).createAlias("batchElement", "batchElement")
                 .createAlias("batchElement.task", "task")
-                .add(Restrictions.eq("task.id", task.getId()))
-                .add(Restrictions.isNotNull("end"))
+                .add(Restrictions.eq("task.id", task.getId())).add(Restrictions.isNotNull("end"))
                 .add(Restrictions.eq("status", Run.Status.COMMITTING))).uniqueResult();
     }
-    
+
     @Override
     public void delete(Batch batch) {
         batch = (Batch) getSession().get(BatchImpl.class, batch.getId());
@@ -222,7 +215,8 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public void delete(BatchElement batchElement) {
-        batchElement = (BatchElement) getSession().get(BatchElementImpl.class, batchElement.getId());
+        batchElement = (BatchElement) getSession().get(BatchElementImpl.class,
+                batchElement.getId());
         batchElement.getBatch().getElements().remove(batchElement);
         getSession().delete(batchElement);
     }
@@ -233,14 +227,13 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         task.getConfiguration().getTasks().remove(task);
         getSession().delete(task);
     }
-    
+
     @Override
     public Run getLatestRun(BatchElement batchElement) {
         return (Run) (getSession().createCriteria(RunImpl.class)
                 .createAlias("batchElement", "batchElement")
                 .add(Restrictions.eq("batchElement.id", batchElement.getId()))
-                .addOrder(Order.desc("start")))
-                .setMaxResults(1).uniqueResult();
+                .addOrder(Order.desc("start"))).setMaxResults(1).uniqueResult();
     }
 
     @Override
@@ -268,11 +261,11 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
             for (BatchElement be : batch.getElements()) {
                 be.setBatch(batch);
                 be.setTask(clone.getTasks().get(be.getTask().getName()));
-                ((BatchElementImpl) be).setId(null);                
+                ((BatchElementImpl) be).setId(null);
                 if (Hibernate.isInitialized(be.getRuns())) {
                     be.getRuns().clear();
                 }
-            }              
+            }
             if (Hibernate.isInitialized(batch.getBatchRuns())) {
                 batch.getBatchRuns().clear();
             }

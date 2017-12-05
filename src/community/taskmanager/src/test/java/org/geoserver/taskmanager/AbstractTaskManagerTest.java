@@ -7,8 +7,8 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Abstract test class.
@@ -17,10 +17,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath*:/applicationContext.xml", "classpath*:/applicationSecurityContext.xml"})
-@WebAppConfiguration //we need web app context to have data directory set.
-public abstract class AbstractTaskManagerTest {    
-    
+@ContextConfiguration({ "classpath*:/applicationContext.xml",
+        "classpath*:/applicationSecurityContext.xml" })
+@WebAppConfiguration // we need web app context to have data directory set.
+public abstract class AbstractTaskManagerTest {
+
     protected static MockData DATA_DIRECTORY;
 
     @Autowired
@@ -28,23 +29,22 @@ public abstract class AbstractTaskManagerTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        //set data directory
+        // set data directory
         DATA_DIRECTORY = new MockData();
-        System.setProperty("GEOSERVER_DATA_DIR", 
-                DATA_DIRECTORY.getDataDirectoryRoot().toString());
+        System.setProperty("GEOSERVER_DATA_DIR", DATA_DIRECTORY.getDataDirectoryRoot().toString());
 
     }
-    
+
     protected boolean setupDataDirectory() throws Exception {
         return false;
     }
-    
+
     @Before
-    public final void setupAndLoadDataDirectory() throws Exception {        
+    public final void setupAndLoadDataDirectory() throws Exception {
         if (setupDataDirectory()) {
             DATA_DIRECTORY.setUp();
             geoServer.reload();
         }
     }
-    
+
 }

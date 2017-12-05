@@ -18,7 +18,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-jdbcconfig</artifactId>
+        <artifactId>gs-jdbcconfig</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

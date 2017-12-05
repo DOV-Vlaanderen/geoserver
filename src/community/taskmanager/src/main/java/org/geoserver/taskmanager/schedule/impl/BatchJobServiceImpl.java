@@ -31,45 +31,44 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the batch job service.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 @Service
-public class BatchJobServiceImpl implements BatchJobService, ApplicationListener<ContextRefreshedEvent>  {
-    
+public class BatchJobServiceImpl
+        implements BatchJobService, ApplicationListener<ContextRefreshedEvent> {
+
     private static final Logger LOGGER = Logging.getLogger(BatchJobServiceImpl.class);
-    
-    @Autowired 
+
+    @Autowired
     TaskManagerDao dao;
-    
+
     @Autowired
     Scheduler scheduler;
 
     @Autowired
     LookupService<TaskType> taskTypes;
-    
+
     @Autowired
     TaskManagerFactory factory;
 
     @Transactional
     protected void schedule(Batch batch) throws SchedulerException {
-        JobKey jobKey = JobKey.jobKey(batch.getFullName());        
-        
+        JobKey jobKey = JobKey.jobKey(batch.getFullName());
+
         try {
             boolean exists = scheduler.checkExists(jobKey);
-            
+
             if (!batch.isActive()) {
                 if (exists) {
                     scheduler.deleteJob(jobKey);
                 }
-                
+
                 LOGGER.log(Level.INFO, "Successfully unscheduled batch " + batch.getFullName());
-                
-            } else {                
-                if (!exists) {        
-                    JobDetail jobDetail = JobBuilder.newJob(BatchJobImpl.class)
-                            .withIdentity(jobKey)
+
+            } else {
+                if (!exists) {
+                    JobDetail jobDetail = JobBuilder.newJob(BatchJobImpl.class).withIdentity(jobKey)
                             .storeDurably().build();
 
                     scheduler.addJob(jobDetail, true);
@@ -77,25 +76,25 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
 
                 TriggerKey triggerKey = TriggerKey.triggerKey(batch.getName());
                 scheduler.unscheduleJob(triggerKey);
-               
+
                 if (batch.isEnabled() && batch.getFrequency() != null
                         && !batch.getElements().isEmpty()) {
-                    Trigger trigger = TriggerBuilder.newTrigger()
-                            .withIdentity(triggerKey)
+                    Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
                             .forJob(jobKey)
-                            .withSchedule(CronScheduleBuilder.cronSchedule(batch.getFrequency())).build();
-                    
-                    scheduler.scheduleJob(trigger);            
+                            .withSchedule(CronScheduleBuilder.cronSchedule(batch.getFrequency()))
+                            .build();
+
+                    scheduler.scheduleJob(trigger);
                 }
-                
+
                 LOGGER.log(Level.INFO, "Successfully (re)scheduled batch " + batch.getName());
             }
-            
+
         } catch (SchedulerException e) {
-           
+
         }
     }
-    
+
     @Override
     @Transactional
     public Batch saveAndSchedule(Batch batch) {
@@ -105,39 +104,39 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
         } catch (SchedulerException e) {
             throw new IllegalArgumentException(e);
         }
-        return batch;        
+        return batch;
     }
-    
+
     @Override
     public void reloadFromData() {
         LOGGER.info("Reloading scheduler from data.");
-        
+
         try {
             scheduler.clear();
         } catch (SchedulerException e) {
             LOGGER.log(Level.WARNING, "Failed to clear scheduler ", e);
             throw new IllegalStateException(e);
         }
-                
+
         for (Batch batch : dao.getBatches()) {
             try {
                 schedule(batch);
             } catch (SchedulerException e) {
-                LOGGER.log(Level.WARNING, "Failed to schedule batch " + batch.getName() + ", disabling. ", e);
+                LOGGER.log(Level.WARNING,
+                        "Failed to schedule batch " + batch.getName() + ", disabling. ", e);
                 batch.setEnabled(false);
-                dao.save(batch); 
+                dao.save(batch);
             }
         }
     }
-    
+
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        reloadFromData();        
+        reloadFromData();
         try {
             scheduler.start();
         } catch (SchedulerException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
-
 
 }

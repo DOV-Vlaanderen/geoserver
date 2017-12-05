@@ -1,18 +1,21 @@
 package org.geoserver.taskmanager.util;
 
 public class ValidationError {
-    
-    public enum ValidationErrorType {MISSING, INVALID_PARAM, INVALID_VALUE}
-    
+
+    public enum ValidationErrorType {
+        MISSING, INVALID_PARAM, INVALID_VALUE
+    }
+
     private ValidationErrorType type;
-    
+
     private String paramName;
-    
+
     private String paramValue;
-    
+
     private String taskType;
-    
-    public ValidationError(ValidationErrorType type, String paramName, String paramValue, String taskType) {
+
+    public ValidationError(ValidationErrorType type, String paramName, String paramValue,
+            String taskType) {
         this.type = type;
         this.paramName = paramName;
         this.paramValue = paramValue;
@@ -30,7 +33,7 @@ public class ValidationError {
     public String getParamValue() {
         return paramValue;
     }
-    
+
     public String getTaskType() {
         return taskType;
     }

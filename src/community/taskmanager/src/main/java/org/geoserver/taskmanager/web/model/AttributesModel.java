@@ -44,7 +44,7 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
     @Override
     protected List<Attribute> getItems() {
         attributes.putAll(configurationModel.getObject().getAttributes());
-        
+
         Set<String> taskAttNames = new LinkedHashSet<String>();
         for (Task task : configurationModel.getObject().getTasks().values()) {
             for (Parameter pam : task.getParameters().values()) {

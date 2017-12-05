@@ -19,11 +19,19 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
 
     private static final long serialVersionUID = -8246320435114536132L;
 
-    public static final Property<Batch> WORKSPACE = new BeanProperty<Batch>("workspace", "workspace");
-    public static final Property<Batch> DESCRIPTION = new BeanProperty<Batch>("description", "description");
-    public static final Property<Batch> FREQUENCY = new BeanProperty<Batch>("frequency", "frequency");
+    public static final Property<Batch> WORKSPACE = new BeanProperty<Batch>("workspace",
+            "workspace");
+
+    public static final Property<Batch> DESCRIPTION = new BeanProperty<Batch>("description",
+            "description");
+
+    public static final Property<Batch> FREQUENCY = new BeanProperty<Batch>("frequency",
+            "frequency");
+
     public static final Property<Batch> ENABLED = new BeanProperty<Batch>("enabled", "enabled");
+
     public static final Property<Batch> NAME = new BeanProperty<Batch>("name", "name");
+
     public static final Property<Batch> STATUS = new AbstractProperty<Batch>("status") {
 
         private static final long serialVersionUID = 6588177543318699677L;
@@ -38,8 +46,9 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
             }
             return null;
         }
-        
+
     };
+
     public static final Property<Batch> RUN = new AbstractProperty<Batch>("run") {
 
         private static final long serialVersionUID = -978472501994535469L;
@@ -48,41 +57,40 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
         public Object getPropertyValue(Batch item) {
             return null;
         }
-        
+
     };
-    
+
     public static final Property<Batch> FULL_NAME = new AbstractProperty<Batch>("name") {
         private static final long serialVersionUID = 6588177543318699677L;
 
         @Override
         public Object getPropertyValue(Batch item) {
             return item.getFullName();
-        }        
+        }
     };
-    
-    
+
     private IModel<Configuration> configurationModel;
 
     public BatchesModel() {
     }
-    
+
     public BatchesModel(IModel<Configuration> configurationModel) {
         this.configurationModel = configurationModel;
     }
-    
+
     @Override
     protected List<Property<Batch>> getProperties() {
-        return Arrays.asList(WORKSPACE, configurationModel == null ? FULL_NAME : NAME, DESCRIPTION, 
+        return Arrays.asList(WORKSPACE, configurationModel == null ? FULL_NAME : NAME, DESCRIPTION,
                 FREQUENCY, ENABLED, RUN, STATUS);
     }
 
     @Override
     protected List<Batch> getItems() {
         List<Batch> list = new ArrayList<Batch>(
-                configurationModel == null ? TaskManagerBeans.get().getDao().getBatches() : 
-                    configurationModel.getObject().getBatches().values());
-        list.removeIf(b -> !TaskManagerBeans.get().getSecUtil().isReadable(
-            SecurityContextHolder.getContext().getAuthentication(), b));
+                configurationModel == null ? TaskManagerBeans.get().getDao().getBatches()
+                        : configurationModel.getObject().getBatches().values());
+        list.removeIf(b -> !TaskManagerBeans.get().getSecUtil()
+                .isReadable(SecurityContextHolder.getContext().getAuthentication(), b));
         return list;
     }
 

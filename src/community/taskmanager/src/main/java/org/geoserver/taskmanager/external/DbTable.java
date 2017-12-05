@@ -5,9 +5,9 @@
 package org.geoserver.taskmanager.external;
 
 public interface DbTable {
-    
+
     DbSource getDbSource();
-    
+
     String getTableName();
 
 }

@@ -15,14 +15,12 @@ import org.geoserver.taskmanager.data.Batch;
 public interface BatchJobService {
 
     /**
-     * Saves this batch and update the schedule according to its new settings.
-     * This may also mean that the batch is actually unscheduled, or that it scheduling is changed,
-     * if it was previously scheduled.
+     * Saves this batch and update the schedule according to its new settings. This may also mean that the batch is actually unscheduled, or that it
+     * scheduling is changed, if it was previously scheduled.
      * 
-     * Batches are scheduled if they are ACTIVE, ENABLED and have a FREQUENCY set.
-     * Batches which are ACTIVE, but not ENABLED _or_ have FREQUENCY set to NULL, are known by the 
-     * quartz scheduler but are never triggered unless explicitly done.
-     * Batches which are NOT ACTIVE, are entirely removed from the quartz scheduler.
+     * Batches are scheduled if they are ACTIVE, ENABLED and have a FREQUENCY set. Batches which are ACTIVE, but not ENABLED _or_ have FREQUENCY set to
+     * NULL, are known by the quartz scheduler but are never triggered unless explicitly done. Batches which are NOT ACTIVE, are entirely removed from the
+     * quartz scheduler.
      * 
      * @param batch the batch.
      * @return the saved batch.

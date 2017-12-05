@@ -17,12 +17,17 @@ public class ConfigurationsModel extends GeoServerDataProvider<Configuration> {
 
     private static final long serialVersionUID = -8246320435114536132L;
 
-    public static final Property<Configuration> WORKSPACE = new BeanProperty<Configuration>("workspace", "workspace");
-    public static final Property<Configuration> NAME = new BeanProperty<Configuration>("name", "name");
-    public static final Property<Configuration> DESCRIPTION = new BeanProperty<Configuration>("description", "description");
+    public static final Property<Configuration> WORKSPACE = new BeanProperty<Configuration>(
+            "workspace", "workspace");
+
+    public static final Property<Configuration> NAME = new BeanProperty<Configuration>("name",
+            "name");
+
+    public static final Property<Configuration> DESCRIPTION = new BeanProperty<Configuration>(
+            "description", "description");
 
     private Boolean templates;
-    
+
     public ConfigurationsModel(Boolean templates) {
         this.templates = templates;
     }
@@ -36,8 +41,8 @@ public class ConfigurationsModel extends GeoServerDataProvider<Configuration> {
     protected List<Configuration> getItems() {
         List<Configuration> list = new ArrayList<Configuration>(
                 TaskManagerBeans.get().getDao().getConfigurations(templates));
-        list.removeIf(c -> !TaskManagerBeans.get().getSecUtil().isReadable(
-                SecurityContextHolder.getContext().getAuthentication(), c));
+        list.removeIf(c -> !TaskManagerBeans.get().getSecUtil()
+                .isReadable(SecurityContextHolder.getContext().getAuthentication(), c));
         return list;
     }
 

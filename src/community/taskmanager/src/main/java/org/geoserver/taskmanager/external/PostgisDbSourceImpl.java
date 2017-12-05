@@ -19,26 +19,25 @@ import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 
 /**
  * DbSource for Postgres.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
-    
+
     private String host;
-    
+
     private int port = 5432;
-    
+
     private String db;
-    
+
     private boolean ssl = false;
-    
+
     private String schema;
-    
+
     private String username;
-    
+
     private String password;
-        
+
     public String getHost() {
         return host;
     }
@@ -123,7 +122,7 @@ public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
         encoder.setPassword(password);
         return encoder;
     }
-    
+
     @Override
     public Map<String, Object> getParameters() {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -149,32 +148,17 @@ public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
     }
 
     /*
-    @Override
-    public InputStream dump(String realTableName, String tempTableName) throws IOException {
-        String url = "jdbc:postgresql://" + username + ":" + password + "@" + host + ":" + port + "/" + db;
-        if (ssl) {
-            url +=  "?sslmode=require";
-        }
-        Process pr = Runtime.getRuntime().exec(
-                "pg_dump --dbname=" + url + " --table " + (schema == null ? "" : schema + ".") + realTableName);
-        
-        //to do: remove the search_path from the script
-        //+ replace all names (table, sequences, indexes, constraints) to temporary names
-        
-        return pr.getInputStream();
-    }
-    
-    @Override
-    public OutputStream script() throws IOException {
-        String url = "jdbc:postgresql://" + username + ":" + password + "@" + host + ":" + port + "/" + db;
-        if (ssl) {
-            url +=  "?sslmode=require";
-        }
-        if (schema != null) {
-            url +=  (ssl ? "&" : "?") + "options=--search_path%3D" + schema;
-        }
-        Process pr = Runtime.getRuntime().exec("psql --dbname=" + url);
-        return pr.getOutputStream();
-    }*/
+     * @Override public InputStream dump(String realTableName, String tempTableName) throws IOException { String url = "jdbc:postgresql://" + username +
+     * ":" + password + "@" + host + ":" + port + "/" + db; if (ssl) { url += "?sslmode=require"; } Process pr = Runtime.getRuntime().exec(
+     * "pg_dump --dbname=" + url + " --table " + (schema == null ? "" : schema + ".") + realTableName);
+     * 
+     * //to do: remove the search_path from the script //+ replace all names (table, sequences, indexes, constraints) to temporary names
+     * 
+     * return pr.getInputStream(); }
+     * 
+     * @Override public OutputStream script() throws IOException { String url = "jdbc:postgresql://" + username + ":" + password + "@" + host + ":" + port
+     * + "/" + db; if (ssl) { url += "?sslmode=require"; } if (schema != null) { url += (ssl ? "&" : "?") + "options=--search_path%3D" + schema; } Process
+     * pr = Runtime.getRuntime().exec("psql --dbname=" + url); return pr.getOutputStream(); }
+     */
 
 }

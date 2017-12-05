@@ -25,35 +25,35 @@ import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Task;
 
-@Entity 
+@Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "task", "batch" }) })
 public class BatchElementImpl extends BaseImpl implements BatchElement {
-    
+
     private static final long serialVersionUID = 7690398584400545752L;
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "batch")
     private BatchImpl batch;
-    
+
     @ManyToOne
     @JoinColumn(name = "task")
     private TaskImpl task;
-    
+
     @Column
     private Integer index;
-    
+
     @OneToMany(targetEntity = RunImpl.class, mappedBy = "batchElement", cascade = CascadeType.ALL)
     @OrderBy("start")
     List<Run> runs = new ArrayList<Run>();
 
     @Column(nullable = false)
     Long removeStamp = 0L;
-    
+
     @Override
     public BatchImpl getBatch() {
         return batch;

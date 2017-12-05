@@ -18,38 +18,38 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskManagerBeans {
-    
+
     @Autowired
     private LookupService<TaskType> taskTypes;
 
     @Autowired
     private TaskManagerFactory fac;
-    
+
     @Autowired
     private TaskManagerDao dao;
-    
+
     @Autowired
     private TaskManagerDataUtil dataUtil;
-    
+
     @Autowired
     private TaskManagerTaskUtil taskUtil;
-    
+
     @Autowired
     private ReportBuilder reportBuilder;
-    
+
     @Autowired
     private List<ReportService> reportServices;
-    
+
     @Autowired
     private BatchJobService bjService;
 
-    @Autowired 
+    @Autowired
     private TaskManagerSecurityUtil secUtil;
-    
+
     public LookupService<TaskType> getTaskTypes() {
         return taskTypes;
     }
-    
+
     public TaskManagerFactory getFac() {
         return fac;
     }
@@ -73,15 +73,15 @@ public class TaskManagerBeans {
     public List<ReportService> getReportServices() {
         return reportServices;
     }
-    
+
     public BatchJobService getBjService() {
         return bjService;
     }
-    
+
     public TaskManagerSecurityUtil getSecUtil() {
         return secUtil;
     }
-    
+
     public static TaskManagerBeans get() {
         return GeoServerApplication.get().getApplicationContext().getBean(TaskManagerBeans.class);
     }

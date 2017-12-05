@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LookupDbSourceServiceImpl extends LookupServiceImpl<DbSource> {
-    
+
     @Autowired
     public void setDbSources(List<DbSource> dbSources) {
         setNamed(dbSources);

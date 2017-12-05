@@ -3,6 +3,7 @@
  * application directory.
  */
 package org.geoserver.taskmanager.external;
+
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -18,14 +19,14 @@ import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
  *
  */
 public interface DbSource extends Named {
-    
+
     /**
      * Get a data source for this database.
      * 
      * @return the data source.
      */
     DataSource getDataSource();
-    
+
     /**
      * Get a geoserver store encoder from this source.
      * 
@@ -43,28 +44,27 @@ public interface DbSource extends Named {
     Map<String, Object> getParameters();
 
     /**
-     * schema 
+     * schema
      * 
      * @return
      */
     String getSchema();
-    
+
     /**
      * 
      * 
      * @param encoder
      * @param origParameters
-     * @return 
+     * @return
      */
     GSAbstractStoreEncoder postProcess(GSAbstractStoreEncoder encoder, DbTable table);
-    
-    /*
-     * these methods could serve an alternative table copy implementation
-     * that doesn't use jdbc but uses direct database commands and sends SQL commands
-     * through a pipeline between servers. 
-     * 
-    public InputStream dump(String realTableName, String tempTableName) throws IOException;
 
-    OutputStream script() throws IOException;
+    /*
+     * these methods could serve an alternative table copy implementation that doesn't use jdbc but uses direct database commands and sends SQL commands
+     * through a pipeline between servers.
+     * 
+     * public InputStream dump(String realTableName, String tempTableName) throws IOException;
+     * 
+     * OutputStream script() throws IOException;
      */
 }

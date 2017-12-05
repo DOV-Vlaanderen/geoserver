@@ -10,19 +10,17 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 /**
- * 
  * A Parameter Type For a Task
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public interface ParameterType {
-        
+
     /**
      * STRING type
      */
     public ParameterType STRING = new ParameterType() {
-        
+
         @Override
         public List<String> getDomain(List<String> dependsOnRawValues) {
             return null;
@@ -34,12 +32,12 @@ public interface ParameterType {
         }
 
     };
-    
+
     /**
      * INTEGER type
      */
     public ParameterType INTEGER = new ParameterType() {
-        
+
         @Override
         public List<String> getDomain(List<String> dependsOnRawValues) {
             return null;
@@ -52,16 +50,16 @@ public interface ParameterType {
             } catch (NumberFormatException e) {
                 return null;
             }
-        
+
         }
 
     };
-    
+
     /**
      * BOOLEAN type
      */
     public ParameterType BOOLEAN = new ParameterType() {
-        
+
         @Override
         public List<String> getDomain(List<String> dependsOnRawValues) {
             return Lists.newArrayList("true", "false");
@@ -69,16 +67,16 @@ public interface ParameterType {
 
         @Override
         public Boolean parse(String value, List<String> dependsOnRawValues) {
-            return Boolean.parseBoolean(value);        
+            return Boolean.parseBoolean(value);
         }
 
     };
-    
+
     /**
      * URL type
      */
     public ParameterType URL = new ParameterType() {
-        
+
         @Override
         public List<String> getDomain(List<String> dependsOnRawValues) {
             return null;
@@ -94,12 +92,12 @@ public interface ParameterType {
         }
 
     };
-    
+
     /**
      * File type
      */
     public ParameterType FILE = new ParameterType() {
-        
+
         @Override
         public List<String> getDomain(List<String> dependsOnRawValues) {
             return null;
@@ -111,31 +109,30 @@ public interface ParameterType {
         }
 
     };
-    
+
     /**
      * List possible values for this parameter (when applicable).
-     * 
+     *
      * @param availableParameters all parameters and their values.
      * @return list of possible values, null if not applicable.
      */
     public List<String> getDomain(List<String> dependsOnRawValues);
-    
+
     /**
      * Validate and parse a parameter value for this parameter (at run time).
-     * 
+     *
      * @param value the raw value.
      * @param availableParameters all parameters and their raw values.
      * @return the parsed value, NULL if the value is invalid.
      */
     public Object parse(String value, List<String> dependsOnRawValues);
-    
+
     /**
      * Validate a parameter value (at configuration time).
-     * 
+     *
      * @param value the raw value.
      * @param availableParameters all parameters and their raw values.
-     * @return true if the value is considered valid at configuration time (may still be considered
-     * invalid at parse time)
+     * @return true if the value is considered valid at configuration time (may still be considered invalid at parse time)
      */
     public default boolean validate(String value, List<String> dependsOnRawValues) {
         return parse(value, dependsOnRawValues) != null;

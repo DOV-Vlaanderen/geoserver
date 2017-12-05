@@ -5,11 +5,11 @@
 package org.geoserver.taskmanager.external;
 
 public class DbTableImpl implements DbTable {
-    
+
     private DbSource dbSource;
-    
+
     private String tableName;
-    
+
     public DbTableImpl(DbSource dbSource, String tableName) {
         this.dbSource = dbSource;
         this.tableName = tableName;

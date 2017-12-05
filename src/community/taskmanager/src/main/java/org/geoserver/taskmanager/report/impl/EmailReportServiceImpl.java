@@ -21,9 +21,8 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Sends a report over email (SMTP).
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class EmailReportServiceImpl implements ReportService {
 

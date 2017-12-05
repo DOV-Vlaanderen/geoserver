@@ -31,24 +31,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * 
  * Implementation independent helper methods.
- * 
  */
 @Service
 public class TaskManagerTaskUtil {
 
     private static final Logger LOGGER = Logging.getLogger(TaskManagerTaskUtil.class);
-    
+
     @Autowired
     private LookupService<TaskType> taskTypes;
-    
+
     @Autowired
     private TaskManagerFactory fac;
 
     @Autowired
     private TaskManagerDataUtil dataUtil;
-            
+
     private String getRawParameterValue(Parameter parameter) {
         String attName = dataUtil.getAssociatedAttributeName(parameter);
         if (attName != null) {
@@ -62,10 +60,10 @@ public class TaskManagerTaskUtil {
             return parameter.getValue();
         }
     }
-    
+
     /**
      * Compile raw parameters from task using the configuration.
-     * 
+     *
      * @param task the task
      * @return the raw parameters.
      */
@@ -82,45 +80,46 @@ public class TaskManagerTaskUtil {
 
     /**
      * Validate required parameters
-     * 
+     *
      * @param taskType task type
      * @param rawParameters raw parameters
      * @throws TaskException
      */
-    private void validateRequired(TaskType taskType, Map<String, String> rawParameters, List<ValidationError> validationErrors)  {
+    private void validateRequired(TaskType taskType, Map<String, String> rawParameters,
+            List<ValidationError> validationErrors) {
         for (ParameterInfo info : taskType.getParameterInfo().values()) {
             if (info.isRequired()) {
-                if (!rawParameters.containsKey(info.getName()) ||
-                        "".equals(rawParameters.get(info.getName()))) {
-                    validationErrors.add(new ValidationError(ValidationErrorType.MISSING, 
+                if (!rawParameters.containsKey(info.getName())
+                        || "".equals(rawParameters.get(info.getName()))) {
+                    validationErrors.add(new ValidationError(ValidationErrorType.MISSING,
                             info.getName(), null, taskType.getName()));
                 }
             }
         }
     }
-    
+
     /**
      * validate and parse the raw parameters.
-     * 
+     *
      * @param taskTypeName the task type name.
      * @param taskType the task type.
      * @param rawParameters the raw parameters.
      * @return the parsed parameters
      * @throws TaskException if any of the parameters are invalid or missing.
      */
-    public Map<String, Object> parseParameters(TaskType taskType, 
-            Map<String, String> rawParameters) throws TaskException {
+    public Map<String, Object> parseParameters(TaskType taskType, Map<String, String> rawParameters)
+            throws TaskException {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-        
-        //first check all required
+
+        // first check all required
         validateRequired(taskType, rawParameters, validationErrors);
-        
-        //parse
-        Map<String, Object> result = new HashMap<String, Object>();        
+
+        // parse
+        Map<String, Object> result = new HashMap<String, Object>();
         for (Entry<String, String> parameter : rawParameters.entrySet()) {
             ParameterInfo info = taskType.getParameterInfo().get(parameter.getKey());
             if (info == null) {
-                validationErrors.add(new ValidationError(ValidationErrorType.INVALID_PARAM, 
+                validationErrors.add(new ValidationError(ValidationErrorType.INVALID_PARAM,
                         parameter.getKey(), null, taskType.getName()));
                 break;
             }
@@ -131,27 +130,26 @@ public class TaskManagerTaskUtil {
             }
             Object value = pt.parse(parameter.getValue(), dependsOnValues);
             if (value == null) {
-                validationErrors.add(new ValidationError(ValidationErrorType.INVALID_VALUE, 
+                validationErrors.add(new ValidationError(ValidationErrorType.INVALID_VALUE,
                         parameter.getKey(), parameter.getValue(), taskType.getName()));
                 break;
             } else {
                 result.put(parameter.getKey(), value);
             }
         }
-        
+
         if (!validationErrors.isEmpty()) {
             throw new TaskException("There were validation errors: " + validationErrors);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Clean-up a configuration.
-     * 
+     *
      * @param config the configuration.
-     * @return true if the cleanup was entirely successful, false if one or more task clean-ups failed,
-     * in which case the logs should be checked.
+     * @return true if the cleanup was entirely successful, false if one or more task clean-ups failed, in which case the logs should be checked.
      */
     public boolean cleanup(Configuration config) {
         boolean success = true;
@@ -163,17 +161,17 @@ public class TaskManagerTaskUtil {
                 type.cleanup(task, parameterValues);
             } catch (TaskException e) {
                 LOGGER.log(Level.SEVERE, "Clean-up of task " + task.getFullName() + " failed", e);
-                success = false;                
+                success = false;
             }
         }
-        return success;        
+        return success;
     }
-    
+
     /**
      * Creates and initializes a task of a particular type
-     * 
+     *
      * @param type the type
-     * @param string 
+     * @param string
      * @return the task
      */
     public Task initTask(String type, String name) {
@@ -190,16 +188,17 @@ public class TaskManagerTaskUtil {
         }
         return task;
     }
-    
+
     private static class AttributeInfo {
         private ParameterType type;
+
         private List<String> dependsOn;
-        
+
         public AttributeInfo(ParameterType type, List<String> dependsOn) {
             this.type = type;
             this.dependsOn = dependsOn;
         }
-        
+
         @Override
         public boolean equals(Object o) {
             if (o instanceof AttributeInfo) {
@@ -217,33 +216,34 @@ public class TaskManagerTaskUtil {
             return dependsOn;
         }
     }
-    
+
     /**
      * Get attribute domain based on associated parameters.
-     * 
+     *
      * @param type the type
-     * @param string 
+     * @param string
      * @return the task
      */
     private List<String> mergeDomain(Attribute attribute) {
         List<Parameter> params = dataUtil.getAssociatedParameters(attribute);
-        
+
         Set<AttributeInfo> attInfos = new HashSet<AttributeInfo>();
         for (Parameter param : params) {
             TaskType taskType = taskTypes.get(param.getTask().getType());
             ParameterInfo info = taskType.getParameterInfo().get(param.getName());
             List<String> dependsOn = new ArrayList<String>();
             for (ParameterInfo dependsOnInfo : info.getDependsOn()) {
-                Parameter dependsOnParam = param.getTask().getParameters().get(dependsOnInfo.getName());
+                Parameter dependsOnParam = param.getTask().getParameters()
+                        .get(dependsOnInfo.getName());
                 dependsOn.add(dependsOnParam == null ? null : getRawParameterValue(dependsOnParam));
             }
             attInfos.add(new AttributeInfo(info.getType(), dependsOn));
         }
-        
+
         Set<String> domain = null;
-        //first add all inclusive domains
+        // first add all inclusive domains
         for (AttributeInfo attInfo : attInfos) {
-            List<String> thisDomain = attInfo.getType().getDomain(attInfo.getDependsOn());            
+            List<String> thisDomain = attInfo.getType().getDomain(attInfo.getDependsOn());
             if (thisDomain != null && thisDomain.contains("")) {
                 if (domain == null) {
                     domain = new LinkedHashSet<String>(thisDomain);
@@ -252,9 +252,9 @@ public class TaskManagerTaskUtil {
                 }
             }
         }
-        //then select on all the exclusive domains
+        // then select on all the exclusive domains
         for (AttributeInfo attInfo : attInfos) {
-            List<String> thisDomain = attInfo.getType().getDomain(attInfo.getDependsOn());            
+            List<String> thisDomain = attInfo.getType().getDomain(attInfo.getDependsOn());
             if (thisDomain != null && !thisDomain.contains("")) {
                 if (domain == null) {
                     domain = new LinkedHashSet<String>(thisDomain);
@@ -265,10 +265,10 @@ public class TaskManagerTaskUtil {
         }
         return domain == null ? null : new ArrayList<String>(domain);
     }
-    
+
     /**
      * Get domains of configuration
-     * 
+     *
      * @param configuration the configuration
      * @return the domains
      */
@@ -279,16 +279,16 @@ public class TaskManagerTaskUtil {
         }
         return domains;
     }
-    
+
     /**
      * Update domains of configuration
-     * 
+     *
      * @param configuration the configuration
      * @param the domains
      */
     public void updateDomains(Configuration configuration, Map<String, List<String>> domains) {
         Iterator<String> it = domains.keySet().iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             String attName = it.next();
             if (!configuration.getAttributes().containsKey(attName)) {
                 it.remove();
@@ -300,10 +300,10 @@ public class TaskManagerTaskUtil {
             }
         }
     }
-    
+
     /**
      * Update dependent domains for a particular attribute.
-     * 
+     *
      * @param attribute the attribute.
      * @param domains the domains.
      */
@@ -313,8 +313,9 @@ public class TaskManagerTaskUtil {
         for (Parameter param : params) {
             TaskType taskType = taskTypes.get(param.getTask().getType());
             ParameterInfo info = taskType.getParameterInfo().get(param.getName());
-            for (ParameterInfo dependentInfo: info.getDependents()) {
-                Parameter depedentParam = param.getTask().getParameters().get(dependentInfo.getName());
+            for (ParameterInfo dependentInfo : info.getDependents()) {
+                Parameter depedentParam = param.getTask().getParameters()
+                        .get(dependentInfo.getName());
                 if (depedentParam != null) {
                     String attName = dataUtil.getAssociatedAttributeName(depedentParam);
                     if (attName != null) {
@@ -323,7 +324,7 @@ public class TaskManagerTaskUtil {
                 }
             }
         }
-        
+
         for (String attName : dependentAttributes) {
             Attribute att = attribute.getConfiguration().getAttributes().get(attName);
             if (att != null) {
@@ -334,25 +335,25 @@ public class TaskManagerTaskUtil {
 
     /**
      * Validate configuration (at configuration time)
-     * 
+     *
      * @param configuration the configuration
      * @throws TaskException
      */
     public List<ValidationError> validate(Configuration configuration) {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
-        
+
         for (Task task : configuration.getTasks().values()) {
             TaskType taskType = taskTypes.get(task.getType());
             Map<String, String> rawParameters = getRawParameterValues(task);
-            //first check all required (except if template)
+            // first check all required (except if template)
             if (!configuration.isTemplate()) {
                 validateRequired(taskType, rawParameters, validationErrors);
             }
-            
+
             for (Entry<String, String> parameter : rawParameters.entrySet()) {
                 ParameterInfo info = taskType.getParameterInfo().get(parameter.getKey());
                 if (info == null) {
-                    validationErrors.add(new ValidationError(ValidationErrorType.INVALID_PARAM, 
+                    validationErrors.add(new ValidationError(ValidationErrorType.INVALID_PARAM,
                             parameter.getKey(), null, taskType.getName()));
                     break;
                 }
@@ -362,16 +363,15 @@ public class TaskManagerTaskUtil {
                     dependsOnValues.add(rawParameters.get(dependsOn.getName()));
                 }
                 if (!pt.validate(parameter.getValue(), dependsOnValues)) {
-                    validationErrors.add(new ValidationError(ValidationErrorType.INVALID_VALUE, 
+                    validationErrors.add(new ValidationError(ValidationErrorType.INVALID_VALUE,
                             parameter.getKey(), parameter.getValue(), taskType.getName()));
                     break;
                 }
             }
-            
+
         }
-        
+
         return validationErrors;
     }
-    
 
 }

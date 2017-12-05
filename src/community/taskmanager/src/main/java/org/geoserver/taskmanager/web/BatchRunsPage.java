@@ -22,28 +22,29 @@ public class BatchRunsPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = -5111795911981486778L;
 
     private IModel<Batch> batchModel;
-    
+
     private GeoServerTablePanel<BatchRun> runsPanel;
-        
+
     public BatchRunsPage(IModel<Batch> batchModel, Page parentPage) {
         this.batchModel = batchModel;
         setReturnPage(parentPage);
     }
-    
+
     @Override
     public void onInitialize() {
         super.onInitialize();
-        
-        add(new SimpleAjaxLink<String>("nameLink", new PropertyModel<String>(batchModel, "fullName")) {
+
+        add(new SimpleAjaxLink<String>("nameLink",
+                new PropertyModel<String>(batchModel, "fullName")) {
             private static final long serialVersionUID = -9184383036056499856L;
-            
+
             @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(new BatchPage(batchModel, getPage()));
             }
         });
-        
-        //the tasks panel
+
+        // the tasks panel
         add(runsPanel = runPanel());
         runsPanel.setSelectable(false);
 
@@ -53,26 +54,26 @@ public class BatchRunsPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 doReturn();
-            }            
+            }
         });
-        
+
     }
-    
-    
+
     protected GeoServerTablePanel<BatchRun> runPanel() {
-        return new GeoServerTablePanel<BatchRun>("runsPanel", 
-                new BatchRunsModel(batchModel), true) {
+        return new GeoServerTablePanel<BatchRun>("runsPanel", new BatchRunsModel(batchModel),
+                true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
-            
+
             @SuppressWarnings("unchecked")
             @Override
             protected Component getComponentForProperty(String id, IModel<BatchRun> runModel,
                     Property<BatchRun> property) {
                 if (property.equals(BatchRunsModel.START)) {
-                    return new SimpleAjaxLink<String>(id, (IModel<String>) property.getModel(runModel)) {
+                    return new SimpleAjaxLink<String>(id,
+                            (IModel<String>) property.getModel(runModel)) {
                         private static final long serialVersionUID = -9184383036056499856L;
-                        
+
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             setResponsePage(new BatchRunPage(batchModel, runModel, getPage()));
@@ -83,6 +84,5 @@ public class BatchRunsPage extends GeoServerSecuredPage {
             }
         };
     }
-    
 
 }
