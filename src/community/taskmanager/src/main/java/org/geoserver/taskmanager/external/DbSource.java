@@ -3,13 +3,13 @@
  * application directory.
  */
 package org.geoserver.taskmanager.external;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.geoserver.taskmanager.util.Named;
 
 import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
+import org.geoserver.taskmanager.util.Named;
+
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * A database configuration used by tasks.
@@ -67,4 +67,13 @@ public interface DbSource extends Named {
 
     OutputStream script() throws IOException;
      */
+
+
+
+    /**
+     * The dialect specific actions for taskmanager.
+     *
+     * @return
+     */
+    Dialect getDialect();
 }

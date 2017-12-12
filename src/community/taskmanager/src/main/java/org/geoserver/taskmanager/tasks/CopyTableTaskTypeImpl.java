@@ -101,7 +101,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
             try (Connection destConn = targetdb.getDataSource().getConnection()) {
                 try (Statement stmt = sourceConn.createStatement()) {
                     try (ResultSet rs = stmt.executeQuery("SELECT * FROM " + 
-                            SqlUtil.quote(table.getTableName()) + "")) {
+                            sourcedb.getDialect().quote(table.getTableName()) + "")) {
 
                         ResultSetMetaData rsmd = rs.getMetaData();
 

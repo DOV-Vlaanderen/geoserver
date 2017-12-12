@@ -38,7 +38,9 @@ public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
     private String username;
     
     private String password;
-        
+
+    private Dialect dialect = new DefaultDialectImpl();
+
     public String getHost() {
         return host;
     }
@@ -95,6 +97,7 @@ public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
         this.password = password;
     }
 
+
     @Override
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -146,6 +149,11 @@ public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
             }
         }
         return encoder;
+    }
+
+    @Override
+    public Dialect getDialect() {
+        return dialect;
     }
 
     /*

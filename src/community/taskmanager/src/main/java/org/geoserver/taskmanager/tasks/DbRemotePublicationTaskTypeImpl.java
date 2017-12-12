@@ -9,12 +9,14 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
+import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,10 +33,10 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
     public static final String PARAM_DB_NAME = "database";
 
     public static final String PARAM_TABLE_NAME = "table-name";
-    
+
     @Autowired
     ExtTypes extTypes;
-    
+
     @PostConstruct
     @Override
     public void initParamInfo() {
@@ -44,7 +46,7 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
         paramInfo.put(PARAM_TABLE_NAME, new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName(), false)
                 .dependsOn(dbInfo));
     }
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -52,18 +54,23 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
 
     @Override
     protected boolean createStore(ExternalGS extGS, GeoServerRESTManager restManager,
-            StoreInfo store, Map<String, Object> parameterValues) throws IOException {
-        final DbSource db = (DbSource) parameterValues.get(PARAM_DB_NAME);
-        final DbTable table = (DbTable) parameterValues.get(PARAM_TABLE_NAME);
-        return restManager.getStoreManager().create(store.getWorkspace().getName(), 
-                db.postProcess(db.getStoreEncoder(store.getName()), table));
+            StoreInfo store, Map<String, Object> parameterValues) throws IOException, TaskException {
+        try {
+            final DbSource db = (DbSource) parameterValues.get(PARAM_DB_NAME);
+            final DbTable table = (DbTable) parameterValues.get(PARAM_TABLE_NAME);
+            return restManager.getStoreManager().create(store.getWorkspace().getName(),
+                    db.postProcess(db.getStoreEncoder(store.getName()), table));
+        } catch (UnsupportedOperationException e) {
+            throw new TaskException("Failed to create store " + store.getWorkspace().getName() + ":"
+                    + store.getName(), e);
+        }
     }
 
     @Override
     protected boolean mustCleanUpStore() {
         return false;
     }
-    
+
     @Override
     protected void postProcess(GSResourceEncoder re, Map<String, Object> parameterValues) {
         final DbTable table = (DbTable) parameterValues.get(PARAM_TABLE_NAME);

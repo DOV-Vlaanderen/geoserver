@@ -319,7 +319,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
     }
 
     protected abstract boolean createStore(ExternalGS extGS, GeoServerRESTManager restManager,
-            StoreInfo store, Map<String, Object> parameterValues) throws IOException ;
+            StoreInfo store, Map<String, Object> parameterValues) throws IOException, TaskException;
     
     protected abstract boolean mustCleanUpStore();
 
