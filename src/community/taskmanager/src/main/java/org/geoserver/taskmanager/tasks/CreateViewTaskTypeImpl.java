@@ -111,9 +111,10 @@ public class CreateViewTaskTypeImpl implements TaskType {
             public void commit() throws TaskException {
                 try (Connection conn = db.getDataSource().getConnection()) {
                     try (Statement stmt = conn.createStatement()){
-                        stmt.executeUpdate("DROP VIEW IF EXISTS " + SqlUtil.quote(viewName));
-                        stmt.executeUpdate("ALTER VIEW " + tempViewName + " RENAME TO " + 
-                                SqlUtil.quote(SqlUtil.notQualified(viewName)));
+                        stmt.executeUpdate("DROP VIEW IF EXISTS " + db.getDialect().quote(viewName));
+
+                        String viewNameQuoted = db.getDialect().quote(SqlUtil.notQualified(viewName));
+                        stmt.executeUpdate(db.getDialect().sqlRenameView(tempViewName, viewNameQuoted));
                     }
                 } catch (SQLException e) {
                     throw new TaskException(e);
@@ -141,7 +142,7 @@ public class CreateViewTaskTypeImpl implements TaskType {
         final String viewName = (String) parameterValues.get(PARAM_VIEW_NAME);
         try (Connection conn = db.getDataSource().getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("DROP VIEW IF EXISTS " + SqlUtil.quote(viewName));
+                stmt.executeUpdate("DROP VIEW IF EXISTS " + db.getDialect().quote(viewName));
             }
         } catch (SQLException e) {
             throw new TaskException(e);

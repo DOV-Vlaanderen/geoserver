@@ -40,17 +40,16 @@ import static org.junit.Assert.assertTrue;
  * @author Niels Charlier
  *
  */
-@Ignore 
 public class CreateViewTaskTest extends AbstractTaskManagerTest {
 
     //configure these constants
     private static final String DB_NAME = "mydb";
     private static final String TABLE_NAME = "gw_beleid.grondwaterlichamen_new";
     private static final String VIEW_NAME = "public.vw_grondwaterlichamen";
-    private static final String SELECT = " dataengine_id, shape";
+    private static final String SELECT = " dataengine_id";
     private static final String WHERE = "gwl like 'BL%'";
     private static final int NUMBER_OF_RECORDS = 7;
-    private static final int NUMBER_OF_COLUMNS = 2;
+    private static final int NUMBER_OF_COLUMNS = 1;
     
     //attributes
     private static final String ATT_DB_NAME = "db";
@@ -228,6 +227,10 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         DbSource ds = dbSources.get(DB_NAME);
         try (Connection conn = ds.getDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
+            if(md.storesUpperCaseIdentifiers()){
+                schema = schema.toUpperCase();
+                pattern = pattern.toUpperCase();
+            }
             ResultSet rs = md.getTables(null, schema, pattern, new String[] {"VIEW"});
             return (rs.next());
         }

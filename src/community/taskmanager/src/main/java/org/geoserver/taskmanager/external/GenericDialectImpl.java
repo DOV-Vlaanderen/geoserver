@@ -21,4 +21,10 @@ public class GenericDialectImpl implements Dialect {
     public String quote(String tableName) {
         return tableName;
     }
+
+
+    @Override
+    public String sqlRenameView(String currentViewName, String newViewName) {
+        return "ALTER VIEW " + currentViewName + " RENAME TO " + newViewName;
+    }
 }

@@ -15,4 +15,9 @@ public class DefaultDialectImpl implements Dialect {
     public String quote(String tableName) {
         return SqlUtil.quote(tableName);
     }
+
+    @Override
+    public String sqlRenameView(String currentViewName, String newViewName) {
+        return "ALTER VIEW " + currentViewName + " RENAME TO " + newViewName;
+    }
 }

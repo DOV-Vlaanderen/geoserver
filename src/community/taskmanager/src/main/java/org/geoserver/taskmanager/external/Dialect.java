@@ -19,4 +19,6 @@ public interface Dialect {
      * @return the quote table name.
      */
     String quote(String tableName);
+
+    String sqlRenameView(String currentViewName, String newViewName);
 }
