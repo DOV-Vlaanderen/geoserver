@@ -160,7 +160,7 @@ public class StatusPanel extends Panel {
                     LOGGER.log(Level.SEVERE, "Error resetting resource caches", t);
                     error(t);
                 }
-                target.add(parent.feedbackPanel);
+                parent.addFeedbackPanels(target);
             }
         });
         
@@ -176,7 +176,7 @@ public class StatusPanel extends Panel {
                     LOGGER.log(Level.SEVERE, "An error occurred while reloading the catalog", t);
                     error(t);
                 }
-                target.add(parent.feedbackPanel);
+                parent.addFeedbackPanels(target);
             }
         });
     }
