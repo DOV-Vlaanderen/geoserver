@@ -4,9 +4,12 @@
  */
 package org.geoserver.taskmanager.external;
 
+import java.sql.Connection;
+import java.util.Set;
+
 /**
  * Dialect specific commands.
- * 
+ *
  * @author Timothy De Bock
  *
  */
@@ -21,4 +24,17 @@ public interface Dialect {
     String quote(String tableName);
 
     String sqlRenameView(String currentViewName, String newViewName);
+
+    /**
+     * Returns the create index statement with the index name over the columns.
+     * @param tableName
+     * @param columnNames
+     * @param isSpatialIndex
+     * @param isUniqueIndex
+     * @return
+     */
+    String createIndex(String tableName, Set<String> columnNames, boolean isSpatialIndex, boolean isUniqueIndex);
+
+
+    Set<String> getSpatialColumns(Connection sourceConn, String tableName);
 }

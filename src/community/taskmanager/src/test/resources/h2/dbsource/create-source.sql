@@ -8,9 +8,15 @@ CREATE SCHEMA gw_beleid;
 
 CREATE TABLE gw_beleid.grondwaterlichamen_new (
     dataengine_id integer NOT NULL,
-    gwl character varying
-    
+    gwl character varying,
+    CONSTRAINT unique_on_gwl UNIQUE (gwl)
 );
+
+ALTER TABLE  gw_beleid.grondwaterlichamen_new
+    ADD CONSTRAINT gw_beleid.grondwaterlichamen_new_pkey PRIMARY KEY (dataengine_id);
+
+CREATE INDEX multipleColumns ON gw_beleid.grondwaterlichamen_new (dataengine_id, gwl);
+
 
 CREATE VIEW gw_beleid.vw_grondwaterlichamen AS
  SELECT gw_beleid.grondwaterlichamen_new.dataengine_id,
@@ -27,8 +33,6 @@ CREATE VIEW gw_beleid.vw_grondwaterlichamen_generated_id AS
 
 
 
-ALTER TABLE  gw_beleid.grondwaterlichamen_new
-    ADD CONSTRAINT gw_beleid.grondwaterlichamen_new_pkey PRIMARY KEY (dataengine_id);
 
 --
 -- Data for Name: grondwaterlichamen_new;
