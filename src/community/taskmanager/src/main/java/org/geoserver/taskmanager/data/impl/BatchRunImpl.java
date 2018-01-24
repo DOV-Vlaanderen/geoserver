@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -29,19 +30,19 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 @Table
 public class BatchRunImpl extends BaseImpl implements BatchRun {
-   
+
     private static final long serialVersionUID = 2468505054020768482L;
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "batch")
     private BatchImpl batch;
-        
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun", 
+
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun",
             cascade = CascadeType.ALL)
     @OrderBy("start")
     @Fetch(FetchMode.SUBSELECT)
@@ -51,7 +52,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     public Long getId() {
         return id;
     }
-    
+
     @Override
     public BatchImpl getBatch() {
         return batch;
@@ -67,4 +68,41 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
         return runs;
     }
 
+    @Override
+    public Date getStart() {
+        return getRuns().isEmpty() ? null : getRuns().get(0).getStart();
+    }
+
+    @Override
+    public Date getEnd() {
+        return getRuns().isEmpty() ? null : getRuns().get(getRuns().size() - 1).getEnd();
+    }
+
+    @Override
+    public Run.Status getStatus() {
+        if (getRuns().isEmpty()) {
+            return null;
+        } else {
+            for (int i = getRuns().size() - 1; i >= 0; i--) {
+                if (getRuns().get(i).getStatus() != Run.Status.COMMITTED) {
+                    return getRuns().get(i).getStatus();
+                }
+            }
+            return Run.Status.COMMITTED;
+        }
+    }
+
+    @Override
+    public String getMessage() {
+        if (getRuns().isEmpty()) {
+            return null;
+        } else {
+            for (int i = getRuns().size() - 1; i >= 0; i--) {
+                if (getRuns().get(i).getMessage() != null) {
+                    return getRuns().get(i).getMessage();
+                }
+            }
+            return null;
+        }
+    }
 }
