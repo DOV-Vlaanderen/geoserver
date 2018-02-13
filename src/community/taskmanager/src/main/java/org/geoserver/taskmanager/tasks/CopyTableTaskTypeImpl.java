@@ -107,8 +107,13 @@ public class CopyTableTaskTypeImpl implements TaskType {
 
                         ResultSetMetaData rsmd = rs.getMetaData();
 
+                        String sqlCreateSchemaIfNotExists = targetdb.getDialect().createSchema(
+                                targetdb.getDataSource().getConnection(),
+                                SqlUtil.schema(tempTableName));
+
                         // create the temp table structure
-                        StringBuilder sb = new StringBuilder("CREATE TABLE ").append(tempTableName)
+                        StringBuilder sb = new StringBuilder(sqlCreateSchemaIfNotExists);
+                        sb.append("CREATE TABLE ").append(tempTableName)
                                 .append(" ( ");
                         int columnCount = rsmd.getColumnCount();
 
