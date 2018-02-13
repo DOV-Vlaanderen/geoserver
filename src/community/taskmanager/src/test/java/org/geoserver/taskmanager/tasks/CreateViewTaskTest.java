@@ -49,7 +49,8 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
     private static final String WHERE = "gwl like 'BL%'";
     private static final int NUMBER_OF_RECORDS = 7;
     private static final int NUMBER_OF_COLUMNS = 1;
-    
+
+    private static final String VIEW_NAME_NEW_SCHEMA = "newschema.vw_grondwaterlichamen";
     //attributes
     private static final String ATT_DB_NAME = "db";
     private static final String ATT_TABLE_NAME = "table_name";
@@ -57,7 +58,7 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_SELECT = "select";
     private static final String ATT_WHERE = "where";
     private static final String ATT_FAIL = "fail";
-    
+
     @Autowired
     private TaskManagerDao dao;
     
@@ -141,7 +142,7 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         assertTrue(taskUtil.cleanup(config));        
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));    
     }
-    
+
     @Test
     public void testComplexView() throws SchedulerException, SQLException {
         dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
@@ -168,7 +169,60 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         assertTrue(taskUtil.cleanup(config));
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));  
     }
-    
+
+
+    @Test
+    public void testSimpleViewInNewSchema() throws SchedulerException, SQLException {
+        dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_VIEW_NAME, VIEW_NAME_NEW_SCHEMA);
+        dataUtil.setConfigurationAttribute(config, ATT_SELECT, "*");
+        config = dao.save(config);
+
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getFullName())
+                .startNow()
+                .build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
+
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), "_temp%"));
+        assertTrue(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+
+        assertTrue(taskUtil.cleanup(config));
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+    }
+
+    @Test
+    public void testComplexViewInNewSchema() throws SchedulerException, SQLException {
+        dataUtil.setConfigurationAttribute(config, ATT_DB_NAME, DB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_VIEW_NAME, VIEW_NAME_NEW_SCHEMA);
+        dataUtil.setConfigurationAttribute(config, ATT_SELECT, SELECT);
+        dataUtil.setConfigurationAttribute(config, ATT_WHERE, WHERE);
+        config = dao.save(config);
+
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getFullName())
+                .startNow()
+                .build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
+
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), "_temp%"));
+        assertTrue(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+        assertEquals(NUMBER_OF_RECORDS, getNumberOfRecords(VIEW_NAME_NEW_SCHEMA));
+        assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(VIEW_NAME_NEW_SCHEMA));
+
+        assertTrue(taskUtil.cleanup(config));
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_NEW_SCHEMA), SqlUtil.notQualified(VIEW_NAME_NEW_SCHEMA)));
+    }
+
+
     @Test
     public void testRollback() throws SchedulerException, SQLException {
         Task task2 = fac.createTask();

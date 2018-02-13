@@ -56,6 +56,8 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
 
     private static final String TARGET_TABLE_FROM_VIEW_NAME = "temp.grondwaterlichamen_vw_copy";
 
+    private static final String TARGET_TABLE_NAME_NEW_SCHEMA = "foobar.grondwaterlichamen_copy";
+
     //attributes
     private static final String ATT_TABLE_NAME = "table_name";
     private static final String ATT_TARGET_DB = "target_db";
@@ -342,6 +344,48 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         assertFalse(tableExists(TARGETDB_NAME, SqlUtil.schema(TARGET_TABLE_NAME), "_temp%"));
         assertFalse(tableExists(TARGETDB_NAME, SqlUtil.schema(TARGET_TABLE_NAME),
                 SqlUtil.notQualified(TARGET_TABLE_NAME)));
+    }
+
+
+    /**
+     * the copy task should create the schema if it doesn't exist.
+     * @throws SchedulerException
+     * @throws SQLException
+     */
+    @Test
+    public void testTableInNewSchema() throws SchedulerException, SQLException {
+        dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_DB, TARGETDB_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_TARGET_TABLE_NAME, TARGET_TABLE_NAME_NEW_SCHEMA);
+        config = dao.save(config);
+
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getFullName())
+                .startNow()
+                .build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {
+        }
+
+        String[] splitTargetTableName = TARGET_TABLE_NAME_NEW_SCHEMA.split("\\.", 2);
+        if (splitTargetTableName.length == 2) {
+            assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], "_temp%"));
+            assertTrue(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_NAME, null, "_temp%"));
+            assertTrue(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME_NEW_SCHEMA));
+        }
+
+        assertTrue(taskUtil.cleanup(config));
+
+        if (splitTargetTableName.length == 2) {
+            assertFalse(tableExists(TARGETDB_NAME, splitTargetTableName[0], splitTargetTableName[1]));
+        } else {
+            assertFalse(tableExists(TARGETDB_NAME, null, TARGET_TABLE_NAME_NEW_SCHEMA));
+        }
     }
 
     private int getNumberOfRecords(String db, String tableName) throws SQLException {

@@ -50,4 +50,13 @@ public interface Dialect {
     Set<String> getSpatialColumns(Connection sourceConn, String tableName);
 
     int isNullable(int nullable);
+
+    /**
+     * Create the schema if it does not exist.
+     *
+     * @param connection
+     * @param schema
+     * @return
+     */
+    String createSchema(Connection connection, String schema);
 }
