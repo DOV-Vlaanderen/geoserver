@@ -67,7 +67,7 @@ public abstract class AbstractCreateViewTaskTypeImpl implements TaskType {
             try (Statement stmt = conn.createStatement()){
 
                 String sqlCreateSchemaIfNotExists = db.getDialect().createSchema(
-                        db.getDataSource().getConnection(),
+                        conn,
                         SqlUtil.schema(tempViewName));
 
                 StringBuilder sb = new StringBuilder(sqlCreateSchemaIfNotExists);
