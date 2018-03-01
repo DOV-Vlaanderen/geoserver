@@ -4,6 +4,8 @@
  */
 package org.geoserver.taskmanager.web.action;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.model.IModel;
 import org.geoserver.taskmanager.web.ConfigurationPage;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -27,12 +29,12 @@ public class LayerEditAction implements Action {
     }
 
     @Override
-    public String execute(ConfigurationPage onPage, String value) {
-        String[] prefixname = value.split(":", 2);
+    public void execute(ConfigurationPage onPage, AjaxRequestTarget target, IModel<String> valueModel) {
+        String[] prefixname = valueModel.getObject().split(":", 2);
         onPage.setResponsePage(
                 new ResourceConfigurationPage(prefixname.length > 1 ? prefixname[0] : null,
                         prefixname[prefixname.length - 1]).setReturnPage(onPage));
-        return value;
+
     }
 
     @Override

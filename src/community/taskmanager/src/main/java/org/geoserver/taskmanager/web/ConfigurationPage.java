@@ -44,7 +44,6 @@ import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.util.ValidationError;
 import org.geoserver.taskmanager.web.action.Action;
-import org.geoserver.taskmanager.web.action.FileUploadAction;
 import org.geoserver.taskmanager.web.model.AttributesModel;
 import org.geoserver.taskmanager.web.model.TasksModel;
 import org.geoserver.taskmanager.web.panel.BatchesPanel;
@@ -575,13 +574,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                         public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                                             String value = itemModel.getObject().getValue();
                                             if (actionModel.getObject().accept(value)) {
-                                                //TODO remove this, just testing if we need target?
-                                                if (actionModel.getObject() instanceof FileUploadAction) {
-                                                    itemModel.getObject().setValue(
-                                                            ((FileUploadAction) actionModel.getObject()).execute(ConfigurationPage.this, target, itemModel));
-                                                } else {
-                                                    actionModel.getObject().execute(ConfigurationPage.this, value);
-                                                }
+                                                IModel<String> valueModel =
+                                                        (IModel<String>) property.getModel(itemModel);
+                                                actionModel.getObject().execute(ConfigurationPage.this, target, valueModel);
                                                 target.add(tablePanel);
                                             } else {
                                                 error(new ParamResourceModel("invalidValue", getPage()).getString());

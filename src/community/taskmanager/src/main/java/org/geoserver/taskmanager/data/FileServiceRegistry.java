@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Timothy De Bock
  *
  */
-public interface FileServiceRegistry {
+public interface FileServiceRegistry extends Serializable {
 
     List<String> getFileServiceNames();
 

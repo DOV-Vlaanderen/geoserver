@@ -4,29 +4,24 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
-import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.taskmanager.data.FileService;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * S3 remote file storage.
@@ -106,9 +101,30 @@ public class S3FileServiceImpl implements FileService {
         if (checkFileExists(filePath)) {
             throw new IOException("The file allready exists");
         }
-        ObjectMetadata metaData = new ObjectMetadata();
-        metaData.setContentEncoding(ENCODING);
-        getS3Client().putObject(getBucketName(filePath), filePath.getFileName().toString(), content, metaData);
+        File scratchFile = File.createTempFile("prefix", String.valueOf(System.currentTimeMillis()));
+        try {
+            if (!getS3Client().doesBucketExist(getBucketName(filePath))) {
+                getS3Client().createBucket(getBucketName(filePath));
+            }
+
+            FileUtils.copyInputStreamToFile(content, scratchFile);
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentEncoding(ENCODING);
+
+            PutObjectRequest putObjectRequest = new PutObjectRequest(
+                    getBucketName(filePath),
+                    filePath.getFileName().toString(),
+                    scratchFile);
+
+            putObjectRequest.withMetadata(metadata);
+
+            getS3Client().putObject(putObjectRequest);
+        } finally {
+            if(scratchFile.exists()) {
+                scratchFile.delete();
+            }
+        }
 
     }
 

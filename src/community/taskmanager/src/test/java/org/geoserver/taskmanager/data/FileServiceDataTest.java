@@ -93,9 +93,9 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     @Test
     public void testFileServiceS3() throws IOException {
         S3FileServiceImpl service = new S3FileServiceImpl(
-                "endpointurl",
-                "username",
-                "password"
+                "endpoint url",
+                "xxx",
+                "xxx"
         );
 
         Path filename = Paths.get("test/" + System.currentTimeMillis() + "-test.txt");
@@ -124,12 +124,12 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     @Test
     public void testFileServiceS3CreateSubFolders() throws IOException {
         S3FileServiceImpl service = new S3FileServiceImpl(
-                "endpointurl",
-                "username",
-                "password"
+                "xxx",
+                "xxx",
+                "xxx"
         );
 
-        Path filename = Paths.get("test/newbucket/" + System.currentTimeMillis() + "-test.txt");
+        Path filename = Paths.get("newbucket/" + System.currentTimeMillis() + "-test.txt");
 
         Assert.assertFalse(service.checkFileExists(filename));
 

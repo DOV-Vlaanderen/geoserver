@@ -6,6 +6,7 @@ package org.geoserver.taskmanager.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * @author Timothy De Bock
  *
  */
-public interface FileService {
+public interface FileService extends Serializable {
 
     String getName();
 
