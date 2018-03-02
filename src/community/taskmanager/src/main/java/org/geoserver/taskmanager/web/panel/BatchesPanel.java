@@ -12,14 +12,18 @@ import org.geoserver.taskmanager.web.BatchPage;
 import org.geoserver.taskmanager.web.BatchRunsPage;
 import org.geoserver.taskmanager.web.model.BatchesModel;
 import org.geoserver.web.CatalogIconFactory;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.util.logging.Logging;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
@@ -45,6 +49,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
@@ -117,16 +122,22 @@ public class BatchesPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                boolean someCant = false;
+                List<String> nonDeletable = new ArrayList<String>();
                 for (Batch batch : batchesPanel.getSelection()) {
                     if (!TaskManagerBeans.get().getDataUtil().isDeletable(batch)) {
-                        error(new ParamResourceModel("stillRunning",
-                                BatchesPanel.this, batch.getFullName()).getString());
-                        someCant = true;
+                        nonDeletable.add(batch.getFullName());
                     }
                 }
-                if (someCant) {
-                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                if (!nonDeletable.isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(new ParamResourceModel("cannotDelete",
+                           BatchesPanel.this).getString());
+                    for (String batchName : nonDeletable) {
+                        sb.append(escapeHtml(batchName)).append(", ");
+                    }              
+                    sb.setLength(sb.length() - 2);
+                    error(sb.toString());
+                    target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
                 } else {
                 
                     dialog.setTitle(new ParamResourceModel("confirmDeleteBatchesDialog.title", BatchesPanel.this));
@@ -177,7 +188,7 @@ public class BatchesPanel extends Panel {
                             if (error != null) {
                                 error(error);
                                 target.add(remove);
-                                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                                target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
                             } else {
                                 target.add(batchesPanel);
                             }
@@ -258,10 +269,7 @@ public class BatchesPanel extends Panel {
                 } else if (property == BatchesModel.RUN) {
                     if (itemModel.getObject().getId() == null || 
                             itemModel.getObject().getElements().isEmpty() ||
-                            (configurationModel != null && configurationModel.getObject().isTemplate()) ||
-                            !TaskManagerBeans.get().getSecUtil().isWritable(
-                                    ((GeoServerSecuredPage) getPage()).getSession().getAuthentication(), 
-                                    itemModel.getObject())) {
+                            (configurationModel != null && configurationModel.getObject().isTemplate())) {
                         return new Label(id);
                     } else {
                         SimpleAjaxSubmitLink link = new SimpleAjaxSubmitLink(id, null) {
@@ -269,10 +277,18 @@ public class BatchesPanel extends Panel {
                             
                             @Override
                             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                                TaskManagerBeans.get().getBjService().scheduleNow(itemModel.getObject());
-                                info(new ParamResourceModel("batchStarted", BatchesPanel.this).getString());
-
-                                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                                Trigger trigger = TriggerBuilder.newTrigger()
+                                        .forJob(itemModel.getObject().getFullName())
+                                        .startNow()        
+                                        .build();
+                                try {
+                                    GeoServerApplication.get().getBeanOfType(Scheduler.class).scheduleJob(trigger);
+                                } catch (SchedulerException e) {
+                                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                                }
+                                info(new StringResourceModel("batchStarted", BatchesPanel.this).getString());
+                                
+                                target.add(((GeoServerBasePage) getPage()).getFeedbackPanel());
                             }
                         };
                         link.getLink().add(new AttributeAppender("class", "play-link", ","));
