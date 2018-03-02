@@ -7,6 +7,7 @@ import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.impl.FileServiceImpl;
 import org.geoserver.taskmanager.data.impl.S3FileServiceImpl;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -90,6 +91,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
      *
      * @throws IOException
      */
+    @Ignore
     @Test
     public void testFileServiceS3() throws IOException {
         S3FileServiceImpl service = new S3FileServiceImpl(
@@ -121,6 +123,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
      *
      * @throws IOException
      */
+    @Ignore
     @Test
     public void testFileServiceS3CreateSubFolders() throws IOException {
         S3FileServiceImpl service = new S3FileServiceImpl(

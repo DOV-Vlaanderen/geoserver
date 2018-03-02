@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -66,22 +67,27 @@ public class FileUploadPanel extends Panel {
             setDefaultModel(new CompoundPropertyModel<>(fileUploadModel));
 
             add(dialog = new GeoServerDialog("dialog"));
+            add(new FeedbackPanel("feedback"));
 
             setMultiPart(true);
 
 
             DropDownChoice<String> fileServiceChoice =
                     new DropDownChoice<>("fileServiceSelection", getFilterRegistry().getFileServiceNames());
+            //TODO why does this also block the add new folder dialogbox? and how do I stop this?
+            //fileServiceChoice.setRequired(true);
             add(fileServiceChoice);
 
             DropDownChoice<String> folderChoice = new DropDownChoice<>("folderSelection", new ArrayList<>());
             folderChoice.setOutputMarkupId(true);
+            //folderChoice.setRequired(true);
             add(folderChoice);
 
-            fileServiceChoice.add(createFileServiceSelectionChangedBehavior(fileServiceChoice, folderChoice));
+            fileServiceChoice.add(createFileServiceSelectionChangedBehavior(this, fileServiceChoice, folderChoice));
 
             add(createAddFolderButton(folderChoice));
             add(fileUploadField = new FileUploadField("fileInput"));
+            //fileUploadField.setRequired(true);
         }
 
 
@@ -103,7 +109,6 @@ public class FileUploadPanel extends Panel {
                             fileService.delete(filePath);
                         }
                         fileService.create(filePath, upload.getInputStream());
-                        System.out.println("UPLOAD complete :" + filePath.toString());
                         //TODO does not yet update the gui?
                         //fileNameModel.setObject(filePath.toString());
                     } catch (Exception e) {
@@ -116,11 +121,14 @@ public class FileUploadPanel extends Panel {
         /**
          * React to the file service changed event. Update the available folders drop down.
          *
+         *
+         * @param parent
          * @param fileServiceChoice
          * @param folderChoice
          * @return
          */
         private AjaxFormComponentUpdatingBehavior createFileServiceSelectionChangedBehavior(
+                final FileUploadForm parent,
                 final DropDownChoice<String> fileServiceChoice,
                 final DropDownChoice<String> folderChoice) {
 
@@ -139,13 +147,13 @@ public class FileUploadPanel extends Panel {
                                 availableFolders.add(path.toString());
                             }
                         } catch (IOException e) {
-                            //TODO do somthing usefull
-                            System.out.println("Could not get folders!!" + e.getMessage());
+                            parent.error("Could not get folders for service:" + e.getMessage());
                         }
                     }
                     folderChoice.setChoices(availableFolders);
 
                     target.add(folderChoice);
+                    target.add(parent);
                 }
             };
         }
@@ -164,8 +172,9 @@ public class FileUploadPanel extends Panel {
 
                 @Override
                 public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    dialog.setTitle(new ParamResourceModel("newTaskDialog.title", getPage()));
+                    dialog.setTitle(new ParamResourceModel("FileUpload.panel.filename", getPage()));
                     dialog.setInitialHeight(100);
+                    dialog.setInitialWidth(630);
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
                         private static final long serialVersionUID = 7410393012930249966L;
@@ -204,6 +213,7 @@ public class FileUploadPanel extends Panel {
 
             private String fileServiceSelection;
             private String folderSelection;
+
             //TODO why is this needed :( ?
             private String fileInput;
         }

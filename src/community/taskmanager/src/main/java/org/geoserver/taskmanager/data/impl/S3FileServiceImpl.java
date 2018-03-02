@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -83,7 +84,11 @@ public class S3FileServiceImpl implements FileService {
         if (filePath == null) {
             throw new IOException("Name of a file can not be null.");
         }
-        return getS3Client().doesObjectExist(getBucketName(filePath), filePath.getFileName().toString());
+        try {
+            return getS3Client().doesObjectExist(getBucketName(filePath), filePath.getFileName().toString());
+        } catch (AmazonClientException e) {
+            throw new IOException(e);
+        }
 
     }
 
@@ -120,8 +125,10 @@ public class S3FileServiceImpl implements FileService {
             putObjectRequest.withMetadata(metadata);
 
             getS3Client().putObject(putObjectRequest);
+        } catch (AmazonClientException e) {
+            throw new IOException(e);
         } finally {
-            if(scratchFile.exists()) {
+            if (scratchFile.exists()) {
                 scratchFile.delete();
             }
         }
@@ -134,7 +141,11 @@ public class S3FileServiceImpl implements FileService {
             throw new IOException("Name of a file can not be null.");
         }
         if (checkFileExists(filePath)) {
-            getS3Client().deleteObject(getBucketName(filePath), filePath.getFileName().toString());
+            try {
+                getS3Client().deleteObject(getBucketName(filePath), filePath.getFileName().toString());
+            } catch (AmazonClientException e) {
+                throw new IOException(e);
+            }
             return true;
         } else {
             return false;
@@ -147,17 +158,25 @@ public class S3FileServiceImpl implements FileService {
             throw new IOException("Name of a file can not be null.");
         }
         GetObjectRequest objectRequest = new GetObjectRequest(getBucketName(filePath), filePath.getFileName().toString());
-        return getS3Client().getObject(objectRequest).getObjectContent();
+        try {
+            return getS3Client().getObject(objectRequest).getObjectContent();
+        } catch (AmazonClientException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override
     public List<Path> listSubfolders() throws IOException {
-        List<Bucket> buckets = getS3Client().listBuckets();
-        ArrayList<Path> paths = new ArrayList<>();
-        for (Bucket bucket : buckets) {
-            paths.add(Paths.get(bucket.getName()));
+        try {
+            List<Bucket> buckets = getS3Client().listBuckets();
+            ArrayList<Path> paths = new ArrayList<>();
+            for (Bucket bucket : buckets) {
+                paths.add(Paths.get(bucket.getName()));
+            }
+            return paths;
+        } catch (AmazonClientException e) {
+            throw new IOException(e);
         }
-        return paths;
     }
 
     private AmazonS3 getS3Client() {

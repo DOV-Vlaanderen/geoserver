@@ -36,7 +36,7 @@ public class FileUploadAction implements Action {
 
         dialog.setTitle(new ParamResourceModel("FileUpload.dialogTile", onPage.getPage()));
         dialog.setInitialWidth(650);
-        dialog.setInitialHeight(250);
+        dialog.setInitialHeight(300);
         dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
             private static final long serialVersionUID = 7410393012930249966L;
@@ -48,7 +48,6 @@ public class FileUploadAction implements Action {
 
             @Override
             protected boolean onSubmit(AjaxRequestTarget target, org.apache.wicket.Component contents) {
-
                 return true;
             }
 
