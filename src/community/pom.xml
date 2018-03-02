@@ -549,7 +549,7 @@
       </modules>
     </profile>
     <profile>
-      <id>taskmanager></id>
+      <id>taskmanager</id>
       <modules>
         <module>taskmanager</module>
      </modules>

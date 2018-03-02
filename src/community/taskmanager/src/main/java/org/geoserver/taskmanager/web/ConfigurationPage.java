@@ -574,8 +574,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                         public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                                             String value = itemModel.getObject().getValue();
                                             if (actionModel.getObject().accept(value)) {
-                                                itemModel.getObject().setValue(
-                                                  actionModel.getObject().execute(ConfigurationPage.this, value));
+                                                IModel<String> valueModel =
+                                                        (IModel<String>) property.getModel(itemModel);
+                                                actionModel.getObject().execute(ConfigurationPage.this, target, valueModel);
                                                 target.add(tablePanel);
                                             } else {
                                                 error(new ParamResourceModel("invalidValue", getPage()).getString());
@@ -648,7 +649,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 addFeedbackPanels(target);
             }
         };
-    }   
-    
+    }
 
+    public GeoServerDialog getDialog() {
+        return dialog;
+    }
 }

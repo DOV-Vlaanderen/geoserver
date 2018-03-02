@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+    <wicket:head>
+        <style type="text/css">
+            .horizontal {
+                display: inline;
+            }
+
+        </style>
+    </wicket:head>
+</head>
+<body>
+<wicket:panel>
+    <form wicket:id="simpleUpload">
+        <div wicket:id="dialog"></div>
+        <span wicket:id="feedback"></span>
+        <fieldset>
+            <legend>
+                <wicket:message key="FileUpload.panel.locationtitle"/>
+            </legend>
+            <div>
+                <label>
+                    <wicket:message key="FileUpload.panel.filelocation"/>
+                    <select wicket:id="fileServiceSelection">
+                    </select>
+                </label>
+
+                <div>
+                    <label class="horizontal">
+                        <wicket:message key="FileUpload.panel.filefolder"/>
+                        <select wicket:id="folderSelection">
+                        </select>
+                    </label>
+                    <a class="add-link" href="#" wicket:id="addNew">
+                        <wicket:message key="FileUpload.panel.addnew"/>
+                    </a>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>
+                <wicket:message key="FileUpload.panel.uploadtile"/>
+            </legend>
+            <p>
+                <label for="simpleUpload">
+                    <wicket:message key="FileUpload.panel.filename"/>
+                </label>
+                <input wicket:id="fileInput" type="file" id="simpleUpload"/>
+            </p>
+        </fieldset>
+    </form>
+</wicket:panel>
+</body>
+</html>
