@@ -10,6 +10,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -17,6 +18,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.fileservice.impl.LookupFileServiceImpl;
 import org.geoserver.taskmanager.util.LookupService;
@@ -32,10 +34,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Upload a File with the @{FileService} .
+ *
+ *
+ * @author Timothy De Bock
+ */
 public class FileUploadPanel extends Panel {
 
 
     private static final long serialVersionUID = -1821529746678003578L;
+
+    private FeedbackPanel feedbackPanel;
+
 
     public FileUploadPanel(String id, IModel<String> model) {
         super(id, model);
@@ -46,6 +57,7 @@ public class FileUploadPanel extends Panel {
 
 
     private class FileUploadForm extends Form<Void> {
+        private IModel<String> fileNameModel;
 
         private final GeoServerDialog dialog;
         /**
@@ -65,31 +77,54 @@ public class FileUploadPanel extends Panel {
          */
 
         public FileUploadForm(String name, IModel<String> fileNameModel) {
+
             super(name);
+            this.fileNameModel = fileNameModel;
+
             setDefaultModel(new CompoundPropertyModel<>(fileUploadModel));
 
+
             add(dialog = new GeoServerDialog("dialog"));
-            add(new FeedbackPanel("feedback"));
+            add(feedbackPanel = new FeedbackPanel("feedback"));
+            feedbackPanel.setOutputMarkupId(true);
 
             setMultiPart(true);
 
 
             DropDownChoice<String> fileServiceChoice =
                     new DropDownChoice("fileServiceSelection",
-                            new ArrayList<>(TaskManagerBeans.get().getFileServices().names()));
-            //TODO why does this also block the add new folder dialogbox? and how do I stop this?
-            //fileServiceChoice.setRequired(true);
+                            new ArrayList<>(TaskManagerBeans.get().getFileServices().names())) {
+                        @Override
+                        public boolean isRequired() {
+                            Component submit = getParent().getParent().getParent().get("submit");
+                            Form dialogForm = (Form) getParent().getParent().getParent();
+                            return dialogForm.findSubmittingButton() == submit;
+                        }
+                    };
             add(fileServiceChoice);
 
-            DropDownChoice<String> folderChoice = new DropDownChoice<>("folderSelection", new ArrayList<>());
+            DropDownChoice<String> folderChoice = new DropDownChoice("folderSelection", new ArrayList<>()){
+                @Override
+                public boolean isRequired() {
+                    Component submit = getParent().getParent().getParent().get("submit");
+                    Form dialogForm = (Form) getParent().getParent().getParent();
+                    return dialogForm.findSubmittingButton() == submit;
+                }
+            };
             folderChoice.setOutputMarkupId(true);
-            //folderChoice.setRequired(true);
             add(folderChoice);
 
             fileServiceChoice.add(createFileServiceSelectionChangedBehavior(this, fileServiceChoice, folderChoice));
 
             add(createAddFolderButton(folderChoice));
-            add(fileUploadField = new FileUploadField("fileInput"));
+            add(fileUploadField = new FileUploadField("fileInput") {
+                @Override
+                public boolean isRequired() {
+                    Component submit = getParent().getParent().getParent().get("submit");
+                    Form dialogForm = (Form) getParent().getParent().getParent();
+                    return dialogForm.findSubmittingButton() == submit;
+                }
+            });
             //fileUploadField.setRequired(true);
         }
 
@@ -110,9 +145,9 @@ public class FileUploadPanel extends Panel {
                         if (fileService.checkFileExists(filePath)) {
                             fileService.delete(filePath);
                         }
-                        fileService.create(filePath, upload.getInputStream());
-                        //TODO does not yet update the gui?
-                        //fileNameModel.setObject(filePath.toString());
+                        String path = fileService.create(filePath, upload.getInputStream());
+
+                        fileNameModel.setObject(path);
                     } catch (Exception e) {
                         throw new IllegalStateException("Unable to write file", e);
                     }
@@ -122,7 +157,6 @@ public class FileUploadPanel extends Panel {
 
         /**
          * React to the file service changed event. Update the available folders drop down.
-         *
          *
          * @param parent
          * @param fileServiceChoice
@@ -221,6 +255,10 @@ public class FileUploadPanel extends Panel {
             private String fileInput;
         }
 
+    }
+
+    public FeedbackPanel getFeedbackPanel() {
+        return feedbackPanel;
     }
 
 }

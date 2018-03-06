@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.web.action;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.geoserver.taskmanager.web.ConfigurationPage;
 import org.geoserver.taskmanager.web.panel.FileUploadPanel;
@@ -24,7 +25,7 @@ public class FileUploadAction implements Action {
 
     private final static String NAME = "FileUpload";
 
-
+    FileUploadPanel panel;
     @Override
     public String getName() {
         return NAME;
@@ -43,15 +44,23 @@ public class FileUploadAction implements Action {
 
             @Override
             protected org.apache.wicket.Component getContents(String id) {
-                return new FileUploadPanel(id, valueModel);
+                panel = new FileUploadPanel(id, valueModel);
+                return panel;
             }
 
             @Override
             protected boolean onSubmit(AjaxRequestTarget target, org.apache.wicket.Component contents) {
+                onPage.addAttributesPanel(target);
                 return true;
             }
 
+            @Override
+            public void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(panel.getFeedbackPanel());
+            }
         });
+
+
 
     }
 

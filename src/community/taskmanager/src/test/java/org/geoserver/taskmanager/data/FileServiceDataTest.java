@@ -27,7 +27,7 @@ import java.util.List;
  * @author Timothy De Bock
  */
 public class FileServiceDataTest extends AbstractTaskManagerTest {
-    
+
     @Autowired
     LookupService<FileService> fileServiceRegistry;
 
@@ -69,7 +69,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     @Test
     public void testFileServiceCreateSubFolders() throws IOException {
         FileServiceImpl service = new FileServiceImpl();
-        service.setRootFolder(FileUtils.getTempDirectoryPath()+"/fileservicetest/");
+        service.setRootFolder(FileUtils.getTempDirectoryPath() + "/fileservicetest/");
 
         Path filename = Paths.get("subfolder/" + System.currentTimeMillis() + "-test.txt");
         Path path = Paths.get(FileUtils.getTempDirectoryPath() + "/fileservicetest/" + filename);
@@ -99,7 +99,8 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         S3FileServiceImpl service = new S3FileServiceImpl(
                 "endpoint url",
                 "xxx",
-                "xxx"
+                "xxx",
+                "alias"
         );
 
         Path filename = Paths.get("test/" + System.currentTimeMillis() + "-test.txt");
@@ -131,14 +132,17 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         S3FileServiceImpl service = new S3FileServiceImpl(
                 "xxx",
                 "xxx",
-                "xxx"
+                "xxx",
+                "alias"
         );
 
-        Path filename = Paths.get("newbucket/" + System.currentTimeMillis() + "-test.txt");
+        String filename = System.currentTimeMillis() + "-test.txt";
+        Path filenamePath = Paths.get("newbucket/" + filename);
 
-        Assert.assertFalse(service.checkFileExists(filename));
+        Assert.assertFalse(service.checkFileExists(filenamePath));
 
-        service.create(filename, IOUtils.toInputStream("test the file service", "UTF-8"));
-        service.delete(filename);
+        String location = service.create(filenamePath, IOUtils.toInputStream("test the file service", "UTF-8"));
+        Assert.assertEquals("alias://newbucket/" + filename, location);
+        service.delete(filenamePath);
     }
 }
