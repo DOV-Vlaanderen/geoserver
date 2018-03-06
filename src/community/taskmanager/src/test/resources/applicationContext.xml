@@ -7,6 +7,7 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
     <context:component-scan base-package="org.geoserver.taskmanager.beans"/>
+    <context:component-scan base-package="org.geoserver.taskmanager.fileservice"/>
 
     <!--H2 setup -->
     <bean class="org.geoserver.taskmanager.external.H2DbSourceImpl">
@@ -58,11 +59,11 @@
     </bean>
 
     <!--File Services-->
-    <bean class="org.geoserver.taskmanager.data.impl.FileServiceImpl">
+    <bean class="org.geoserver.taskmanager.fileservice.impl.FileServiceImpl">
         <property name="rootFolder" value="/tmp"/>
     </bean>
 
-    <bean class="org.geoserver.taskmanager.data.impl.S3FileServiceImpl">
+    <bean class="org.geoserver.taskmanager.fileservice.impl.S3FileServiceImpl">
         <property name="endpoint" value="http://dov-minio-s3-on-1.vm.cumuli.be:9000"/>
         <property name="user" value="xx"/>
         <property name="password" value="cccc"/>

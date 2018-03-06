@@ -17,8 +17,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.taskmanager.data.FileService;
-import org.geoserver.taskmanager.data.FileServiceRegistry;
+import org.geoserver.taskmanager.fileservice.FileService;
+import org.geoserver.taskmanager.fileservice.impl.LookupFileServiceImpl;
+import org.geoserver.taskmanager.util.LookupService;
+import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -73,7 +75,8 @@ public class FileUploadPanel extends Panel {
 
 
             DropDownChoice<String> fileServiceChoice =
-                    new DropDownChoice<>("fileServiceSelection", getFilterRegistry().getFileServiceNames());
+                    new DropDownChoice("fileServiceSelection",
+                            new ArrayList<>(TaskManagerBeans.get().getFileServices().names()));
             //TODO why does this also block the add new folder dialogbox? and how do I stop this?
             //fileServiceChoice.setRequired(true);
             add(fileServiceChoice);
@@ -99,10 +102,9 @@ public class FileUploadPanel extends Panel {
         protected void onSubmit() {
             final List<FileUpload> uploads = fileUploadField.getFileUploads();
             if (uploads != null) {
-                FileServiceRegistry fileServiceRegistry =
-                        getFilterRegistry();
                 for (FileUpload upload : uploads) {
-                    FileService fileService = fileServiceRegistry.getService(fileUploadModel.fileServiceSelection);
+                    FileService fileService =
+                            TaskManagerBeans.get().getFileServices().get(fileUploadModel.fileServiceSelection);
                     try {
                         Path filePath = Paths.get(fileUploadModel.folderSelection + "/" + upload.getClientFileName());
                         if (fileService.checkFileExists(filePath)) {
@@ -142,7 +144,8 @@ public class FileUploadPanel extends Panel {
                     availableFolders.clear();
                     if (serviceName != null) {
                         try {
-                            List<Path> paths = getFilterRegistry().getService(serviceName).listSubfolders();
+                            List<Path> paths =
+                                    TaskManagerBeans.get().getFileServices().get(serviceName).listSubfolders();
                             for (Path path : paths) {
                                 availableFolders.add(path.toString());
                             }
@@ -220,7 +223,4 @@ public class FileUploadPanel extends Panel {
 
     }
 
-    private FileServiceRegistry getFilterRegistry() {
-        return GeoServerApplication.get().getApplicationContext().getBean(FileServiceRegistry.class);
-    }
 }

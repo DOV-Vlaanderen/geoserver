@@ -4,8 +4,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 
-import org.geoserver.taskmanager.data.impl.FileServiceImpl;
-import org.geoserver.taskmanager.data.impl.S3FileServiceImpl;
+import org.geoserver.taskmanager.fileservice.FileService;
+import org.geoserver.taskmanager.fileservice.impl.FileServiceImpl;
+import org.geoserver.taskmanager.fileservice.impl.S3FileServiceImpl;
+import org.geoserver.taskmanager.util.LookupService;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,17 +27,17 @@ import java.util.List;
  * @author Timothy De Bock
  */
 public class FileServiceDataTest extends AbstractTaskManagerTest {
-
+    
     @Autowired
-    private FileServiceRegistry fileServiceRegistry;
+    LookupService<FileService> fileServiceRegistry;
 
     @Test
     public void testFileRegistry() {
-        Assert.assertEquals(2, fileServiceRegistry.getFileServiceNames().size());
+        Assert.assertEquals(2, fileServiceRegistry.names().size());
 
 
-        String firstService = fileServiceRegistry.getFileServiceNames().get(0);
-        Assert.assertNotNull(fileServiceRegistry.getService(firstService));
+        String firstService = fileServiceRegistry.names().iterator().next();
+        Assert.assertNotNull(fileServiceRegistry.get(firstService));
 
     }
 

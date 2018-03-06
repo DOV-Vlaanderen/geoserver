@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
+import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.report.ReportBuilder;
 import org.geoserver.taskmanager.report.ReportService;
 import org.geoserver.taskmanager.schedule.BatchJobService;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskManagerBeans {
     
+    @Autowired
+    private LookupService<FileService> fileServices;
     @Autowired
     private LookupService<TaskType> taskTypes;
 
@@ -48,7 +51,11 @@ public class TaskManagerBeans {
 
     @Autowired 
     private InitConfigUtil initConfigUtil;
-        
+
+    public LookupService<FileService> getFileServices() {
+        return fileServices;
+    }
+
     public LookupService<TaskType> getTaskTypes() {
         return taskTypes;
     }
