@@ -50,6 +50,7 @@ public class FileUploadAction implements Action {
 
             @Override
             protected boolean onSubmit(AjaxRequestTarget target, org.apache.wicket.Component contents) {
+                panel.onSubmit();
                 onPage.addAttributesPanel(target);
                 return true;
             }
