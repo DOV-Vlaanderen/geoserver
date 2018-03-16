@@ -10,6 +10,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -51,6 +52,8 @@ public class FileUploadPanel extends Panel {
     private DropDownChoice<String> fileServiceChoice;
     
     private DropDownChoice<String> folderChoice;
+
+    private AjaxSubmitLink addFolderButton;
 
     /**
      * Construct.
@@ -111,12 +114,14 @@ public class FileUploadPanel extends Panel {
                     }
                 }
                 folderChoice.setChoices(availableFolders);
-
                 target.add(folderChoice);
+                addFolderButton.setVisible(serviceName != null);
             }
         });
 
-        add(createAddFolderButton(folderChoice));
+        addFolderButton = createAddFolderButton(folderChoice);
+        addFolderButton.setVisible(false);
+        add(addFolderButton);
         add(fileUploadField = new FileUploadField("fileInput") {
             private static final long serialVersionUID = 4614183848423156996L;
 
