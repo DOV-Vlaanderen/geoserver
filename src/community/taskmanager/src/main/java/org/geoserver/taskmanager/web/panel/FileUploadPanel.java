@@ -116,11 +116,14 @@ public class FileUploadPanel extends Panel {
                 folderChoice.setChoices(availableFolders);
                 target.add(folderChoice);
                 addFolderButton.setVisible(serviceName != null);
+                target.add(addFolderButton);
             }
         });
 
         addFolderButton = createAddFolderButton(folderChoice);
         addFolderButton.setVisible(false);
+        addFolderButton.setOutputMarkupPlaceholderTag(true);
+
         add(addFolderButton);
         add(fileUploadField = new FileUploadField("fileInput") {
             private static final long serialVersionUID = 4614183848423156996L;
