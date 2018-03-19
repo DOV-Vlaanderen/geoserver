@@ -97,8 +97,10 @@ public class FileServiceImpl implements FileService {
         File file = new File(rootFolder.toUri());
         String[] folders = file.list(FileFilterUtils.directoryFileFilter());
         ArrayList<Path> paths = new ArrayList<>();
-        for (String folder : folders) {
-            paths.add(Paths.get(folder));
+        if (folders != null) {
+            for (String folder : folders) {
+                paths.add(Paths.get(folder));
+            }
         }
         return paths;
     }
