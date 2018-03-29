@@ -26,6 +26,7 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Run;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Index;
 
 @Entity
 @Table
@@ -52,6 +53,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     private Boolean interruptMe = false; 
     
     @Column
+    @Index(name="schedulerReferenceIndex")
     private String schedulerReference;
 
     @Override

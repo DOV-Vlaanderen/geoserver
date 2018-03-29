@@ -37,10 +37,11 @@ public class NewTaskPanel extends Panel {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                getTypeField().getModel().setObject(
-                     config.getTasks().get(getCopyField().getConvertedInput())
-                     .getType());
-                target.add(getTypeField());
+                if (getCopyField().getConvertedInput() != null) {
+                    getTypeField().getModel().setObject(
+                            config.getTasks().get(getCopyField().getConvertedInput()).getType());
+                    target.add(getTypeField());
+                }
             }
         });
         

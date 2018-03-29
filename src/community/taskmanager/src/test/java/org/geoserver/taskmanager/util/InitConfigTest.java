@@ -16,6 +16,7 @@ import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,11 @@ public class InitConfigTest extends AbstractTaskManagerTest {
         util.addBatchToConfiguration(config, otherBatch);
 
         config = dao.save(config);        
+    }
+    
+    @After
+    public void clearDataFromDatabase() {
+        dao.delete(config);
     }
     
     @Test 

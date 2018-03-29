@@ -35,7 +35,7 @@ public class FileUploadAction implements Action {
     public void execute(ConfigurationPage onPage, AjaxRequestTarget target, IModel<String> valueModel) {
         GeoServerDialog dialog = onPage.getDialog();
 
-        dialog.setTitle(new ParamResourceModel("FileUpload.dialogTile", onPage.getPage()));
+        dialog.setTitle(new ParamResourceModel("FileUploadPanel.dialogTitle", onPage.getPage()));
         dialog.setInitialWidth(650);
         dialog.setInitialHeight(300);
         dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {

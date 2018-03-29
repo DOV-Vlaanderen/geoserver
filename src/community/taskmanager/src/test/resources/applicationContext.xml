@@ -64,10 +64,4 @@
         <property name="name" value="Temporary Directory"/>
     </bean>
 
-    <bean class="org.geoserver.taskmanager.fileservice.impl.S3FileServiceImpl">
-        <property name="endpoint" value="http://dov-minio-s3-on-1.vm.cumuli.be:9000"/>
-        <property name="user" value="xx"/>
-        <property name="password" value="cccc"/>
-    </bean>
-
 </beans>

@@ -111,7 +111,7 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         ConfigurationsPage page = new ConfigurationsPage();
         tester.startPage(page);        
         
-        tester.clickLink("addNew", true);
+        tester.clickLink("addNew");
         
         tester.assertComponent("dialog:dialog:content:form:userPanel", DropDownPanel.class);
         
@@ -135,8 +135,8 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         assertTrue(containsConfig(dao.getConfigurations(false), dummy2));
         
         //sort descending on name
-        tester.clickLink("configurationsPanel:listContainer:sortableLinks:1:header:link", true);
-        tester.clickLink("configurationsPanel:listContainer:sortableLinks:1:header:link", true);
+        tester.clickLink("configurationsPanel:listContainer:sortableLinks:1:header:link");
+        tester.clickLink("configurationsPanel:listContainer:sortableLinks:1:header:link");
         
         //select
         CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage(

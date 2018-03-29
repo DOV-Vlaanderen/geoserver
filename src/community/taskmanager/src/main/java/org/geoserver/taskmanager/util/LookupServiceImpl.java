@@ -29,4 +29,14 @@ public class LookupServiceImpl<T extends Named> implements LookupService<T> {
         return map.keySet();
     }
 
+    @Override
+    public <S extends T> S get(String name, Class<S> clazz) {
+        T object = map.get(name);
+        if (clazz.isInstance(object)) {
+            return clazz.cast(object);
+        } else {
+            return null;
+        }
+    }
+
 }

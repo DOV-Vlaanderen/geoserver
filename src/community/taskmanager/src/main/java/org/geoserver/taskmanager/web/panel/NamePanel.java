@@ -17,7 +17,7 @@ public class NamePanel extends Panel {
         super(id, model);
         
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(new TextField<String>("textfield", model));
+        add(new TextField<String>("textfield", model).setRequired(true));
     }
 
     public FeedbackPanel getFeedbackPanel() {

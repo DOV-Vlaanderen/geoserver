@@ -118,11 +118,19 @@
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
-	    <classifier>tests</classifier>
+	   		 <classifier>tests</classifier>
             <scope>test</scope>
 	    <version>${project.version}</version>
         </dependency>
 
+
+        <!--S3 support-->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-s3-geotiff</artifactId>
+            <scope>test</scope>
+            <version>${gt.version}</version>
+        </dependency>
     </dependencies>
 
       <build>

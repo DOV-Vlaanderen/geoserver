@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
+import org.geoserver.taskmanager.web.model.AttributesModel;
 import org.geoserver.taskmanager.web.model.ParametersModel;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -24,9 +25,12 @@ public class TaskParameterPanel extends Panel {
         
     private IModel<Task> taskModel;
     
-    public TaskParameterPanel(String id, IModel<Task> taskModel) {
+    private AttributesModel attModel;
+    
+    public TaskParameterPanel(String id, IModel<Task> taskModel, AttributesModel attModel) {
         super(id);
         this.taskModel = taskModel;
+        this.attModel = attModel;
     }
     
     @Override
@@ -47,8 +51,7 @@ public class TaskParameterPanel extends Panel {
                 if (property.equals(ParametersModel.VALUE)) {
                     return new AutoCompleteTextFieldPanel(id, 
                             (IModel<String>) property.getModel(itemModel),
-                            taskModel.getObject().getConfiguration().getAttributes().keySet()
-                            .stream().map(s -> "${" + s + "}").collect(Collectors.toList()));
+                            attModel.getItems().stream().map(s -> "${" + s.getName() + "}").collect(Collectors.toList()));
                 }
                 return null;
             }

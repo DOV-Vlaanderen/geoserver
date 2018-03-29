@@ -12,6 +12,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -22,6 +23,7 @@ import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -54,6 +56,8 @@ public class FileUploadPanel extends Panel {
 
     private DropDownChoice<String> folderChoice;
 
+    private AjaxSubmitLink addFolderButton;
+
     /**
      * Construct.
      *
@@ -73,7 +77,26 @@ public class FileUploadPanel extends Panel {
 
         fileServiceChoice =
                 new DropDownChoice<String>("fileServiceSelection", new Model<String>(),
-                        new ArrayList<>(TaskManagerBeans.get().getFileServices().names())) {
+                        new ArrayList<>(TaskManagerBeans.get().getFileServices().names()),
+                        new IChoiceRenderer<String>() {
+                            private static final long serialVersionUID = -1102965730550597918L;
+
+                            @Override
+                            public Object getDisplayValue(String object) {
+                                return TaskManagerBeans.get().getFileServices().get(object).getDescription();
+                            }
+
+                            @Override
+                            public String getIdValue(String object, int index) {
+                                return object;
+                            }
+
+                            @Override
+                            public String getObject(String id, IModel<? extends List<? extends String>> choices) {
+                                return id;
+                            }                   
+                    
+                }) {
                     private static final long serialVersionUID = 2231004332244002574L;
 
                     @Override
@@ -103,22 +126,27 @@ public class FileUploadPanel extends Panel {
                 List<String> availableFolders = new ArrayList<String>();
                 if (serviceName != null) {
                     try {
-                        List<Path> paths =
+                        List<String> paths =
                                 TaskManagerBeans.get().getFileServices().get(serviceName).listSubfolders();
-                        for (Path path : paths) {
-                            availableFolders.add(path.toString());
+                        for (String path : paths) {
+                            availableFolders.add(path);
                         }
                     } catch (IOException e) {
                         FileUploadPanel.this.error("Could not get folders for service:" + e.getMessage());
                     }
                 }
                 folderChoice.setChoices(availableFolders);
-
                 target.add(folderChoice);
+                addFolderButton.setVisible(serviceName != null);
+                target.add(addFolderButton);
             }
         });
 
-        add(createAddFolderButton(folderChoice));
+        addFolderButton = createAddFolderButton(folderChoice);
+        addFolderButton.setVisible(false);
+        addFolderButton.setOutputMarkupPlaceholderTag(true);
+
+        add(addFolderButton);
         add(fileUploadField = new FileUploadField("fileInput") {
             private static final long serialVersionUID = 4614183848423156996L;
 
@@ -147,7 +175,7 @@ public class FileUploadPanel extends Panel {
                 FileService fileService =
                         TaskManagerBeans.get().getFileServices().get(fileServiceChoice.getModelObject());
                 try {
-                    Path filePath = Paths.get(folderChoice.getModelObject() + "/" + upload.getClientFileName());
+                    String filePath = folderChoice.getModelObject() + "/" + upload.getClientFileName();
                     if (fileService.checkFileExists(filePath)) {
                         fileService.delete(filePath);
                     }
@@ -175,7 +203,7 @@ public class FileUploadPanel extends Panel {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                dialog.setTitle(new ParamResourceModel("FileUpload.panel.createFolder", getPage()));
+                dialog.setTitle(new ParamResourceModel("createFolder", FileUploadPanel.this));
                 dialog.setInitialHeight(100);
                 dialog.setInitialWidth(630);
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {

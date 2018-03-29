@@ -23,7 +23,9 @@ import org.geoserver.taskmanager.schedule.BatchJobService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
     //configure these constants
     private static final String FILE_NAME = TestData.class.getResource("world.tiff").getFile().toString();
+    private static final String REMOTE_FILE_NAME = "test://test/salinity.tif";
     private static final String WORKSPACE = "gs";
     private static final String COVERAGE_NAME = "world";
     private static final String LAYER_NAME = WORKSPACE + ":" + COVERAGE_NAME;
@@ -125,6 +128,39 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         CoverageStoreInfo csi = catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class);
         assertNotNull(csi);
         assertEquals("file:" + FILE_NAME, csi.getURL());
+        assertNotNull(catalog.getResourceByName(LAYER_NAME, CoverageInfo.class));
+        
+        taskUtil.cleanup(config);
+        
+        assertNull(catalog.getLayerByName(LAYER_NAME));
+        assertNull(catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class));
+        assertNull(catalog.getResourceByName(LAYER_NAME, CoverageInfo.class));
+    }
+    
+    @Test
+    public void testS3SuccessAndCleanup() throws SchedulerException {
+        //TODO: test of kan verbinding gemaakt worden met de s3 service
+        //en image is aanwezig
+        Assume.assumeTrue(false);
+        
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, REMOTE_FILE_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_LAYER, LAYER_NAME);
+        config = dao.save(config);
+        
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getFullName())
+                .startNow()        
+                .build();
+        scheduler.scheduleJob(trigger);
+        
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.COMPLETE
+                && scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
+        
+        
+        assertNotNull(catalog.getLayerByName(LAYER_NAME));
+        CoverageStoreInfo csi = catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class);
+        assertNotNull(csi);
+        assertEquals(REMOTE_FILE_NAME, csi.getURL());
         assertNotNull(catalog.getResourceByName(LAYER_NAME, CoverageInfo.class));
         
         taskUtil.cleanup(config);

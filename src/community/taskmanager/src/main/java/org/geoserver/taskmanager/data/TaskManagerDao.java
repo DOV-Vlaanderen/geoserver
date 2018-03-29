@@ -202,4 +202,13 @@ public interface TaskManagerDao {
      */
     <T extends Identifiable>  T reload(T object);
 
+    /**
+     * Return batch run on the basis of the scheduler reference
+     * If the scheduler reference is not unique, the most recent batch run is returned.
+     * 
+     * @param schedulerReference scheduler reference
+     * @return
+     */
+    BatchRun getBatchRunBySchedulerReference(String schedulerReference);
+
 }

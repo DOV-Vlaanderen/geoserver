@@ -1,21 +1,14 @@
 package org.geoserver.taskmanager.web;
 
-import java.util.logging.Level;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.time.Duration;
+import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.InitConfigUtil;
-import org.geoserver.web.GeoServerApplication;
+import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.Trigger.TriggerState;
 
 public class InitConfigurationPage extends GeoServerSecuredPage {
     
@@ -30,18 +23,9 @@ public class InitConfigurationPage extends GeoServerSecuredPage {
     @Override
     public void onInitialize() {
         super.onInitialize();
-
-        final Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(InitConfigUtil.getInitBatch(configurationModel.getObject()).getFullName())
-                .startNow().build();
-
-        try {
-            GeoServerApplication.get().getBeanOfType(Scheduler.class).scheduleJob(trigger);
-        } catch (SchedulerException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            Throwable rootCause = ExceptionUtils.getRootCause(e);
-            error(rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage());
-        }
+        
+        final String schedulerReference = TaskManagerBeans.get().getBjService().scheduleNow(
+                InitConfigUtil.getInitBatch(configurationModel.getObject()));
 
         add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
 
@@ -49,17 +33,13 @@ public class InitConfigurationPage extends GeoServerSecuredPage {
 
             @Override
             protected void onTimer(AjaxRequestTarget target) {
-                try {
-                    TriggerState status = GeoServerApplication.get().getBeanOfType(Scheduler.class)
-                            .getTriggerState(trigger.getKey());
-                    if (status == TriggerState.COMPLETE || status == TriggerState.ERROR
-                            || status == TriggerState.NONE) {
-                        // reload page
-                        setResponsePage(new ConfigurationPage(
-                                InitConfigUtil.unwrap(configurationModel.getObject())));
-                    }
-                } catch (SchedulerException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                BatchRun br = TaskManagerBeans.get().getDao().getBatchRunBySchedulerReference(
+                        schedulerReference);
+                
+                if (br != null && br.getStatus().isClosed()) {
+                    // reload page
+                    setResponsePage(new ConfigurationPage(
+                            InitConfigUtil.unwrap(configurationModel.getObject())));
                 }
             }
         });

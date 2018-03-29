@@ -17,36 +17,33 @@
         <span wicket:id="feedback"></span>
         <fieldset>
             <legend>
-                <wicket:message key="FileUpload.panel.locationtitle"/>
+                <wicket:message key="locationTitle"/>
             </legend>
             <div>
-                <label>
-                    <wicket:message key="FileUpload.panel.filelocation"/>
-                    <select wicket:id="fileServiceSelection">
-                    </select>
+                <label for="fileServiceSelection">
+                    <wicket:message key="fileServiceSelection"/>
                 </label>
-
+                <select id="fileServiceSelection"  wicket:id="fileServiceSelection" />
                 <div>
-                    <label class="horizontal">
-                        <wicket:message key="FileUpload.panel.filefolder"/>
-                        <select wicket:id="folderSelection">
-                        </select>
+                    <label for="folderSelection" class="horizontal">
+                        <wicket:message key="folderSelection"/>
                     </label>
+                    <select id="folderSelection" wicket:id="folderSelection" />
                     <a class="add-link" href="#" wicket:id="addNew">
-                        <wicket:message key="FileUpload.panel.addnew"/>
+                        <wicket:message key="addNew"/>
                     </a>
                 </div>
             </div>
         </fieldset>
         <fieldset>
             <legend>
-                <wicket:message key="FileUpload.panel.uploadtile"/>
+                <wicket:message key="uploadTitle"/>
             </legend>
             <p>
-                <label for="simpleUpload">
-                    <wicket:message key="FileUpload.panel.filename"/>
+                <label for="fileInput">
+                    <wicket:message key="fileInput"/>
                 </label>
-                <input wicket:id="fileInput" type="file" id="simpleUpload"/>
+                <input id="fileInput" wicket:id="fileInput" type="file"/>
             </p>
         </fieldset>
 </wicket:panel>

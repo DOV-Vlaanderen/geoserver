@@ -144,7 +144,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 
                 if (createStore) {
                     try {
-                        if (!createStore(extGS, restManager, store, ctx.getParameterValues())) {
+                        if (!createStore(extGS, restManager, store, ctx)) {
                             throw new TaskException("Failed to create store " + ws + ":" + store.getName());
                         }
                     } catch (IOException e) {
@@ -376,7 +376,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
     }
 
     protected abstract boolean createStore(ExternalGS extGS, GeoServerRESTManager restManager,
-            StoreInfo store, Map<String, Object> parameterValues) throws IOException, TaskException;
+            StoreInfo store, TaskContext ctx) throws IOException, TaskException;
     
     protected abstract boolean mustCleanUpStore();
 

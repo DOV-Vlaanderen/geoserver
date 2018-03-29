@@ -9,6 +9,8 @@ import java.util.Set;
 public interface LookupService<T extends Named> {
 
     public T get(String name);
+
+    public <S extends T> S get(String name, Class<S> clazz);
     
     public Set<String> names();
 }

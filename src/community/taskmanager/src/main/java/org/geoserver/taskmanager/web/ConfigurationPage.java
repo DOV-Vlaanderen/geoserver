@@ -167,8 +167,15 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 getSession().getAuthentication(), 
                 GeoServerApplication.get().getCatalog().getDefaultWorkspace());
         form.add(new DropDownChoice<String>("workspace",
-                new PropertyModel<String>(configurationModel, "workspace"), workspaces)
-                .setNullValid(canBeNull).setRequired(!canBeNull));
+                new PropertyModel<String>(configurationModel, "workspace"), workspaces) {
+                        private static final long serialVersionUID = -6665795544099616226L;
+
+                        @Override
+                        public boolean isRequired() {
+                            return !canBeNull && (form.findSubmittingButton() == saveButton 
+                                    || form.findSubmittingButton() == applyButton);
+                        }
+                }.setNullValid(canBeNull));
 
         TextField<String> name = new TextField<String>("description",
                 new PropertyModel<String>(configurationModel, "description"));
@@ -447,12 +454,14 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 final GeoServerTablePanel<Task> thisPanel = this;     
                 if (property.equals(TasksModel.NAME)) {                    
                     IModel<String> nameModel = (IModel<String>) property.getModel(itemModel);
+                    String oldName = nameModel.getObject();
                     return new SimpleAjaxSubmitLink(id, nameModel) {
 
                         private static final long serialVersionUID = 2023797271780630795L;
 
                         @Override
                         protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                            
                             dialog.setInitialWidth(400);
                             dialog.setInitialHeight(100);                            
                             dialog.setTitle(new ParamResourceModel("changeTaskName", getPage()));
@@ -485,6 +494,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                 @Override
                                 protected boolean onSubmit(AjaxRequestTarget target,
                                         Component contents) {
+                                    configurationModel.getObject().getTasks().remove(oldName);
+                                    configurationModel.getObject().getTasks().put(
+                                            nameModel.getObject(), itemModel.getObject());
                                     target.add(thisPanel);
                                     return true;
                                 }
@@ -545,7 +557,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
                                 @Override
                                 protected Component getContents(String id) {
-                                    return new TaskParameterPanel(id, itemModel);
+                                    return new TaskParameterPanel(id, itemModel, attributesModel);
                                 }
 
                                 @Override

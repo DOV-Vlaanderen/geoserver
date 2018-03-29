@@ -14,6 +14,7 @@ import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
+import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.springframework.stereotype.Component;
@@ -48,10 +49,10 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
 
     @Override
     protected boolean createStore(ExternalGS extGS, GeoServerRESTManager restManager,
-            StoreInfo store, Map<String, Object> parameterValues) throws IOException, TaskException {
+            StoreInfo store, TaskContext ctx) throws IOException, TaskException {
         try {
-            final DbSource db = (DbSource) parameterValues.get(PARAM_DB_NAME);
-            final DbTable table = (DbTable) parameterValues.get(PARAM_TABLE_NAME);
+            final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
+            final DbTable table = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
             return restManager.getStoreManager().create(store.getWorkspace().getName(),
                     db.postProcess(db.getStoreEncoder(store.getName()), table));
         } catch (UnsupportedOperationException e) {

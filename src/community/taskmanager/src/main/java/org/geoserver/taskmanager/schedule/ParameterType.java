@@ -4,7 +4,7 @@
  */
 package org.geoserver.taskmanager.schedule;
 
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,7 +78,7 @@ public interface ParameterType {
     /**
      * URL type
      */
-    public ParameterType URL = new ParameterType() {
+    public ParameterType URI = new ParameterType() {
         
         @Override
         public List<String> getDomain(List<String> dependsOnRawValues) {
@@ -86,29 +86,15 @@ public interface ParameterType {
         }
 
         @Override
-        public java.net.URL parse(String value, List<String> dependsOnRawValues) {
+        public java.net.URI parse(String value, List<String> dependsOnRawValues) {
             try {
-                return new java.net.URL(value);
-            } catch (MalformedURLException e) {
+                if (!value.contains(":")) {
+                    value = "file:" + value;
+                }
+                return new java.net.URI(value);
+            } catch (URISyntaxException e) {
                 return null;
             }
-        }
-
-    };
-    
-    /**
-     * File type
-     */
-    public ParameterType FILE = new ParameterType() {
-        
-        @Override
-        public List<String> getDomain(List<String> dependsOnRawValues) {
-            return null;
-        }
-
-        @Override
-        public java.io.File parse(String value, List<String> dependsOnRawValues) {
-            return new java.io.File(value);
         }
         
         @Override

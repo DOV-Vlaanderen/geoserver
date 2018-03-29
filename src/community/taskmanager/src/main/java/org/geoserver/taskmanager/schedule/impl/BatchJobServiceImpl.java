@@ -173,7 +173,7 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
     }
     
     @Override
-    public void scheduleNow(Batch batch) {
+    public String scheduleNow(Batch batch) {
         Trigger trigger = TriggerBuilder.newTrigger()
                 .forJob(batch.getFullName())
                 .startNow()        
@@ -183,6 +183,8 @@ public class BatchJobServiceImpl implements BatchJobService, ApplicationListener
         } catch (SchedulerException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+        
+        return trigger.getKey().getName();
     }
         
     @Override
