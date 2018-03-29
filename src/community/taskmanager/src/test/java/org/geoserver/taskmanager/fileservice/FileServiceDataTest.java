@@ -8,12 +8,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 
-import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.fileservice.impl.FileServiceImpl;
 import org.geoserver.taskmanager.fileservice.impl.S3FileServiceImpl;
 import org.geoserver.taskmanager.util.LookupService;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,14 +21,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
  * Test data methods.
  *
- * @author Timothy De Bock
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class FileServiceDataTest extends AbstractTaskManagerTest {
+
+    private final static Logger LOGGER = Logger.getLogger("FileServiceRegistryImpl");
 
     @Autowired
     LookupService<FileService> fileServiceRegistry;
@@ -101,56 +103,70 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
      *
      * @throws IOException
      */
-    @Ignore
     @Test
     public void testFileServiceS3() throws IOException {
-        S3FileServiceImpl service = new S3FileServiceImpl(
-                "endpoint url",
-                "xxx",
-                "xxx",
-                "alias"
-        );
+        S3FileServiceImpl service = getS3FileService();
 
-        Path filename = Paths.get("test/" + System.currentTimeMillis() + "-test.txt");
+        String filename = +System.currentTimeMillis() + "-test.txt";
+        Path filenamePath = Paths.get("test", filename);
 
-        Assert.assertFalse(service.checkFileExists(filename));
+        Assert.assertFalse(service.checkFileExists(filenamePath));
 
         String content = "test the file service";
-        service.create(filename, IOUtils.toInputStream(content, "UTF-8"));
+        String fileUri = service.create(filenamePath, IOUtils.toInputStream(content, "UTF-8"));
+        Assert.assertEquals("alias://test/" + filename, fileUri);
 
-        boolean fileExists = service.checkFileExists(filename);
+
+        boolean fileExists = service.checkFileExists(filenamePath);
         Assert.assertTrue(fileExists);
 
-        String actualContent = IOUtils.toString(service.read(filename));
+        String actualContent = IOUtils.toString(service.read(filenamePath));
         Assert.assertEquals(content, actualContent);
 
-        service.delete(filename);
+        service.delete(filenamePath);
 
-        Assert.assertFalse(service.checkFileExists(filename));
+        Assert.assertFalse(service.checkFileExists(filenamePath));
     }
+
 
     /**
      * Enable this test if you have acces to aws compatible service.
      *
      * @throws IOException
      */
-    @Ignore
     @Test
     public void testFileServiceS3CreateSubFolders() throws IOException {
-        S3FileServiceImpl service = new S3FileServiceImpl(
-                "xxx",
-                "xxx",
-                "xxx",
-                "alias"
-        );
+        S3FileServiceImpl service = getS3FileService();
 
         String filename = System.currentTimeMillis() + "-test.txt";
-        Path filenamePath = Paths.get("newbucket/" + filename);
+        Path filenamePath = Paths.get("newbucket", filename);
 
         Assert.assertFalse(service.checkFileExists(filenamePath));
 
         String location = service.create(filenamePath, IOUtils.toInputStream("test the file service", "UTF-8"));
         Assert.assertEquals("alias://newbucket/" + filename, location);
         service.delete(filenamePath);
+    }
+
+    /**
+     * Add the properties to your S3 service here.
+     * @return
+     */
+    private S3FileServiceImpl getS3FileService() {
+        S3FileServiceImpl s3FileService = new S3FileServiceImpl(
+                "your-s3-service-uri",
+                "your-s3-user",
+                "your-s3-password",
+                "alias"
+        );
+        List<Path> folders = null;
+        try {
+            folders = s3FileService.listSubfolders();
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+        }
+        Assume.assumeNotNull(folders);
+
+        return s3FileService;
     }
 }
