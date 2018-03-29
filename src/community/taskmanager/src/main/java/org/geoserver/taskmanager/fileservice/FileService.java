@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Persist and read files.
  * 
- * @author Timothy De Bock
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  *
  */
 public interface FileService extends Serializable, Named {

@@ -24,7 +24,7 @@ import javax.servlet.ServletContext;
 /**
  * Local file storage.
  *
- * @author Timothy De Bock
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class FileServiceImpl implements FileService, ServletContextAware {
 

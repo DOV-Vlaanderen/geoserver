@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +41,11 @@ public abstract class AbstractTaskManagerTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        System.setProperty("s3.properties.location",
-                AbstractTaskManagerTest.class.getResource("s3.properties").getFile().toString());   
-        
+        URL s3propertiesFile = AbstractTaskManagerTest.class.getResource("s3.properties");
+        if (s3propertiesFile != null) {
+            System.setProperty("s3.properties.location", s3propertiesFile.getFile());
+        }
+
         if (DATA_DIRECTORY == null) {
             //set data directory
             DATA_DIRECTORY = new MockData();

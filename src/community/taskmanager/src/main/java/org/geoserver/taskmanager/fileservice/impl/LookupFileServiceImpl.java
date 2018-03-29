@@ -21,6 +21,8 @@ import java.util.logging.Logger;
 /**
  * Find all @FileService instance from the spring context.
  * The Lookup service will also define S3 fileServices for each configuration in the S3-geotiff module.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @Component()
 public class LookupFileServiceImpl extends LookupServiceImpl<FileService> {

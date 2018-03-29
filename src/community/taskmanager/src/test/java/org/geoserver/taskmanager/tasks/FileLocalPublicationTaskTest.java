@@ -19,13 +19,14 @@ import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
+import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.schedule.BatchJobService;
+import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -34,10 +35,18 @@ import org.quartz.TriggerBuilder;
 import org.quartz.Trigger.TriggerState;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.logging.Logger;
+
 public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
+
+    private final static Logger LOGGER = Logger.getLogger("FileLocalPublicationTaskTest");
+
     //configure these constants
     private static final String FILE_NAME = TestData.class.getResource("world.tiff").getFile().toString();
-    private static final String REMOTE_FILE_NAME = "test://test/salinity.tif";
+    private static final String REMOTE_FILE_LOCATION = "test/salinity.tif";
+    private static final String REMOTE_FILE_URI = "test://" + REMOTE_FILE_LOCATION;
     private static final String WORKSPACE = "gs";
     private static final String COVERAGE_NAME = "world";
     private static final String LAYER_NAME = WORKSPACE + ":" + COVERAGE_NAME;
@@ -68,6 +77,9 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
     
     @Autowired
     private TaskManagerTaskUtil taskUtil;
+
+    @Autowired
+    private LookupService<FileService> fileServices;
     
     private Configuration config;
     
@@ -139,11 +151,17 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
     
     @Test
     public void testS3SuccessAndCleanup() throws SchedulerException {
-        //TODO: test of kan verbinding gemaakt worden met de s3 service
-        //en image is aanwezig
-        Assume.assumeTrue(false);
-        
-        dataUtil.setConfigurationAttribute(config, ATT_FILE, REMOTE_FILE_NAME);
+        try {
+            FileService fileService = fileServices.get("s3-test");
+            Assume.assumeNotNull(fileService);
+            Assume.assumeTrue("File exists on s3 service",
+                    fileService.checkFileExists(Paths.get(REMOTE_FILE_LOCATION)));
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+            Assume.assumeTrue("S3 service is configured and available", false);
+        }
+
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, REMOTE_FILE_URI);
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, LAYER_NAME);
         config = dao.save(config);
         
@@ -160,7 +178,7 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         assertNotNull(catalog.getLayerByName(LAYER_NAME));
         CoverageStoreInfo csi = catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class);
         assertNotNull(csi);
-        assertEquals(REMOTE_FILE_NAME, csi.getURL());
+        assertEquals(REMOTE_FILE_URI, csi.getURL());
         assertNotNull(catalog.getResourceByName(LAYER_NAME, CoverageInfo.class));
         
         taskUtil.cleanup(config);

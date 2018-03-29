@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * S3 remote file storage.
  *
- * @author Timothy De Bock
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class S3FileServiceImpl implements FileService {
 

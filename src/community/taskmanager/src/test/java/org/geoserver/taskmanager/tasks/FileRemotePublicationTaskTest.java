@@ -9,9 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
@@ -25,6 +27,7 @@ import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.external.ExternalGS;
+import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.schedule.BatchJobService;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
@@ -49,10 +52,13 @@ import it.geosolutions.geoserver.rest.decoder.RESTCoverage;
  * @author Niels Charlier
  */
 public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
+
+    private final static Logger LOGGER = Logger.getLogger("FileRemotePublicationTaskTest");
     
     //configure these constants
     private static QName REMOTE_COVERAGE = new QName("gs", "mylayer", "gs");
-    private static String REMOTE_COVERAGE_URL = "test://test/salinity.tif";
+    private static String REMOTE_COVERAGE_FILE_LOCATION = "test/salinity.tif";
+    private static String REMOTE_COVERAGE_URL = "test://" + REMOTE_COVERAGE_FILE_LOCATION;
     private static String REMOTE_COVERAGE_TYPE = "S3GeoTiff";
     
     private static final String ATT_LAYER = "layer";
@@ -79,7 +85,10 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
     @Autowired
     private Scheduler scheduler;
-    
+
+    @Autowired
+    private LookupService<FileService> fileServices;
+
     private Configuration config;
     
     private Batch batch;
@@ -87,17 +96,22 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
     @Override
     public boolean setupDataDirectory() throws Exception {             
         DATA_DIRECTORY.addWcs11Coverages();
-        
-        //TODO: test of kan verbinding gemaakt worden met de s3 service
-        //en image is aanwezig
-        boolean s3present = false;
-        if (s3present) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(CatalogWriter.COVERAGE_TYPE_KEY, REMOTE_COVERAGE_TYPE);
-            params.put(CatalogWriter.COVERAGE_URL_KEY, REMOTE_COVERAGE_URL);
-            DATA_DIRECTORY.addCustomCoverage(REMOTE_COVERAGE, params);
+
+        try {
+            FileService fileService = fileServices.get("s3-test");
+            Assume.assumeNotNull(fileService);
+            Assume.assumeTrue("File exists on s3 service",
+                    fileService.checkFileExists(Paths.get(REMOTE_COVERAGE_FILE_LOCATION)));
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+            Assume.assumeTrue("S3 service is configured and available", false);
         }
-        
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(CatalogWriter.COVERAGE_TYPE_KEY, REMOTE_COVERAGE_TYPE);
+        params.put(CatalogWriter.COVERAGE_URL_KEY, REMOTE_COVERAGE_URL);
+        DATA_DIRECTORY.addCustomCoverage(REMOTE_COVERAGE, params);
+
         return true;
     }
     
@@ -212,8 +226,7 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
     
     @Test
     public void testS3SuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
-        Assume.assumeTrue(false);
-        
+
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, 
                 REMOTE_COVERAGE.getPrefix() + ":" + REMOTE_COVERAGE.getLocalPart());
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
