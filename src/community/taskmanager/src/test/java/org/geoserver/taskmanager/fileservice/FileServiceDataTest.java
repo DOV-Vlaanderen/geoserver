@@ -42,7 +42,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         FileService fs = fileServiceRegistry.get("s3-test");
         Assert.assertNotNull(fs);
         Assert.assertTrue(fs instanceof S3FileServiceImpl);
-        Assert.assertEquals("http://dov-minio-s3-on-1.vm.cumuli.be:9000",
+        Assert.assertEquals("http://127.0.0.1:9000",
                 ((S3FileServiceImpl) fs).getEndpoint());
 
         fs = fileServiceRegistry.get("Temporary Directory");
@@ -75,9 +75,6 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
 
     }
 
-    //****************************************************************************************************************//
-    //*** S3 Related tests *******************************************************************************************//
-    //****************************************************************************************************************//
     @Test
     public void testFileServiceCreateSubFolders() throws IOException {
         FileServiceImpl service = new FileServiceImpl();
@@ -98,6 +95,30 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
 
         List<String> folders = service.listSubfolders();
         Assert.assertEquals(1, folders.size());
+    }
+
+    //****************************************************************************************************************//
+    //*** S3 Related tests *******************************************************************************************//
+    //****************************************************************************************************************//
+
+
+    /**
+     * This test assumes access to aws compatible service.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testFileServiceS3CreateSubFolders() throws IOException {
+        S3FileServiceImpl service = getS3FileService();
+
+        String filename = System.currentTimeMillis() + "-test.txt";
+        String filenamePath = "rootfolder/Nested_folder/" + filename;
+
+        Assert.assertFalse(service.checkFileExists(filenamePath));
+
+        String location = service.create(filenamePath, IOUtils.toInputStream("test the file service", "UTF-8"));
+        Assert.assertEquals("alias://rootfolder/Nested_folder/" + filename, location);
+        service.delete(filenamePath);
     }
 
     /**
@@ -131,24 +152,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     }
 
 
-    /**
-     * This test assumes access to aws compatible service.
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testFileServiceS3CreateSubFolders() throws IOException {
-        S3FileServiceImpl service = getS3FileService();
 
-        String filename = System.currentTimeMillis() + "-test.txt";
-        String filenamePath = "newbucket/" + filename;
-
-        Assert.assertFalse(service.checkFileExists(filenamePath));
-
-        String location = service.create(filenamePath, IOUtils.toInputStream("test the file service", "UTF-8"));
-        Assert.assertEquals("alias://newbucket/" + filename, location);
-        service.delete(filenamePath);
-    }
 
     @Test
     public void testFileServiceS3RenameFile() throws IOException {
@@ -176,13 +180,17 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
 
     /**
      * Add the properties to your S3 service here.
+     *
+     * How to run your local minio service:
+     * https://www.minio.io/downloads.html#download-server-linux-x64
+     *
      * @return
      */
     private S3FileServiceImpl getS3FileService() {
         S3FileServiceImpl s3FileService = new S3FileServiceImpl(
-                "your-s3-service-uri",
-                "your-s3-user",
-                "your-s3-password",
+                "http://127.0.0.1:9000",
+                "B4CZTLJUNB5RFS5TQX40",
+                "mNi5+c6gX+dtk6FeeocU9o2YjJiovP8mNFHWDeKO",
                 "alias"
         );
         List<String> folders = null;

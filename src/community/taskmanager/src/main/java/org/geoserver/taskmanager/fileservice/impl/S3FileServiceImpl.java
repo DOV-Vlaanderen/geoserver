@@ -298,17 +298,17 @@ public class S3FileServiceImpl implements FileService {
     }
 
     private static String getBucketName(String filePath) {
-        int lastSlashPosition = filePath.lastIndexOf('/');
-        if (lastSlashPosition > 0) {
-            return filePath.substring(0, lastSlashPosition);
+        int indexSlashPosition = filePath.indexOf('/');
+        if (indexSlashPosition > 0) {
+            return filePath.substring(0, indexSlashPosition);
         }
         return "";
     }
     
     private static String getFileName(String filePath) {
-        int lastSlashPosition = filePath.lastIndexOf('/');
-        if (lastSlashPosition >= 0) {
-            return filePath.substring(lastSlashPosition + 1);
+        int indexSlashPosition = filePath.indexOf('/');
+        if (indexSlashPosition >= 0) {
+            return filePath.substring(indexSlashPosition + 1);
         }
         return "";
     }

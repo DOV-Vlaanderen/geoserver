@@ -18,11 +18,17 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.protocol.http.WebSession;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.taskmanager.fileservice.FileService;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +40,8 @@ import java.util.List;
  * @author Timothy De Bock
  */
 public class FileUploadPanel extends Panel {
+
+    private static final String ROOT_BUCKET = "rasters/";
 
     private FeedbackPanel feedbackPanel;
 
@@ -51,9 +59,8 @@ public class FileUploadPanel extends Panel {
 
     private DropDownChoice<String> fileServiceChoice;
 
-    private DropDownChoice<String> folderChoice;
+    private DropDownChoice<String> workspaceChoice;
 
-    private AjaxSubmitLink addFolderButton;
 
     /**
      * Construct.
@@ -103,7 +110,15 @@ public class FileUploadPanel extends Panel {
                 };
         add(fileServiceChoice.setNullValid(false));
 
-        folderChoice = new DropDownChoice<String>("folderSelection", new Model<String>(), new ArrayList<>()) {
+        List<String> workspaces = new ArrayList<String>();
+        Authentication authentication = ((GeoServerSession) getSession()).getAuthentication();
+        for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
+            if (TaskManagerBeans.get().getSecUtil().isAdminable(authentication, wi)) {
+                workspaces.add(wi.getName());
+            }
+        }
+
+        workspaceChoice = new DropDownChoice<String>("workspace", new Model<String>(), new ArrayList<>()) {
             private static final long serialVersionUID = 3543687800810146647L;
 
             @Override
@@ -111,39 +126,11 @@ public class FileUploadPanel extends Panel {
                 return hasBeenSubmitted();
             }
         };
-        folderChoice.setOutputMarkupId(true);
-        add(folderChoice);
+        workspaceChoice.setOutputMarkupId(true);
+        workspaceChoice.setChoices(workspaces);
+        add(workspaceChoice);
 
-        fileServiceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                String serviceName = fileServiceChoice.getModel().getObject();
-                List<String> availableFolders = new ArrayList<String>();
-                if (serviceName != null) {
-                    try {
-                        List<String> paths =
-                                TaskManagerBeans.get().getFileServices().get(serviceName).listSubfolders();
-                        for (String path : paths) {
-                            availableFolders.add(path);
-                        }
-                    } catch (IOException e) {
-                        FileUploadPanel.this.error("Could not get folders for service:" + e.getMessage());
-                    }
-                }
-                folderChoice.setChoices(availableFolders);
-                target.add(folderChoice);
-                addFolderButton.setVisible(serviceName != null);
-                target.add(addFolderButton);
-            }
-        });
-
-        addFolderButton = createAddFolderButton(folderChoice);
-        addFolderButton.setVisible(false);
-        addFolderButton.setOutputMarkupPlaceholderTag(true);
-
-        add(addFolderButton);
         add(fileUploadField = new FileUploadField("fileInput") {
             private static final long serialVersionUID = 4614183848423156996L;
 
@@ -172,7 +159,7 @@ public class FileUploadPanel extends Panel {
                 FileService fileService =
                         TaskManagerBeans.get().getFileServices().get(fileServiceChoice.getModelObject());
                 try {
-                    String filePath = folderChoice.getModelObject() + "/" + upload.getClientFileName();
+                    String filePath = ROOT_BUCKET + workspaceChoice.getModelObject() + "/" + upload.getClientFileName();
                     if (fileService.checkFileExists(filePath)) {
                         fileService.delete(filePath);
                     }
