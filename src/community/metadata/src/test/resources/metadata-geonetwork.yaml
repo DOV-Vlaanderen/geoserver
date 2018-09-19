@@ -1,0 +1,3 @@
+geonetworks:
+  - name: geonetwork-extra
+    url: https://geonetwork-opensource.org/test

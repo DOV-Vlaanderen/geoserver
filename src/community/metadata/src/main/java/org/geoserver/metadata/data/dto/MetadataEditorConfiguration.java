@@ -6,12 +6,18 @@
 package org.geoserver.metadata.data.dto;
 
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MetadataEditorConfiguration {
 
     List<MetadataAttributeConfiguration> attributes = new ArrayList<>();
+
+    List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
 
     public List<MetadataAttributeConfiguration> getAttributes() {
         return attributes;
@@ -19,5 +25,13 @@ public class MetadataEditorConfiguration {
 
     public void setAttributes(List<MetadataAttributeConfiguration> attributes) {
         this.attributes = attributes;
+    }
+
+    public List<MetadataGeonetworkConfiguration> getGeonetworks() {
+        return geonetworks;
+    }
+
+    public void setGeonetworks(List<MetadataGeonetworkConfiguration> geonetworks) {
+        this.geonetworks = geonetworks;
     }
 }

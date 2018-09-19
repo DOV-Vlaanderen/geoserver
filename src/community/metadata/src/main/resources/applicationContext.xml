@@ -20,8 +20,8 @@
 
     <bean id="metadataTemplatePage" class="org.geoserver.web.MenuPageInfo">
        <property name="id" value="metadataTemplatePage"/>
-       <property name="titleKey" value="TemplatesPage.page.title"/>
-       <property name="descriptionKey" value="TemplatesPage.page.description"/>
+       <property name="titleKey" value="MetadataTemplatePage.page.title"/>
+       <property name="descriptionKey" value="MetadataTemplatePage.page.description"/>
        <property name="componentClass" value="org.geoserver.metadata.web.MetadataTemplatePage"/>
        <property name="category" ref="metadataCategory" />
        <property name="order" value="1001" />

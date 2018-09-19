@@ -1,0 +1,14 @@
+attributes:
+  - label: tekstveld1
+    fieldType: TEXT
+  - label: number
+    fieldType: NUMBER
+  - label: dropit
+    fieldType: DROPDOWN
+    values:
+        - Mike D
+        - MCA
+        - Ad Rock
+geonetworks:
+  - name: geonetwork
+    url: https://geonetwork-opensource.org/
