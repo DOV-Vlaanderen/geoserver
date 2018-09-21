@@ -6,8 +6,9 @@
 package org.geoserver.metadata.data.dto;
 
 
+import java.io.Serializable;
 
-public class MetadataGeonetworkConfiguration {
+public class MetadataGeonetworkConfiguration implements Serializable{
 
     String name;
 

@@ -6,12 +6,12 @@
 package org.geoserver.metadata.data.dto;
 
 
-public enum FieldTypeEnum {
-    TEXT, NUMBER, DROPDOWN, COMPLEX;
+public enum OccurenceEnum {
+    SINGLE, REPEAT;
 
 
-    public static FieldTypeEnum fromCode(String code) {
-        for (FieldTypeEnum c : FieldTypeEnum.values()) {
+    public static OccurenceEnum fromCode(String code) {
+        for (OccurenceEnum c : OccurenceEnum.values()) {
             if (c.name().equals(code)) {
                 return c;
             }

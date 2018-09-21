@@ -6,16 +6,21 @@
 package org.geoserver.metadata.data.dto;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MetadataAttributeConfiguration {
+public class MetadataAttributeConfiguration implements Serializable{
 
     String label;
 
     FieldTypeEnum fieldType;
 
+    OccurenceEnum occurrence = OccurenceEnum.SINGLE;
+
     List<String> values = new ArrayList<>();
+
+    String typename;
 
     public MetadataAttributeConfiguration() {
     }
@@ -23,6 +28,16 @@ public class MetadataAttributeConfiguration {
     public MetadataAttributeConfiguration(String label, FieldTypeEnum fieldType) {
         this.label = label;
         this.fieldType = fieldType;
+    }
+
+    public MetadataAttributeConfiguration(MetadataAttributeConfiguration other) {
+        label = other.getLabel();
+        fieldType = other.getFieldType();
+        occurrence = other.getOccurrence();
+        typename = other.getTypename();
+        for (String values : other.getValues()) {
+            this.values.add(values);
+        }
     }
 
     public String getLabel() {
@@ -47,5 +62,21 @@ public class MetadataAttributeConfiguration {
 
     public void setValues(List<String> values) {
         this.values = values;
+    }
+
+    public String getTypename() {
+        return typename;
+    }
+
+    public void setTypename(String typename) {
+        this.typename = typename;
+    }
+
+    public OccurenceEnum getOccurrence() {
+        return occurrence;
+    }
+
+    public void setOccurrence(OccurenceEnum occurrence) {
+        this.occurrence = occurrence;
     }
 }

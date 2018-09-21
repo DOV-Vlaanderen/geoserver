@@ -25,10 +25,29 @@ public class DropDownPanel extends Panel {
 
         super(id, model);
 
-        add(new DropDownChoice<String>("dropdown", values));
+        add(createDropDown(values));
 
 
     }
 
+    private DropDownChoice<String> createDropDown(List<String> values) {
+        return new DropDownChoice<String>("dropdown", new IModel<String>() {
+            public String option;
+
+            @Override
+            public String getObject() {
+                return option;
+            }
+
+            @Override
+            public void setObject(String t) {
+                option = t;
+            }
+
+            @Override
+            public void detach() {
+            }
+        }, values);
+    }
 
 }

@@ -28,22 +28,24 @@ public class YamlServiceImpl implements YamlService {
 
     @Override
     public MetadataEditorConfiguration readValue(String folder) throws IOException {
+        LOGGER.info("Searching for yamls in: " + folder);
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         MetadataEditorConfiguration configuration = new MetadataEditorConfiguration();
         try {
             ArrayList<File> files = new ArrayList<File>(
                     FileUtils.listFiles(new File(folder), new RegexFileFilter("^(.*?).yaml"), DirectoryFileFilter.DIRECTORY));
 
-        for (File file : files) {
-            try {
-                MetadataEditorConfiguration config = mapper.readValue(file, MetadataEditorConfiguration.class);
-                //Merge configuration
-                configuration.getAttributes().addAll(config.getAttributes());
-                configuration.getGeonetworks().addAll(config.getGeonetworks());
-            } catch (IOException e) {
-                LOGGER.severe(e.getMessage());
+            for (File file : files) {
+                try {
+                    MetadataEditorConfiguration config = mapper.readValue(file, MetadataEditorConfiguration.class);
+                    //Merge configuration
+                    configuration.getAttributes().addAll(config.getAttributes());
+                    configuration.getGeonetworks().addAll(config.getGeonetworks());
+                    configuration.getComplextypes().addAll(config.getComplextypes());
+                } catch (IOException e) {
+                    LOGGER.severe(e.getMessage());
+                }
             }
-        }
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }

@@ -4,9 +4,12 @@
       xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-    <div wicket:id="geonetworkPanel"></div>
-    <h1>Attributen</h1>
-    <div wicket:id="attributesPanel"></div>
+    <h1>Importeer metadata</h1>
+    <form wicket:id="form">
+        <select wicket:id="geonetworkName"/>
+        <input wicket:id="textfield"  style="width: 600px;"/>
+        <input wicket:id="buttonImport" type="submit" value="Importeer" />
+    </form>
 </wicket:panel>
 </body>
 </html>

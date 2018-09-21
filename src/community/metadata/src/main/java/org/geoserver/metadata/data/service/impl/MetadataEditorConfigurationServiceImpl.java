@@ -22,7 +22,7 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
 
     private static final Logger LOGGER = Logging.getLogger(MetadataEditorConfigurationServiceImpl.class);
 
-    @Value("${metadata.folder:.}")
+    @Value("${metadata.folder:./src/test/resources}")
     private String folder;
 
     private YamlService yamlService = new YamlServiceImpl();

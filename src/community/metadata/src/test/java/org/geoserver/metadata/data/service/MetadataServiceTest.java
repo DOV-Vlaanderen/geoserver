@@ -31,6 +31,7 @@ public class MetadataServiceTest extends AbstractMetadataTest{
         Assert.assertNotNull(configuration);
         Assert.assertEquals(4, configuration.getAttributes().size());
         Assert.assertEquals(2, configuration.getGeonetworks().size());
+        Assert.assertEquals(1, configuration.getComplextypes().size());
 
     }
 }

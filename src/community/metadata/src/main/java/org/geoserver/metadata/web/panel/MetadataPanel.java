@@ -13,10 +13,12 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.dto.AttributeInput;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
+import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 import org.geoserver.metadata.web.panel.attribute.DropDownPanel;
 import org.geoserver.metadata.web.panel.attribute.TextFieldPanel;
 import org.geoserver.web.GeoServerApplication;
@@ -37,56 +39,37 @@ public class MetadataPanel extends Panel {
     private static final Logger LOGGER = Logging.getLogger(MetadataPanel.class);
 
 
-    public MetadataPanel(String id) {
+    private final IModel<MetadataMap> metadataModel;
+
+    private ImportGeonetworkPanel geonetworkPanel;
+    private boolean geonetworkPanelVisible;
+
+
+    public MetadataPanel(String id, IModel<MetadataMap> metadataModel) {
         super(id);
+        this.metadataModel = metadataModel;
     }
 
     @Override
     public void onInitialize() {
         super.onInitialize();
 
-
+        geonetworkPanel = new ImportGeonetworkPanel("geonetworkPanel");
+        add(geonetworkPanel);
+        geonetworkPanel.setVisible(geonetworkPanelVisible);
         //the attributes panel
-        GeoServerTablePanel attributesPanel;
-        add(attributesPanel = createAttributesPanel());
-        attributesPanel.setFilterVisible(false);
-        attributesPanel.setSelectable(false);
-        attributesPanel.setPageable(false);
-        attributesPanel.setSortable(false);
-        attributesPanel.setOutputMarkupId(true);
+        add(new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), true, metadataModel));
 
     }
 
+    public boolean isGeonetworkPanelVisible() {
+        return geonetworkPanel.isVisible();
+    }
 
-    private GeoServerTablePanel createAttributesPanel() {
-
-        return new GeoServerTablePanel<AttributeInput>("attributesPanel", new AttributeDataProvider(), true) {
-
-            private static final long serialVersionUID = -8943273843044917552L;
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel,
-                                                        GeoServerDataProvider.Property<AttributeInput> property) {
-                final GeoServerTablePanel<AttributeInput> tablePanel = this;
-                if (property.equals(AttributeDataProvider.VALUE)) {
-                    System.out.println(itemModel.getObject().getAttributeConfiguration().getLabel());
-                    switch (itemModel.getObject().getAttributeConfiguration().getFieldType()) {
-                        case TEXT:
-                            return new TextFieldPanel(id, (IModel<String>) property.getModel(itemModel));
-                        case NUMBER:
-                            return new TextFieldPanel(id, (IModel<String>) property.getModel(itemModel));
-                        case DROPDOWN:
-                            final DropDownPanel ddp =
-                                    new DropDownPanel(id, (IModel<String>) property.getModel(itemModel),
-                                            itemModel.getObject().getAttributeConfiguration().getValues());
-
-                            return ddp;
-
-                    }
-                }
-                return null;
-            }
-        };
+    public void setGeonetworkPanelVisible(boolean geonetworkPanelVisible) {
+        this.geonetworkPanelVisible = geonetworkPanelVisible;
+        if (geonetworkPanel != null) {
+            geonetworkPanel.setVisible(geonetworkPanelVisible);
+        }
     }
 }

@@ -1,6 +1,7 @@
 attributes:
   - label: tekstveld1
     fieldType: TEXT
+    occurrence: REPEAT
   - label: number
     fieldType: NUMBER
   - label: dropit
@@ -9,6 +10,23 @@ attributes:
         - Mike D
         - MCA
         - Ad Rock
+  - label: contact adres
+    fieldType: COMPLEX
+    typename: adres
+    occurrence: REPEAT
+
+complextypes:
+  - typename: adres
+    attributes:
+        - label: gemeente
+          fieldType: TEXT
+        - label: straat
+          fieldType: TEXT
+        - label: huisnummer
+          fieldType: TEXT
+        - label: postcode
+          fieldType: TEXT
+
 geonetworks:
   - name: geonetwork
     url: https://geonetwork-opensource.org/

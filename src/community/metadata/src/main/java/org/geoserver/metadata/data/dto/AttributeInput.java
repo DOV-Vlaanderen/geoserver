@@ -9,7 +9,7 @@ package org.geoserver.metadata.data.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+//TODO this one is probaly not needed.
 public class AttributeInput implements Serializable{
 
     MetadataAttributeConfiguration attributeConfiguration;
@@ -17,7 +17,7 @@ public class AttributeInput implements Serializable{
     Object inputValue;
 
     public AttributeInput(MetadataAttributeConfiguration attributeConfiguration) {
-        this.attributeConfiguration = attributeConfiguration;
+        this.attributeConfiguration = new MetadataAttributeConfiguration(attributeConfiguration);
     }
 
     public MetadataAttributeConfiguration getAttributeConfiguration() {

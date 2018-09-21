@@ -12,12 +12,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class MetadataEditorConfiguration {
 
     List<MetadataAttributeConfiguration> attributes = new ArrayList<>();
 
     List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
+
+    List<MetadataAttributeComplexTypeConfiguration> complextypes = new ArrayList<>();
 
     public List<MetadataAttributeConfiguration> getAttributes() {
         return attributes;
@@ -33,5 +34,13 @@ public class MetadataEditorConfiguration {
 
     public void setGeonetworks(List<MetadataGeonetworkConfiguration> geonetworks) {
         this.geonetworks = geonetworks;
+    }
+
+    public List<MetadataAttributeComplexTypeConfiguration> getComplextypes() {
+        return complextypes;
+    }
+
+    public void setComplextypes(List<MetadataAttributeComplexTypeConfiguration> complextypes) {
+        this.complextypes = complextypes;
     }
 }

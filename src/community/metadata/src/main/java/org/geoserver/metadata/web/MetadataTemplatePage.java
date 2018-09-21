@@ -5,6 +5,8 @@
 
 package org.geoserver.metadata.web;
 
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerBasePage;
@@ -23,7 +25,10 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     public void onInitialize() {
         super.onInitialize();
-        this.add(new MetadataPanel("metadataTemplatePanel"));
+        CompoundPropertyModel<MetadataMap> metadataModel = new CompoundPropertyModel<MetadataMap>(new MetadataMap());
+        MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel);
+        this.add(metadataTemplatePanel);
+        metadataTemplatePanel.setGeonetworkPanelVisible(false);
     }
 
     protected ComponentAuthorizer getPageAuthorizer() {
