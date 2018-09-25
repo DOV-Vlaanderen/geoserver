@@ -1,22 +1,25 @@
 attributes:
-  - label: tekstveld1
+  - label: input-tekst
     fieldType: TEXT
     occurrence: REPEAT
   - label: number
     fieldType: NUMBER
-  - label: dropit
+  - label: beheerder
+    fieldType: COMPLEX
+    typename: persoon
+  - label: dropdown
     fieldType: DROPDOWN
     values:
-        - Mike D
-        - MCA
-        - Ad Rock
+        - Selecteer mij
+        - of selecteer deze rij
+        - deze best niet selecteren
   - label: contact adres
     fieldType: COMPLEX
-    typename: adres
+    typename: inputadres
     occurrence: REPEAT
 
 complextypes:
-  - typename: adres
+  - typename: inputadres
     attributes:
         - label: gemeente
           fieldType: TEXT
@@ -26,7 +29,19 @@ complextypes:
           fieldType: TEXT
         - label: postcode
           fieldType: TEXT
+  - typename: persoon
+    attributes:
+        - label: naam
+          fieldType: TEXT
+        - label: geslacht
+          fieldType: DROPDOWN
+          values:
+              - man
+              - vrouw
+              - onbekend
 
 geonetworks:
-  - name: geonetwork
-    url: https://geonetwork-opensource.org/
+  - name: geonetwork full url
+    url: https://www.dov.vlaanderen.be/geonetwork/srv/xml_iso19139_save?uuid=
+  - name: geonetwork base url
+    url: https://www.dov.vlaanderen.be/geonetwork/

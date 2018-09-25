@@ -4,12 +4,11 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.geoserver.metadata.data.dto.AttributeInput;
-import org.geoserver.metadata.data.dto.MetadataAttributeComplexTypeConfiguration;
+import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
-import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 import java.util.ArrayList;
@@ -28,16 +27,22 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
 
     private List<AttributeInput> items = new ArrayList<>();
 
-    public RepeatableAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration) {
+    public RepeatableAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration, IModel<MetadataMap> metadataModel) {
         this.template = new MetadataAttributeConfiguration(attributeConfiguration);
         template.setOccurrence(OccurenceEnum.SINGLE);
-        addField();
+        if (metadataModel.getObject().get(attributeConfiguration.getLabel()) == null) {
+            ArrayList<Object> elements = new ArrayList<>();
+            AttributeInput attributeInput = new AttributeInput(template);
+            elements.add(attributeInput);
+            metadataModel.getObject().put(attributeConfiguration.getLabel(), elements);
+        }
+        items = (List<AttributeInput>) metadataModel.getObject().get(attributeConfiguration.getLabel());
     }
 
 
     @Override
     protected List<Property<AttributeInput>> getProperties() {
-        return Arrays.asList(NAME, VALUE);
+        return Arrays.asList(VALUE);
     }
 
     @Override
@@ -47,6 +52,8 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
 
     public void addField() {
         AttributeInput attributeInput = new AttributeInput(template);
+        items.add(attributeInput);
+        /*AttributeInput attributeInput = new AttributeInput(template);
         String label;
         if (count != 0) {
             label = attributeInput.getAttributeConfiguration().getLabel() + "-" + count;
@@ -55,7 +62,7 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
         }
         attributeInput.getAttributeConfiguration().setLabel(label);
         items.add(attributeInput);
-        count++;
+        count++;*/
     }
 
     public void removeFields(List<AttributeInput> attributes) {

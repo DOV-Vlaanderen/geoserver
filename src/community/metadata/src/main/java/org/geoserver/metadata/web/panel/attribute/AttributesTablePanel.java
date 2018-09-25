@@ -5,17 +5,13 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.dto.AttributeInput;
+import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
-import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
@@ -31,10 +27,11 @@ public class AttributesTablePanel extends Panel {
     private final IModel<MetadataMap> metadataModel;
 
 
-    public AttributesTablePanel(String id, GeoServerDataProvider dataProvider, boolean selectable, IModel<MetadataMap> metadataModel) {
+    public AttributesTablePanel(String id, GeoServerDataProvider dataProvider, IModel<MetadataMap> metadataModel) {
         super(id, metadataModel);
 
-        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(dataProvider, selectable);
+
+        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -48,76 +45,25 @@ public class AttributesTablePanel extends Panel {
         this.metadataModel = metadataModel;
 
 
-        /*add(new AjaxLink<Object>("removeSelected") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                //repeatableDataProvider.removeFields(tablePanel);
-            }
-        });
-        add(new AjaxLink<Object>("addNew") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                repeatableDataProvider.addField();
-            }
-        });*/
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider dataProvider, boolean selectable) {
-        return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider, selectable) {
+    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider dataProvider) {
+        return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
             @Override
             protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel, GeoServerDataProvider.Property<AttributeInput> property) {
                 if (property.equals(AttributeDataProvider.VALUE)) {
                     MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject().getAttributeConfiguration();
                     if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
-                        switch (attributeConfiguration.getFieldType()) {
-                            case TEXT:
-                                return new TextFieldPanel(id,
-                                        createModel(attributeConfiguration.getLabel(), metadataModel));
-                            case NUMBER:
-                                return new TextFieldPanel(id,
-                                        (IModel<String>) property.getModel(itemModel));
-                            case DROPDOWN:
-                                final DropDownPanel ddp =
-                                        new DropDownPanel(id,
-                                                (IModel<String>) property.getModel(itemModel),
-                                                attributeConfiguration.getValues());
-
-                                return ddp;
-                            case COMPLEX:
-                                return new AttributesTablePanel(id, new AttributeDataProvider(attributeConfiguration.getTypename()), true, metadataModel);
-                        }
+                        return EditorFactory.create(attributeConfiguration,id, metadataModel);
                     } else {
-                        RepeatableAttributeDataProvider repeatableDataProvider = new RepeatableAttributeDataProvider(attributeConfiguration);
-                        return new RepeatableAttributesTablePanel(id, repeatableDataProvider, true, metadataModel);
+                        /*return new ListAttributesPanel(attributeConfiguration,id,metadataModel);*/
+                        RepeatableAttributeDataProvider repeatableDataProvider = new RepeatableAttributeDataProvider(attributeConfiguration, metadataModel);
+                        return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), repeatableDataProvider, metadataModel);
                     }
                 }
                 return null;
             }
 
-        };
-    }
-
-
-    private IModel<String> createModel(String key, IModel<MetadataMap> metadataModel) {
-        return new IModel<String>() {
-            @Override
-            public String getObject() {
-                return (String) metadataModel.getObject().get(key);
-            }
-
-            @Override
-            public void setObject(String object) {
-                metadataModel.getObject().put(key, object);
-            }
-
-            @Override
-            public void detach() {
-
-            }
         };
     }
 

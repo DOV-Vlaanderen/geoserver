@@ -9,9 +9,10 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.dto.AttributeInput;
+import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -29,17 +30,17 @@ public class RepeatableAttributesTablePanel extends Panel {
     private final IModel<MetadataMap> metadataModel;
 
 
-    public RepeatableAttributesTablePanel(String id, GeoServerDataProvider dataProvider, boolean selectable, IModel<MetadataMap> metadataModel) {
+    public RepeatableAttributesTablePanel(String id, String fieldprefix, GeoServerDataProvider dataProvider, IModel<MetadataMap> metadataModel) {
         super(id, metadataModel);
 
-        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(dataProvider, selectable);
+        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(fieldprefix, dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
         tablePanel.getBottomPager().setVisible(false);
         tablePanel.setOutputMarkupId(false);
         tablePanel.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
-        tablePanel.setSelectable(selectable);
+        tablePanel.setSelectable(true);
         tablePanel.setSortable(false);
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
@@ -64,14 +65,14 @@ public class RepeatableAttributesTablePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ((RepeatableAttributeDataProvider) dataProvider).addField();
-                tablePanel.clearSelection();
+
                 target.add(tablePanel);
             }
         });
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider dataProvider, boolean selectable) {
-        return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider, selectable) {
+    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(String fieldprefix, GeoServerDataProvider dataProvider) {
+        return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
             @Override
             protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel, GeoServerDataProvider.Property<AttributeInput> property) {
                 if (property.equals(RepeatableAttributeDataProvider.VALUE)) {
@@ -80,42 +81,49 @@ public class RepeatableAttributesTablePanel extends Panel {
                         switch (attributeConfiguration.getFieldType()) {
                             case TEXT:
                                 return new TextFieldPanel(id,
-                                        createModel(attributeConfiguration.getLabel(), metadataModel));
+                                        createModel(itemModel.getObject()));
                             case NUMBER:
                                 return new TextFieldPanel(id,
-                                        (IModel<String>) property.getModel(itemModel));
+                                        createModel(itemModel.getObject()));
                             case DROPDOWN:
                                 final DropDownPanel ddp =
                                         new DropDownPanel(id,
-                                                (IModel<String>) property.getModel(itemModel),
+                                                createModel(itemModel.getObject()),
                                                 attributeConfiguration.getValues());
 
                                 return ddp;
                             case COMPLEX:
-                                return new AttributesTablePanel(id, new AttributeDataProvider(attributeConfiguration.getTypename()), true, metadataModel);
+                                return new AttributesTablePanel(id,
+                                        new AttributeDataProvider(attributeConfiguration.getTypename(),
+                                                attributeConfiguration.getLabel()), createModel(itemModel.getObject(), metadataModel));
                         }
                     } else {
-                        RepeatableAttributeDataProvider repeatableDataProvider = new RepeatableAttributeDataProvider(attributeConfiguration);
-                        return new RepeatableAttributesTablePanel(id, repeatableDataProvider, true, metadataModel);
+                        RepeatableAttributeDataProvider repeatableDataProvider = new RepeatableAttributeDataProvider(attributeConfiguration, metadataModel);
+                        return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), repeatableDataProvider, metadataModel);
                     }
                 }
                 return null;
             }
-
         };
     }
 
+    private IModel<MetadataMap> createModel(AttributeInput attributeInput, IModel<MetadataMap> metadataModel) {
+        MetadataMap map = new MetadataMap();
+        attributeInput.setInputValue(map);
+        return new CompoundPropertyModel<MetadataMap>(map);
+    }
 
-    private IModel<String> createModel(String key, IModel<MetadataMap> metadataModel) {
+
+    private IModel<String> createModel(AttributeInput attributeInput) {
         return new IModel<String>() {
             @Override
             public String getObject() {
-                return (String) metadataModel.getObject().get(key);
+                return (String) attributeInput.getInputValue();
             }
 
             @Override
             public void setObject(String object) {
-                metadataModel.getObject().put(key, object);
+                attributeInput.setInputValue(object);
             }
 
             @Override

@@ -4,7 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.geoserver.metadata.data.dto.AttributeInput;
+import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.data.dto.MetadataAttributeComplexTypeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
@@ -31,21 +31,24 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput>
     }
 
     /**
-     *  Provide attributes for the given complex type configuration.
+     * Provide attributes for the given complex type configuration.
+     *
      * @param typename
+     * @param label
      */
-    public AttributeDataProvider(String typename) {
+    public AttributeDataProvider(String typename, String label) {
         super();
         MetadataEditorConfigurationService metadataConfigurationService = GeoServerApplication.get().getApplicationContext().getBean(MetadataEditorConfigurationService.class);
         for (MetadataAttributeComplexTypeConfiguration complexTypeConfiguration : metadataConfigurationService.readConfiguration().getComplextypes()) {
-            if (complexTypeConfiguration.getTypename().equals(typename)){
+            if (complexTypeConfiguration.getTypename().equals(typename)) {
                 for (MetadataAttributeConfiguration config : complexTypeConfiguration.getAttributes()) {
-                    items.add(new AttributeInput(config));
+                    AttributeInput attributeInput = new AttributeInput(config);
+                    attributeInput.getAttributeConfiguration().setLabel(label + "_" + attributeInput.getAttributeConfiguration().getLabel());
+                    items.add(attributeInput);
                 }
             }
         }
     }
-
 
 
     @Override

@@ -4,13 +4,14 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
@@ -49,22 +50,60 @@ public class ImportGeonetworkPanel extends Panel {
             optionsGeonetwork.add(geonetwork.getName());
         }
 
-        form.add(createDropDown(optionsGeonetwork));
+        DropDownChoice<String> dropDown = createDropDown(optionsGeonetwork);
+        form.add(dropDown);
 
-        form.add(new TextField<String>("textfield"));
+        TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
+        form.add(inputUUID);
 
-        Button buttonImport = new Button("buttonImport") {
+       /* Button buttonImport = new Button("buttonImport") {
             public void onSubmit() {
                 info("buttonImport.onSubmit executed");
+                String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());
+                handleImport(url);
             }
-        };
-        form.add(buttonImport);
+        };*/
+        //form.add(buttonImport);
+
+        form.add(new AjaxFallbackLink("link") {
+            public void onClick(AjaxRequestTarget target) {
+                String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());
+                handleImport(url, target);
+            }
+        });
         add(form);
+    }
+
+    public void handleImport(String url, AjaxRequestTarget target) {
+
+    }
+
+    private String generateMetadataUrl(String modelValue, String uuid) {
+        String url = "";
+
+        for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
+            if (modelValue.equals(geonetwork.getName())) {
+                url = geonetwork.getUrl();
+            }
+        }
+        if (!url.contains("xml_iso19139_save?uuid=")) {
+            //assume we got the base url.
+            if (!url.endsWith("/")) {
+                url = url + "/";
+            }
+            url = url + "srv/xml_iso19139_save?uuid=";
+        }
+        url = url + uuid;
+        return url;
     }
 
 
     private DropDownChoice<String> createDropDown(final ArrayList<String> optionsGeonetwork) {
-        return new DropDownChoice<String>("geonetworkName", new IModel<String>() {
+        return new DropDownChoice<String>("geonetworkName", createStringModel(), optionsGeonetwork);
+    }
+
+    private IModel<String> createStringModel() {
+        return new IModel<String>() {
             public String option;
 
             @Override
@@ -80,7 +119,7 @@ public class ImportGeonetworkPanel extends Panel {
             @Override
             public void detach() {
             }
-        }, optionsGeonetwork);
+        };
     }
 
 }

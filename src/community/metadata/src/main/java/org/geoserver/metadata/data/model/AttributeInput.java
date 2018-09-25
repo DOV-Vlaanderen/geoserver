@@ -3,8 +3,10 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.data.dto;
+package org.geoserver.metadata.data.model;
 
+
+import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
