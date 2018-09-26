@@ -21,8 +21,6 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
 
     public static Property<AttributeInput> VALUE = new BeanProperty<AttributeInput>("Value", "inputValue");
 
-    private int count;
-
     private final MetadataAttributeConfiguration template;
 
     private List<AttributeInput> items = new ArrayList<>();
@@ -30,13 +28,20 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
     public RepeatableAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration, IModel<MetadataMap> metadataModel) {
         this.template = new MetadataAttributeConfiguration(attributeConfiguration);
         template.setOccurrence(OccurenceEnum.SINGLE);
-        if (metadataModel.getObject().get(attributeConfiguration.getLabel()) == null) {
+        MetadataMap metadataMap = metadataModel.getObject();
+
+        if (metadataMap.get(attributeConfiguration.getLabel()) == null) {
             ArrayList<Object> elements = new ArrayList<>();
             AttributeInput attributeInput = new AttributeInput(template);
             elements.add(attributeInput);
-            metadataModel.getObject().put(attributeConfiguration.getLabel(), elements);
+            metadataMap.put(attributeConfiguration.getLabel(), elements);
         }
-        items = (List<AttributeInput>) metadataModel.getObject().get(attributeConfiguration.getLabel());
+        items = (List<AttributeInput>) metadataMap.get(attributeConfiguration.getLabel());
+        for (AttributeInput item : items) {
+            if(item.getAttributeConfiguration() == null){
+                item.setAttributeConfiguration(new MetadataAttributeConfiguration(template));
+            }
+        }
     }
 
 
@@ -53,16 +58,6 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
     public void addField() {
         AttributeInput attributeInput = new AttributeInput(template);
         items.add(attributeInput);
-        /*AttributeInput attributeInput = new AttributeInput(template);
-        String label;
-        if (count != 0) {
-            label = attributeInput.getAttributeConfiguration().getLabel() + "-" + count;
-        } else {
-            label = attributeInput.getAttributeConfiguration().getLabel();
-        }
-        attributeInput.getAttributeConfiguration().setLabel(label);
-        items.add(attributeInput);
-        count++;*/
     }
 
     public void removeFields(List<AttributeInput> attributes) {

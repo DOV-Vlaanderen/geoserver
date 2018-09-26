@@ -32,7 +32,11 @@ public class EditorFactory {
         return new IModel<String>() {
             @Override
             public String getObject() {
-                return (String) metadataModel.getObject().get(key);
+                String val = (String) metadataModel.getObject().get(key);
+                if(val == null){
+                    val = "";
+                }
+                return val;
             }
 
             @Override

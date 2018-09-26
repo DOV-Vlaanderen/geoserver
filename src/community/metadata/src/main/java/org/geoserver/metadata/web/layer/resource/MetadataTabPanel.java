@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.IFormValidator;
@@ -51,14 +52,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /**
  * A generic configuration panel for all basic ResourceInfo properties
  */
-public class MetadataTabPanel extends ResourceConfigurationPanel {
+public class MetadataTabPanel extends ResourceConfigurationPanel  {
 
     private static final long serialVersionUID = -552158739086379566L;
+
     public MetadataTabPanel(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
         IModel<MetadataMap> metadataModel = new CompoundPropertyModel<MetadataMap>(model.getObject().getMetadata());
         this.add(new MetadataPanel("metadataPanel", metadataModel));
     }
+
 
 }

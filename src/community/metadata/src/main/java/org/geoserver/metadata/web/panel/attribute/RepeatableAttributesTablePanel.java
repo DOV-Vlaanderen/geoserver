@@ -9,6 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
+import org.apache.wicket.model.AbstractPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.MetadataMap;
@@ -108,9 +109,16 @@ public class RepeatableAttributesTablePanel extends Panel {
     }
 
     private IModel<MetadataMap> createModel(AttributeInput attributeInput, IModel<MetadataMap> metadataModel) {
-        MetadataMap map = new MetadataMap();
-        attributeInput.setInputValue(map);
-        return new CompoundPropertyModel<MetadataMap>(map);
+        if (attributeInput.getInputValue() == null) {
+            MetadataMap map = new MetadataMap();
+            attributeInput.setInputValue(map);
+        }
+        return new AbstractPropertyModel<MetadataMap>(attributeInput.getInputValue()) {
+            @Override
+            protected String propertyExpression() {
+                return "";
+            }
+        };
     }
 
 

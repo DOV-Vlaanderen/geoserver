@@ -9,11 +9,13 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.validation.FormValidatorAdapter;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerBasePage;
 import org.geotools.util.logging.Logging;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,7 +34,7 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         CompoundPropertyModel<MetadataMap> metadataModel = new CompoundPropertyModel<MetadataMap>(getMetadataMap());
 
         MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel);
-        Form form = new Form("form"){
+        Form form = new Form("form") {
             @Override
             protected void onSubmit() {
                 System.out.println("Form submitted.");

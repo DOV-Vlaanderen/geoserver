@@ -31,12 +31,14 @@ public class MetadataAttributeConfiguration implements Serializable{
     }
 
     public MetadataAttributeConfiguration(MetadataAttributeConfiguration other) {
-        label = other.getLabel();
-        fieldType = other.getFieldType();
-        occurrence = other.getOccurrence();
-        typename = other.getTypename();
-        for (String values : other.getValues()) {
-            this.values.add(values);
+        if (other != null) {
+            label = other.getLabel();
+            fieldType = other.getFieldType();
+            occurrence = other.getOccurrence();
+            typename = other.getTypename();
+            for (String values : other.getValues()) {
+                this.values.add(values);
+            }
         }
     }
 
