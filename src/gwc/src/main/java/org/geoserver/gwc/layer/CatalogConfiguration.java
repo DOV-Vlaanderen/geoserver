@@ -144,6 +144,18 @@ public class CatalogConfiguration implements Configuration {
                         .initialCapacity(10) //
                         .maximumSize(100) //
                         .build(new TileLayerLoader(tileLayerCatalog));
+
+        tileLayerCatalog.addListener(
+                new TileLayerCatalogListener() {
+
+                    @Override
+                    public void onEvent(String layerId, TileLayerCatalogListener.Type type) {
+                        if (type == TileLayerCatalogListener.Type.MODIFY
+                                || type == TileLayerCatalogListener.Type.DELETE) {
+                            layerCache.invalidate(layerId);
+                        }
+                    }
+                });
     }
 
     /** @see org.geowebcache.config.Configuration#getIdentifier() */
