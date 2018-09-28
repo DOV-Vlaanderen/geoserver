@@ -56,15 +56,6 @@ public class ImportGeonetworkPanel extends Panel {
         TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
         form.add(inputUUID);
 
-       /* Button buttonImport = new Button("buttonImport") {
-            public void onSubmit() {
-                info("buttonImport.onSubmit executed");
-                String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());
-                handleImport(url);
-            }
-        };*/
-        //form.add(buttonImport);
-
         form.add(new AjaxFallbackLink("link") {
             public void onClick(AjaxRequestTarget target) {
                 String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());

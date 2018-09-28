@@ -45,3 +45,7 @@ geonetworks:
     url: https://www.dov.vlaanderen.be/geonetwork/srv/xml_iso19139_save?uuid=
   - name: geonetwork base url
     url: https://www.dov.vlaanderen.be/geonetwork/
+
+geonetworkmapping:
+    -  geoserver: indentifier-other
+       geonetwork: //gmd:fileIdentifier/gco:CharacterString/text()

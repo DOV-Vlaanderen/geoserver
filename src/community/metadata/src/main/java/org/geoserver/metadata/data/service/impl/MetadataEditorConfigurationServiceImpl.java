@@ -22,8 +22,8 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
 
     private static final Logger LOGGER = Logging.getLogger(MetadataEditorConfigurationServiceImpl.class);
 
-    @Value("${metadata.folder:./src/test/resources}")
-    private String folder;
+        @Value("${metadata.folder:./src/test/resources}")
+        private String folder;
 
     private YamlService yamlService = new YamlServiceImpl();
 
@@ -33,7 +33,7 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
         //process all the configurations
         MetadataEditorConfiguration configuration = new MetadataEditorConfiguration();
         try {
-            configuration = yamlService.readValue(folder);
+            configuration = yamlService.readConfiguration(folder);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
         }

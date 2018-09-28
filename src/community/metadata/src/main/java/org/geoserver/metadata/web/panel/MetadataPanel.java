@@ -87,7 +87,9 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
         }
     }
 
-
+    //******************************************************************************************************************//
+    //*** TODO refactor conversion *************************************************************************************//
+    //******************************************************************************************************************//
     @Override
     public void updateModel() {
         List<String> keysToDelete = new ArrayList<>();
@@ -151,7 +153,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
                     String[] keys = metadataKey.split("_");
                     for (int i = 0; i < list.size(); i++) {
                         Object object = list.get(i);
-                        if(!tempMap.containsKey(keys[0])){
+                        if (!tempMap.containsKey(keys[0])) {
                             ArrayList<AttributeInput> value = new ArrayList<>();
                             for (Object o : list) {
                                 AttributeInput e = new AttributeInput(null);
@@ -167,7 +169,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
                     //simple
                     for (Object object : list) {
                         if (object instanceof String) {
-                            if(!tempMap.containsKey(metadataKey)){
+                            if (!tempMap.containsKey(metadataKey)) {
                                 tempMap.put(metadataKey, new ArrayList<>());
                             }
                             AttributeInput e = new AttributeInput(null);

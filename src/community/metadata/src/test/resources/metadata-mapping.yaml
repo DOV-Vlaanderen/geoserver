@@ -1,0 +1,25 @@
+#https://oefen.dov.vlaanderen.be/geonetwork/srv/api/records/024a15a4-a6f9-41ca-b28a-f17e3f5623f9/formatters/xml
+#//book[author="Neal Stephenson"]/title
+geonetworkmapping:
+    -  geoserver: indentifier-single
+       geonetwork: //gmd:fileIdentifier//gco:CharacterString/text()
+    -  geoserver: refsystem-as-list
+       geonetwork: //gmd:referenceSystemInfo//gmd:code//gco:CharacterString/text()
+       occurrence: REPEAT
+    -  geoserver: referencesystem-object
+       geonetwork: //gmd:referenceSystemInfo
+       fieldType: COMPLEX
+       typename: referencesystem
+    -  geoserver: referencesystem-object-list
+       geonetwork: //gmd:referenceSystemInfo
+       fieldType: COMPLEX
+       typename: referencesystem
+       occurrence: REPEAT
+
+objectmapping:
+    - typename: referencesystem
+      mapping:
+          - geoserver: code
+            geonetwork: .//gmd:code//gco:CharacterString/text()
+          - geoserver: codeSpace
+            geonetwork: .//gmd:codeSpace//gco:CharacterString/text()

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geotools.util.logging.Logging;
@@ -27,7 +28,7 @@ public class YamlServiceImpl implements YamlService {
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
 
     @Override
-    public MetadataEditorConfiguration readValue(String folder) throws IOException {
+    public MetadataEditorConfiguration readConfiguration(String folder) throws IOException {
         LOGGER.info("Searching for yamls in: " + folder);
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         MetadataEditorConfiguration configuration = new MetadataEditorConfiguration();
@@ -42,6 +43,32 @@ public class YamlServiceImpl implements YamlService {
                     configuration.getAttributes().addAll(config.getAttributes());
                     configuration.getGeonetworks().addAll(config.getGeonetworks());
                     configuration.getComplextypes().addAll(config.getComplextypes());
+                } catch (IOException e) {
+                    LOGGER.severe(e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+        }
+
+        return configuration;
+    }
+
+    @Override
+    public AttributeMappingConfiguration readMapping(String folder) throws IOException {
+        LOGGER.info("Searching for yamls in: " + folder);
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        AttributeMappingConfiguration configuration = new AttributeMappingConfiguration();
+        try {
+            ArrayList<File> files = new ArrayList<File>(
+                    FileUtils.listFiles(new File(folder), new RegexFileFilter("^(.*?).yaml"), DirectoryFileFilter.DIRECTORY));
+
+            for (File file : files) {
+                try {
+                    AttributeMappingConfiguration config = mapper.readValue(file, AttributeMappingConfiguration.class);
+                    //Merge configuration
+                    configuration.getGeonetworkmapping().addAll(config.getGeonetworkmapping());
+                    configuration.getObjectmapping().addAll(config.getObjectmapping());
                 } catch (IOException e) {
                     LOGGER.severe(e.getMessage());
                 }

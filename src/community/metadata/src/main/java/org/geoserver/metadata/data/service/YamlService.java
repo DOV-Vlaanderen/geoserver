@@ -2,6 +2,7 @@
 // All rights reserved
 package org.geoserver.metadata.data.service;
 
+import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 
 import java.io.IOException;
@@ -15,7 +16,9 @@ import java.io.IOException;
 @SuppressWarnings("UnusedDeclaration")
 public interface YamlService {
 
-    MetadataEditorConfiguration readValue(String folder) throws IOException;
+    MetadataEditorConfiguration readConfiguration(String folder) throws IOException;
+
+    AttributeMappingConfiguration readMapping(String folder) throws IOException;
 
 
 }
