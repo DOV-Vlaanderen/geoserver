@@ -98,23 +98,23 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                             @Override
                             public void changed(ResourceNotification notify) {
                                 for (Event event : notify.events()) {
-                                    if (event.getKind() == ResourceNotification.Kind.ENTRY_CREATE) {
-                                        if (!event.getPath().contains("/")
-                                                && event.getPath().toLowerCase().endsWith(".xml")
-                                                && !listenersByFileName.containsKey(
-                                                        event.getPath())) {
-                                            GeoServerTileLayerInfoImpl info =
-                                                    load(
-                                                            resourceLoader
-                                                                    .get(baseDirectory)
-                                                                    .get(event.getPath()));
-                                            if (info != null) {
-                                                for (TileLayerCatalogListener listener :
-                                                        listeners) {
-                                                    listener.onEvent(
-                                                            info.getId(),
-                                                            TileLayerCatalogListener.Type.CREATE);
-                                                }
+                                    if ((event.getKind() == ResourceNotification.Kind.ENTRY_CREATE
+                                                    || event.getKind()
+                                                            == ResourceNotification.Kind
+                                                                    .ENTRY_MODIFY)
+                                            && !event.getPath().contains("/")
+                                            && event.getPath().toLowerCase().endsWith(".xml")
+                                            && !listenersByFileName.containsKey(event.getPath())) {
+                                        GeoServerTileLayerInfoImpl info =
+                                                load(
+                                                        resourceLoader
+                                                                .get(baseDirectory)
+                                                                .get(event.getPath()));
+                                        if (info != null) {
+                                            for (TileLayerCatalogListener listener : listeners) {
+                                                listener.onEvent(
+                                                        info.getId(),
+                                                        TileLayerCatalogListener.Type.CREATE);
                                             }
                                         }
                                     }
