@@ -5,7 +5,6 @@
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Test;

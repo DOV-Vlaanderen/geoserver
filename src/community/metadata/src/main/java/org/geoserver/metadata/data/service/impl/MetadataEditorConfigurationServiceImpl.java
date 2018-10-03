@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,7 +21,7 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
 
     private static final Logger LOGGER = Logging.getLogger(MetadataEditorConfigurationServiceImpl.class);
 
-        @Value("${metadata.folder:./src/test/resources}")
+        @Value("${metadata.folder:/home/niels/workspaces/geoserver/geoserver/src/community/metadata/src/test/resources/}")
         private String folder;
 
     private YamlService yamlService = new YamlServiceImpl();

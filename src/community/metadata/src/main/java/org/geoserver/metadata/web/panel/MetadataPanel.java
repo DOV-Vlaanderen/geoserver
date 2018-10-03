@@ -1,10 +1,9 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.metadata.web.panel;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -19,7 +18,6 @@ import org.geotools.util.logging.Logging;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class MetadataPanel extends Panel implements IFormModelUpdateListener {
@@ -38,6 +36,11 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
     public MetadataPanel(String id, IModel<MetadataMap> metadataModel) {
         super(id);
         this.metadataModel = new IModel<MetadataMap>() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -4105614402367347930L;
+
             @Override
             public MetadataMap getObject() {
                 //return metadataModel.getObject();
@@ -62,6 +65,11 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
         super.onInitialize();
         this.setOutputMarkupId(true);
         geonetworkPanel = new ImportGeonetworkPanel("geonetworkPanel") {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -4620394948554985874L;
+
             @Override
             public void handleImport(String url, AjaxRequestTarget target) {
                 metadataModel.getObject().put("postcode", "negenduust");
@@ -90,6 +98,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
     //******************************************************************************************************************//
     //*** TODO refactor conversion *************************************************************************************//
     //******************************************************************************************************************//
+    @SuppressWarnings("unchecked")
     @Override
     public void updateModel() {
         List<String> keysToDelete = new ArrayList<>();
@@ -100,9 +109,9 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
 
         for (String metadataKey : metadataMap.keySet()) {
             Serializable val = metadataMap.get(metadataKey);
-            if (val instanceof List && !((List) val).isEmpty()) {
+            if (val instanceof List && !((List<?>) val).isEmpty()) {
                 //converting complex objects
-                List values = (List) val;
+                List<?> values = (List<?>) val;
                 for (Object value : values) {
 
                     if (value instanceof AttributeInput) {
@@ -114,14 +123,14 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
                                 if (!tempMap.containsKey(key)) {
                                     tempMap.put(key, new ArrayList<>());
                                 }
-                                ((List) tempMap.get(key)).add(map.get(key));
+                                ((List<Serializable>) tempMap.get(key)).add(map.get(key));
                             }
                         } else if (inputAttribute instanceof String) {
                             //converting list of simple objects
                             if (!tempMap.containsKey(metadataKey)) {
                                 tempMap.put(metadataKey, new ArrayList<>());
                             }
-                            ((List) tempMap.get(metadataKey)).add(inputAttribute);
+                            ((List<Object>) tempMap.get(metadataKey)).add(inputAttribute);
                         }
                     }
                 }
@@ -138,6 +147,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
     }
 
 
+    @SuppressWarnings("unchecked")
     private MetadataMap toView(IModel<MetadataMap> metadataModel) {
         List<String> keysToDelete = new ArrayList<>();
 
@@ -147,7 +157,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
         for (String metadataKey : metadataMap.keySet()) {
             Serializable val = metadataMap.get(metadataKey);
             if (val instanceof List) {
-                List list = (List) val;
+                List<?> list = (List<?>) val;
                 if (metadataKey.contains("_")) {
                     //complex
                     String[] keys = metadataKey.split("_");
@@ -174,7 +184,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
                             }
                             AttributeInput e = new AttributeInput(null);
                             e.setInputValue(object);
-                            ((List) tempMap.get(metadataKey)).add(e);
+                            ((List<AttributeInput>) tempMap.get(metadataKey)).add(e);
                         }
                     }
                 }

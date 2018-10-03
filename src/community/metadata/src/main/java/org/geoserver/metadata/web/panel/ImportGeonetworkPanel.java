@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +6,6 @@ package org.geoserver.metadata.web.panel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -43,7 +42,7 @@ public class ImportGeonetworkPanel extends Panel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        Form form = new Form("form");
+        Form<Object> form = new Form<Object>("form");
 
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
         for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
@@ -56,9 +55,15 @@ public class ImportGeonetworkPanel extends Panel {
         TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
         form.add(inputUUID);
 
-        form.add(new AjaxFallbackLink("link") {
+        form.add(new AjaxFallbackLink<Object>("link") {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -8718015688839770852L;
+
             public void onClick(AjaxRequestTarget target) {
-                String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());
+                //String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());
+                String url = "https://oefen.dov.vlaanderen.be/geonetwork/srv/api/records/1a2c6739-3c62-432b-b2a0-aaa589a9e3a1/formatters/xml";
                 handleImport(url, target);
             }
         });
@@ -95,6 +100,10 @@ public class ImportGeonetworkPanel extends Panel {
 
     private IModel<String> createStringModel() {
         return new IModel<String>() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 7255270070196033720L;
             public String option;
 
             @Override

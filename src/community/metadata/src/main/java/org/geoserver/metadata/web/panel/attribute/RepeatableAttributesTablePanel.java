@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,7 +10,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.AbstractPropertyModel;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.AttributeInput;
@@ -31,7 +30,7 @@ public class RepeatableAttributesTablePanel extends Panel {
     private final IModel<MetadataMap> metadataModel;
 
 
-    public RepeatableAttributesTablePanel(String id, String fieldprefix, GeoServerDataProvider dataProvider, IModel<MetadataMap> metadataModel) {
+    public RepeatableAttributesTablePanel(String id, String fieldprefix, GeoServerDataProvider<AttributeInput> dataProvider, IModel<MetadataMap> metadataModel) {
         super(id, metadataModel);
 
         GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(fieldprefix, dataProvider);
@@ -72,8 +71,13 @@ public class RepeatableAttributesTablePanel extends Panel {
         });
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(String fieldprefix, GeoServerDataProvider dataProvider) {
+    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(String fieldprefix, GeoServerDataProvider<AttributeInput> dataProvider) {
         return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 4333335931795175790L;
+
             @Override
             protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel, GeoServerDataProvider.Property<AttributeInput> property) {
                 if (property.equals(RepeatableAttributeDataProvider.VALUE)) {
@@ -114,6 +118,11 @@ public class RepeatableAttributesTablePanel extends Panel {
             attributeInput.setInputValue(map);
         }
         return new AbstractPropertyModel<MetadataMap>(attributeInput.getInputValue()) {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -7316718174035675097L;
+
             @Override
             protected String propertyExpression() {
                 return "";
@@ -124,6 +133,11 @@ public class RepeatableAttributesTablePanel extends Panel {
 
     private IModel<String> createModel(AttributeInput attributeInput) {
         return new IModel<String>() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 2768539968982801563L;
+
             @Override
             public String getObject() {
                 return (String) attributeInput.getInputValue();

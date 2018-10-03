@@ -1,23 +1,18 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 
 package org.geoserver.metadata.web;
 
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.validation.FormValidatorAdapter;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerBasePage;
 import org.geotools.util.logging.Logging;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class MetadataTemplatePage extends GeoServerBasePage {
@@ -34,7 +29,12 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         CompoundPropertyModel<MetadataMap> metadataModel = new CompoundPropertyModel<MetadataMap>(getMetadataMap());
 
         MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel);
-        Form form = new Form("form") {
+        Form<?> form = new Form<Object>("form") {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -5120413426598396101L;
+
             @Override
             protected void onSubmit() {
                 System.out.println("Form submitted.");

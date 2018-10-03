@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,7 +17,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -90,6 +88,7 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
 
     }
 
+    @SuppressWarnings("unchecked")
     private void mapNode(MetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
         if (FieldTypeEnum.COMPLEX.equals(attributeMapping.getFieldType())) {
             for (AttributeComplexTypeMapping complexTypeMapping : mapping) {
@@ -110,7 +109,7 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
                 if(!metadataMap.containsKey(attributeMapping.getGeoserver())){
                     metadataMap.put(attributeMapping.getGeoserver(), new ArrayList<>());
                 }
-                ((List) metadataMap.get(attributeMapping.getGeoserver())).add(node.getNodeValue());
+                ((List<String>) metadataMap.get(attributeMapping.getGeoserver())).add(node.getNodeValue());
 
             }
         }

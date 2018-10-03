@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,11 @@ import java.util.List;
 
 public class RepeatableAttributeDataProvider extends GeoServerDataProvider<AttributeInput> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -255037580716257623L;
+
     public static Property<AttributeInput> NAME = new BeanProperty<AttributeInput>("Name", "attributeConfiguration.label");
 
     public static Property<AttributeInput> VALUE = new BeanProperty<AttributeInput>("Value", "inputValue");
@@ -25,6 +30,7 @@ public class RepeatableAttributeDataProvider extends GeoServerDataProvider<Attri
 
     private List<AttributeInput> items = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public RepeatableAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration, IModel<MetadataMap> metadataModel) {
         this.template = new MetadataAttributeConfiguration(attributeConfiguration);
         template.setOccurrence(OccurenceEnum.SINGLE);

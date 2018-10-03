@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,6 +30,11 @@ public class EditorFactory {
 
     static private IModel<String> createModel(String key, IModel<MetadataMap> metadataModel) {
         return new IModel<String>() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 2943279172304236560L;
+
             @Override
             public String getObject() {
                 String val = (String) metadataModel.getObject().get(key);

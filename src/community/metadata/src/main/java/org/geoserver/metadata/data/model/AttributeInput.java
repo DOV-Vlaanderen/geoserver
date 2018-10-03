@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,10 +8,10 @@ package org.geoserver.metadata.data.model;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 //TODO this one is probaly not needed.
 public class AttributeInput implements Serializable{
+
+    private static final long serialVersionUID = -8928656843453377656L;
 
     MetadataAttributeConfiguration attributeConfiguration;
 

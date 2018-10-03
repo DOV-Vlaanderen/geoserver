@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,6 +16,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput> {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4454769618643460913L;
 
     public static Property<AttributeInput> NAME = new BeanProperty<AttributeInput>("Name", "attributeConfiguration.label");
 

@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,7 +27,7 @@ public class AttributesTablePanel extends Panel {
     private final IModel<MetadataMap> metadataModel;
 
 
-    public AttributesTablePanel(String id, GeoServerDataProvider dataProvider, IModel<MetadataMap> metadataModel) {
+    public AttributesTablePanel(String id, GeoServerDataProvider<AttributeInput> dataProvider, IModel<MetadataMap> metadataModel) {
         super(id, metadataModel);
 
 
@@ -47,8 +47,13 @@ public class AttributesTablePanel extends Panel {
 
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider dataProvider) {
+    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider<AttributeInput> dataProvider) {
         return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 5267842353156378075L;
+
             @Override
             protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel, GeoServerDataProvider.Property<AttributeInput> property) {
                 if (property.equals(AttributeDataProvider.VALUE)) {

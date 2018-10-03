@@ -1,5 +1,7 @@
-// Copyright (C) 2010-2011 DOV, http://dov.vlaanderen.be/
-// All rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
@@ -13,7 +15,6 @@ import java.io.IOException;
  *
  * @author Timothy De Bock
  */
-@SuppressWarnings("UnusedDeclaration")
 public interface YamlService {
 
     MetadataEditorConfiguration readConfiguration(String folder) throws IOException;

@@ -1,5 +1,7 @@
-// Copyright (C) 2010-2011 DOV, http://dov.vlaanderen.be/
-// All rights reserved
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.metadata.data.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
