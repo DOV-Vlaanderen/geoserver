@@ -39,7 +39,6 @@ public class RepeatableAttributesTablePanel extends Panel {
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
         tablePanel.getBottomPager().setVisible(false);
-        tablePanel.setOutputMarkupId(false);
         tablePanel.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
         tablePanel.setSelectable(true);
         tablePanel.setSortable(false);

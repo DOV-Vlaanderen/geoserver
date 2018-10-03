@@ -152,9 +152,9 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
                 result = expr.evaluate(doc, XPathConstants.NODESET);
             }
             NodeList nodes = (NodeList) result;
-            for (int i = 0; i < nodes.getLength(); i++) {
+           /* for (int i = 0; i < nodes.getLength(); i++) {
                 System.out.println(nodes.item(i).getTextContent());
-            }
+            }*/
             return nodes;
         } catch (XPathExpressionException e) {
 

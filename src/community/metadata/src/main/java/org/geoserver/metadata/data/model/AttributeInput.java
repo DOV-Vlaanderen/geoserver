@@ -8,7 +8,7 @@ package org.geoserver.metadata.data.model;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 
 import java.io.Serializable;
-//TODO this one is probaly not needed.
+
 public class AttributeInput implements Serializable{
 
     private static final long serialVersionUID = -8928656843453377656L;
@@ -21,6 +21,13 @@ public class AttributeInput implements Serializable{
         if (attributeConfiguration != null) {
             this.attributeConfiguration = new MetadataAttributeConfiguration(attributeConfiguration);
         }
+    }
+
+    public AttributeInput(MetadataAttributeConfiguration attributeConfiguration, Object inputValue) {
+        if (attributeConfiguration != null) {
+            this.attributeConfiguration = new MetadataAttributeConfiguration(attributeConfiguration);
+        }
+        this.inputValue = inputValue;
     }
 
     public MetadataAttributeConfiguration getAttributeConfiguration() {
