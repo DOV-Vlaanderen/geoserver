@@ -65,9 +65,6 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
         super.onInitialize();
         this.setOutputMarkupId(true);
         geonetworkPanel = new ImportGeonetworkPanel("geonetworkPanel") {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -4620394948554985874L;
 
             @Override

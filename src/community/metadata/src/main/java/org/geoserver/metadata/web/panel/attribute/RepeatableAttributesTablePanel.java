@@ -6,7 +6,8 @@ package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.AbstractPropertyModel;
@@ -48,22 +49,24 @@ public class RepeatableAttributesTablePanel extends Panel {
         this.metadataModel = metadataModel;
 
 
-        add(new AjaxLink<Object>("removeSelected") {
-            private static final long serialVersionUID = 1L;
+        add(new AjaxSubmitLink("removeSelected") {
+
+            private static final long serialVersionUID = -8829474855848647384L;
 
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 ((RepeatableAttributeDataProvider) dataProvider).removeFields(tablePanel.getSelection());
                 tablePanel.clearSelection();
                 target.add(tablePanel);
             }
         });
 
-        add(new AjaxLink<Object>("addNew") {
-            private static final long serialVersionUID = 1L;
+        add(new AjaxSubmitLink("addNew") {
+
+            private static final long serialVersionUID = 6840006565079316081L;
 
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 ((RepeatableAttributeDataProvider) dataProvider).addField();
 
                 target.add(tablePanel);
