@@ -14,7 +14,7 @@ import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -44,10 +44,8 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(ImportGeonetworkMetadataServiceImpl.class);
 
-    private YamlService yamlService = new YamlServiceImpl();
-
-    @Value("${metadata.folder:./src/test/resources}")
-    private String folder;
+    @Autowired
+    private YamlService yamlService;
 
 
     @Override
@@ -57,7 +55,7 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
             printNote(doc.getChildNodes());
         }
 */
-        AttributeMappingConfiguration mapping = yamlService.readMapping(folder);
+        AttributeMappingConfiguration mapping = yamlService.readMapping();
 
         for (AttributeMapping attributeMapping : mapping.getGeonetworkmapping()) {
             addAttribute(metadataMap, attributeMapping, doc, null, mapping.getObjectmapping());

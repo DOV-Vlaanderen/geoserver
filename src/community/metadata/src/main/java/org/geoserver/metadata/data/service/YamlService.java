@@ -17,9 +17,9 @@ import java.io.IOException;
  */
 public interface YamlService {
 
-    MetadataEditorConfiguration readConfiguration(String folder) throws IOException;
+    MetadataEditorConfiguration readConfiguration() throws IOException;
 
-    AttributeMappingConfiguration readMapping(String folder) throws IOException;
+    AttributeMappingConfiguration readMapping() throws IOException;
 
 
 }

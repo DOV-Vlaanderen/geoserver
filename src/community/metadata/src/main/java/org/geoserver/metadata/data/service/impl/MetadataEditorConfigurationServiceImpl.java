@@ -9,7 +9,7 @@ import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -21,10 +21,8 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
 
     private static final Logger LOGGER = Logging.getLogger(MetadataEditorConfigurationServiceImpl.class);
 
-        @Value("${metadata.folder:/home/niels/workspaces/geoserver/geoserver/src/community/metadata/src/test/resources/}")
-        private String folder;
-
-    private YamlService yamlService = new YamlServiceImpl();
+    @Autowired
+    private YamlService yamlService;
 
     @Override
     public MetadataEditorConfiguration readConfiguration() {
@@ -32,7 +30,7 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
         //process all the configurations
         MetadataEditorConfiguration configuration = new MetadataEditorConfiguration();
         try {
-            configuration = yamlService.readConfiguration(folder);
+            configuration = yamlService.readConfiguration();
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
         }

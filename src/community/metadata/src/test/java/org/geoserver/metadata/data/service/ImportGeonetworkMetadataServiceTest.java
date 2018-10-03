@@ -5,13 +5,11 @@
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.catalog.MetadataMap;
-import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 
 /**
@@ -20,8 +18,6 @@ import java.util.logging.Logger;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class ImportGeonetworkMetadataServiceTest extends AbstractMetadataTest{
-
-    private final static Logger LOGGER = Logging.getLogger(ImportGeonetworkMetadataServiceTest.class);
 
     @Autowired
     ImportGeonetworkMetadataService importService;

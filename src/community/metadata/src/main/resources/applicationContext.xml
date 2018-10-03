@@ -9,14 +9,6 @@
 
     <context:component-scan base-package="org.geoserver.metadata" />
 
-    <!--TODO properties only work in unit test-->
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
-        <property name="location">
-            <value>classpath:metadata.properties</value>
-        </property>
-    </bean>
-
     <bean id="metadataCategory" class="org.geoserver.web.Category">
         <property name="nameKey" value="category.metadata" />
         <property name="order" value="1000" />
@@ -33,9 +25,6 @@
        <property name="order" value="1001" />
        <property name="authorizer" ref="metadataMenuAuthorizer"/>
     </bean>
-
-
-
 
     <bean id="metadataEditTabPanel" class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
         <property name="id" value="metadataEditTabPanel" />

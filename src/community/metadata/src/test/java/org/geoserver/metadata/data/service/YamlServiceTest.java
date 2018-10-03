@@ -6,13 +6,11 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
-import org.geoserver.metadata.data.service.impl.YamlServiceImpl;
-import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 
 /**
@@ -20,29 +18,26 @@ import java.util.logging.Logger;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class YamlServiceTest extends AbstractMetadataTest{
+public class YamlServiceTest extends AbstractMetadataTest {
 
-    private final static Logger LOGGER = Logging.getLogger(YamlServiceTest.class);
-
-
-
-    private YamlService yamlService = new YamlServiceImpl();
+    @Autowired
+    private YamlService yamlService;
 
     @Test
     public void testFileRegistry() throws IOException {
-        MetadataEditorConfiguration configuration = yamlService.readConfiguration("./src/test/resources");
+        MetadataEditorConfiguration configuration = yamlService.readConfiguration();
         Assert.assertNotNull(configuration);
         Assert.assertEquals(5, configuration.getAttributes().size());
-        Assert.assertEquals(2, configuration.getGeonetworks().size());
-        Assert.assertEquals(1, configuration.getComplextypes().size());
+        Assert.assertEquals(3, configuration.getGeonetworks().size());
+        Assert.assertEquals(2, configuration.getComplextypes().size());
 
     }
 
     @Test
     public void testGeonetworkMappingRegistry() throws IOException {
-        AttributeMappingConfiguration configuration = yamlService.readMapping("./src/test/resources");
+        AttributeMappingConfiguration configuration = yamlService.readMapping();
         Assert.assertNotNull(configuration);
-        Assert.assertEquals(4, configuration.getGeonetworkmapping().size());
+        Assert.assertEquals(5, configuration.getGeonetworkmapping().size());
         Assert.assertEquals(1, configuration.getObjectmapping().size());
 
 

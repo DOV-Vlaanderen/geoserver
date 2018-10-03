@@ -4,8 +4,10 @@
  */
 package org.geoserver.metadata.data.service;
 
+import org.apache.wicket.util.file.File;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.geoserver.util.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -45,6 +47,18 @@ public abstract class AbstractMetadataTest {
             DATA_DIRECTORY = new MockData();
             System.setProperty("GEOSERVER_DATA_DIR", 
                     DATA_DIRECTORY.getDataDirectoryRoot().toString());
+            
+            //copy test files to data directory
+            File metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata");
+            metadata.mkdirs();
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml"), 
+                   new File(metadata, "fouteinhoud.yaml"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-geonetwork.yaml"), 
+                    new File(metadata, "metadata-geonetwork.yaml"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-mapping.yaml"), 
+                    new File(metadata, "metadata-mapping.yaml"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui.yaml"), 
+                    new File(metadata, "metadata-ui.yaml"));
         }
     }
     

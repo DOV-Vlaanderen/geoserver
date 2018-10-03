@@ -5,12 +5,10 @@
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
-import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.logging.Logger;
 
 
 /**
@@ -20,8 +18,6 @@ import java.util.logging.Logger;
  */
 public class MetadataServiceTest extends AbstractMetadataTest{
 
-    private final static Logger LOGGER = Logging.getLogger(MetadataServiceTest.class);
-
     @Autowired
     MetadataEditorConfigurationService metadataService;
 
@@ -29,9 +25,9 @@ public class MetadataServiceTest extends AbstractMetadataTest{
     public void testFileRegistry() {
         MetadataEditorConfiguration configuration = metadataService.readConfiguration();
         Assert.assertNotNull(configuration);
-        Assert.assertEquals(4, configuration.getAttributes().size());
-        Assert.assertEquals(2, configuration.getGeonetworks().size());
-        Assert.assertEquals(1, configuration.getComplextypes().size());
+        Assert.assertEquals(5, configuration.getAttributes().size());
+        Assert.assertEquals(3, configuration.getGeonetworks().size());
+        Assert.assertEquals(2, configuration.getComplextypes().size());
 
     }
 }
