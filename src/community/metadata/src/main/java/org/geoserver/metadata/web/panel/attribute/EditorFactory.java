@@ -6,54 +6,35 @@ package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.MetadataMap;
+import org.apache.wicket.model.Model;
+import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 
 public class EditorFactory {
 
 
-
-    static Component create(MetadataAttributeConfiguration configuration, String id, IModel<MetadataMap> metadataModel) {
+    static Component create(MetadataAttributeConfiguration configuration, String id, 
+            IModel<ComplexMetadataMap> metadataModel) {
         switch (configuration.getFieldType()) {
             case TEXT:
-                return new TextFieldPanel(id, createModel(configuration.getLabel(), metadataModel));
+                return new TextFieldPanel(id, 
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getLabel())));
             case NUMBER:
-                return new TextFieldPanel(id, createModel(configuration.getLabel(), metadataModel));
+                return new TextFieldPanel(id, 
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getLabel())));
             case DROPDOWN:
-                return new DropDownPanel(id, createModel(configuration.getLabel(), metadataModel), configuration.getValues());
+                return new DropDownPanel(id, 
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getLabel())),
+                        configuration.getValues());
             case COMPLEX:
-                return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename(), configuration.getLabel()), metadataModel);
+                return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename(), 
+                        configuration.getLabel()), 
+                        new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getLabel())));
         }
         return null;
-    }
-
-
-    static private IModel<String> createModel(String key, IModel<MetadataMap> metadataModel) {
-        return new IModel<String>() {
-            /**
-             * 
-             */
-            private static final long serialVersionUID = 2943279172304236560L;
-
-            @Override
-            public String getObject() {
-                String val = (String) metadataModel.getObject().get(key);
-                if(val == null){
-                    val = "";
-                }
-                return val;
-            }
-
-            @Override
-            public void setObject(String object) {
-                metadataModel.getObject().put(key, object);
-            }
-
-            @Override
-            public void detach() {
-
-            }
-        };
     }
 
 

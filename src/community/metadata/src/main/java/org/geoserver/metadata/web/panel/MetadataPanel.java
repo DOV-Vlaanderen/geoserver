@@ -5,33 +5,25 @@
 package org.geoserver.metadata.web.panel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.mapper.ViewObjectMetadataMapper;
-import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
-import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
-public class MetadataPanel extends Panel implements IFormModelUpdateListener {
+public class MetadataPanel extends Panel /*implements IFormModelUpdateListener */ {
     private static final long serialVersionUID = 1297739738862860160L;
 
     private static final Logger LOGGER = Logging.getLogger(MetadataPanel.class);
-
-
-    private final IModel<MetadataMap> metadataModel;
+    
+    //private final IModel<MetadataMap> metadataModel;
 
     private ImportGeonetworkPanel geonetworkPanel;
 
@@ -39,13 +31,9 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
 
     private ViewObjectMetadataMapper mapper = new ViewObjectMetadataMapper();
 
-
-    public MetadataPanel(String id, IModel<MetadataMap> metadataModel) {
-        super(id);
-        this.metadataModel = new IModel<MetadataMap>() {
-            /**
-             * 
-             */
+    public MetadataPanel(String id, IModel<ComplexMetadataMap> metadataModel) {
+        super(id, metadataModel);
+        /*this.metadataModel = new IModel<MetadataMap>() {
             private static final long serialVersionUID = -4105614402367347930L;
 
             @Override
@@ -62,7 +50,7 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
             public void detach() {
 
             }
-        };
+        };*/
     }
 
 
@@ -77,21 +65,25 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
             public void handleImport(String url, AjaxRequestTarget target) {
                 ImportGeonetworkMetadataService metadataService = GeoServerApplication.get().getApplicationContext().getBean(ImportGeonetworkMetadataService.class);
                 //import metadata
-                try {
-                    metadataService.importMetadata(url, metadataModel.getObject());
-                    metadataModel.getObject();
-                    target.add(MetadataPanel.this);
+               /* try {
+                    metadataService.importMetadata(url, getMetadataModel().getObject());
                 } catch (IOException e) {
                     LOGGER.severe(e.getMessage());
-                }
+                }*/
                 target.add(MetadataPanel.this);
             }
         };
         add(geonetworkPanel);
         geonetworkPanel.setVisible(geonetworkPanelVisible);
         //the attributes panel
-        add(new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), metadataModel));
+        add(new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), 
+                getMetadataModel()));
 
+    }
+    
+    @SuppressWarnings("unchecked")
+    public IModel<ComplexMetadataMap> getMetadataModel() {
+        return (IModel<ComplexMetadataMap>) getDefaultModel();
     }
 
 
@@ -105,11 +97,12 @@ public class MetadataPanel extends Panel implements IFormModelUpdateListener {
             geonetworkPanel.setVisible(geonetworkPanelVisible);
         }
     }
+    /*
 
     @Override
     public void updateModel() {
       mapper.toPersistedModel(metadataModel);
-    }
+    }*/
 
 
 

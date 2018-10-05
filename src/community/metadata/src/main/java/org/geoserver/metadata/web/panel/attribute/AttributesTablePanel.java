@@ -8,8 +8,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.AttributeInput;
+import org.geoserver.metadata.data.ComplexMetadataMap;
+import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -24,10 +25,9 @@ public class AttributesTablePanel extends Panel {
     private static final Logger LOGGER = Logging.getLogger(AttributesTablePanel.class);
 
 
-    private final IModel<MetadataMap> metadataModel;
 
-
-    public AttributesTablePanel(String id, GeoServerDataProvider<AttributeInput> dataProvider, IModel<MetadataMap> metadataModel) {
+    public AttributesTablePanel(String id, GeoServerDataProvider<AttributeInput> dataProvider, 
+            IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
 
 
@@ -42,16 +42,11 @@ public class AttributesTablePanel extends Panel {
         tablePanel.setSortable(false);
         add(tablePanel);
 
-        this.metadataModel = metadataModel;
-
 
     }
 
     private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider<AttributeInput> dataProvider) {
         return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
-            /**
-             * 
-             */
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override
@@ -59,11 +54,22 @@ public class AttributesTablePanel extends Panel {
                 if (property.equals(AttributeDataProvider.VALUE)) {
                     MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject().getAttributeConfiguration();
                     if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
-                        return EditorFactory.create(attributeConfiguration,id, metadataModel);
+                        return EditorFactory.create(attributeConfiguration,id, getMetadataModel());
+                    } else if (attributeConfiguration.getFieldType() == FieldTypeEnum.COMPLEX){
+                        RepeatableComplexAttributeDataProvider repeatableDataProvider = 
+                                new RepeatableComplexAttributeDataProvider(attributeConfiguration, 
+                                getMetadataModel());
+                        return new RepeatableComplexAttributesTablePanel(id, attributeConfiguration.getLabel(), 
+                                repeatableDataProvider,
+                                getMetadataModel());
                     } else {
                         /*return new ListAttributesPanel(attributeConfiguration,id,metadataModel);*/
-                        RepeatableAttributeDataProvider repeatableDataProvider = new RepeatableAttributeDataProvider(attributeConfiguration, metadataModel);
-                        return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), repeatableDataProvider, metadataModel);
+                        RepeatableAttributeDataProvider<String> repeatableDataProvider = 
+                                new RepeatableAttributeDataProvider<String>(String.class, attributeConfiguration, 
+                                getMetadataModel());
+                        return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), 
+                                repeatableDataProvider,
+                                getMetadataModel());
                     }
                 }
                 return null;
@@ -72,4 +78,9 @@ public class AttributesTablePanel extends Panel {
         };
     }
 
+
+    @SuppressWarnings("unchecked")
+    public IModel<ComplexMetadataMap> getMetadataModel() {
+        return (IModel<ComplexMetadataMap>) getDefaultModel();
+    }
 }

@@ -4,10 +4,11 @@
  */
 package org.geoserver.metadata.web.layer.resource;
 
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.MetadataMap;
+import org.apache.wicket.model.Model;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.metadata.data.ComplexMetadataMap;
+import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 
@@ -21,7 +22,8 @@ public class MetadataTabPanel extends ResourceConfigurationPanel  {
     public MetadataTabPanel(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
-        IModel<MetadataMap> metadataModel = new CompoundPropertyModel<MetadataMap>(model.getObject().getMetadata());
+        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(
+                new ComplexMetadataMapImpl(model.getObject().getMetadata()));
         this.add(new MetadataPanel("metadataPanel", metadataModel));
     }
 

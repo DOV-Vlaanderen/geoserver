@@ -8,7 +8,6 @@ package org.geoserver.metadata.data.mapper;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.model.AttributeInput;
 
 import java.io.Serializable;

@@ -5,68 +5,88 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.model.AttributeInput;
+import org.geoserver.metadata.data.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RepeatableAttributeDataProvider extends GeoServerDataProvider<AttributeInput> {
+public class RepeatableAttributeDataProvider<T extends Serializable> 
+    extends GeoServerDataProvider<ComplexMetadataAttribute<T>> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -255037580716257623L;
 
-    public static Property<AttributeInput> NAME = new BeanProperty<AttributeInput>("Name", "attributeConfiguration.label");
+    /*
+    public static Property<ComplexMetadataAttribute<?>> NAME = 
+            new BeanProperty<ComplexMetadataAttribute<?>>("Name", "attributeConfiguration.label");*/
+    
+    public static String KEY_VALUE = "value";
 
-    public static Property<AttributeInput> VALUE = new BeanProperty<AttributeInput>("Value", "inputValue");
+    private final Property<ComplexMetadataAttribute<T>> VALUE = 
+            new BeanProperty<ComplexMetadataAttribute<T>>(KEY_VALUE, "value");
 
     private final MetadataAttributeConfiguration template;
+    
+    private IModel<ComplexMetadataMap> metadataModel;
 
-    private List<AttributeInput> items = new ArrayList<>();
+    private List<ComplexMetadataAttribute<T>> items = new ArrayList<>();
+    
+    private Class<T> clazz;
 
-    @SuppressWarnings("unchecked")
-    public RepeatableAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration, IModel<MetadataMap> metadataModel) {
+    public RepeatableAttributeDataProvider(Class<T> clazz, MetadataAttributeConfiguration attributeConfiguration, 
+            IModel<ComplexMetadataMap> metadataModel) {
+        this.clazz = clazz;
+        this.metadataModel = metadataModel;
+
         this.template = new MetadataAttributeConfiguration(attributeConfiguration);
-        template.setOccurrence(OccurenceEnum.SINGLE);
-        MetadataMap metadataMap = metadataModel.getObject();
+        template.setOccurrence(OccurenceEnum.SINGLE); //note: I don't get this
 
-        if (metadataMap.get(attributeConfiguration.getLabel()) == null) {
+        /*if (metadataMap.get(attributeConfiguration.getLabel()) == null) {
             ArrayList<Object> elements = new ArrayList<>();
-            AttributeInput attributeInput = new AttributeInput(template);
-            elements.add(attributeInput);
+            ComplexMetadataAttribute<T> att = new ComplexMetadataAttribute<T>(template);
+            elements.add(ComplexMetadataAttribute<T>);
             metadataMap.put(attributeConfiguration.getLabel(), elements);
         }
-        items = (List<AttributeInput>) metadataMap.get(attributeConfiguration.getLabel());
-        for (AttributeInput item : items) {
+        items = (List<ComplexMetadataAttribute<T>>) metadataMap.get(attributeConfiguration.getLabel());
+        for (ComplexMetadataAttribute<T> item : items) {
             if(item.getAttributeConfiguration() == null){
                 item.setAttributeConfiguration(new MetadataAttributeConfiguration(template));
             }
+        }*/
+        
+        items = new ArrayList<ComplexMetadataAttribute<T>>();
+        for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getLabel()); i++) {
+            items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getLabel(), i));
         }
+        
     }
 
 
     @Override
-    protected List<Property<AttributeInput>> getProperties() {
+    protected List<Property<ComplexMetadataAttribute<T>>> getProperties() {
         return Arrays.asList(VALUE);
     }
 
     @Override
-    protected List<AttributeInput> getItems() {
+    protected List<ComplexMetadataAttribute<T>> getItems() {
         return items;
     }
 
     public void addField() {
-        AttributeInput attributeInput = new AttributeInput(template);
-        items.add(attributeInput);
+        items.add(metadataModel.getObject().get(clazz, template.getLabel(), 
+                items.size()));
     }
 
-    public void removeFields(List<AttributeInput> attributes) {
+    public void removeFields(List<ComplexMetadataAttribute<T>> attributes) {
         items.removeAll(attributes);
+    }
+    
+    public MetadataAttributeConfiguration getConfiguration() {
+        return template;
     }
 }

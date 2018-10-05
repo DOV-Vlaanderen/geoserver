@@ -24,9 +24,6 @@ public class DropDownPanel extends Panel {
 
     private DropDownChoice<String> createDropDown(List<String> values) {
         return new DropDownChoice<String>("dropdown", new IModel<String>() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -8063978137850431963L;
             public String option;
 

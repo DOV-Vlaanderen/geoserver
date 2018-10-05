@@ -6,8 +6,11 @@
 package org.geoserver.metadata.web;
 
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.ComplexMetadataMap;
+import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerBasePage;
@@ -26,13 +29,10 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     public void onInitialize() {
         super.onInitialize();
-        CompoundPropertyModel<MetadataMap> metadataModel = new CompoundPropertyModel<MetadataMap>(getMetadataMap());
+        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(getMetadataMap());
 
         MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel);
         Form<?> form = new Form<Object>("form") {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -5120413426598396101L;
 
             @Override
@@ -50,8 +50,8 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         return ComponentAuthorizer.AUTHENTICATED;
     }
 
-    private MetadataMap getMetadataMap() {
-        MetadataMap map = new MetadataMap();
+    private ComplexMetadataMap getMetadataMap() {
+        ComplexMetadataMap map = new ComplexMetadataMapImpl(new MetadataMap());
        /* //Simple String veld:
         map.put("status", "compleet");
         map.put("scale", "1/150000");

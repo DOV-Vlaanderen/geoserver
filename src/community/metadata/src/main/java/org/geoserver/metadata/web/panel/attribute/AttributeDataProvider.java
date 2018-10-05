@@ -17,9 +17,6 @@ import java.util.List;
 
 public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -4454769618643460913L;
 
     public static Property<AttributeInput> NAME = new BeanProperty<AttributeInput>("Name", "attributeConfiguration.label");

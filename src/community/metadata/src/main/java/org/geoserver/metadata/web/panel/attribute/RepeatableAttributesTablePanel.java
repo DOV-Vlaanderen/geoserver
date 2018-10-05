@@ -10,12 +10,10 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
-import org.apache.wicket.model.AbstractPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.model.AttributeInput;
+import org.geoserver.metadata.data.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
-import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
@@ -28,13 +26,13 @@ public class RepeatableAttributesTablePanel extends Panel {
     private static final Logger LOGGER = Logging.getLogger(RepeatableAttributesTablePanel.class);
 
 
-    private final IModel<MetadataMap> metadataModel;
-
-
-    public RepeatableAttributesTablePanel(String id, String fieldprefix, GeoServerDataProvider<AttributeInput> dataProvider, IModel<MetadataMap> metadataModel) {
+    public RepeatableAttributesTablePanel(String id, String fieldprefix, 
+            RepeatableAttributeDataProvider<String> dataProvider, 
+            IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
 
-        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(fieldprefix, dataProvider);
+        GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel = 
+                createAttributesTablePanel(fieldprefix, dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -45,16 +43,13 @@ public class RepeatableAttributesTablePanel extends Panel {
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
 
-        this.metadataModel = metadataModel;
-
-
         add(new AjaxSubmitLink("removeSelected") {
 
             private static final long serialVersionUID = -8829474855848647384L;
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((RepeatableAttributeDataProvider) dataProvider).removeFields(tablePanel.getSelection());
+                ((RepeatableAttributeDataProvider<String>) dataProvider).removeFields(tablePanel.getSelection());
                 tablePanel.clearSelection();
                 target.add(tablePanel);
             }
@@ -66,63 +61,66 @@ public class RepeatableAttributesTablePanel extends Panel {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((RepeatableAttributeDataProvider) dataProvider).addField();
+                ((RepeatableAttributeDataProvider<String>) dataProvider).addField();
 
                 target.add(tablePanel);
             }
         });
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(String fieldprefix, GeoServerDataProvider<AttributeInput> dataProvider) {
-        return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
-            /**
-             * 
-             */
+    private GeoServerTablePanel<ComplexMetadataAttribute<String>> createAttributesTablePanel(
+            String fieldprefix, RepeatableAttributeDataProvider<String> dataProvider) {
+        return new GeoServerTablePanel<ComplexMetadataAttribute<String>>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 4333335931795175790L;
 
             @Override
-            protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel, GeoServerDataProvider.Property<AttributeInput> property) {
-                if (property.equals(RepeatableAttributeDataProvider.VALUE)) {
-                    MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject().getAttributeConfiguration();
-                    if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
+            protected Component getComponentForProperty(String id, 
+                    IModel<ComplexMetadataAttribute<String>> itemModel, 
+                    GeoServerDataProvider.Property<ComplexMetadataAttribute<String>> property) {
+                if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
+                    MetadataAttributeConfiguration attributeConfiguration = 
+                            dataProvider.getConfiguration();
+                    //if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
                         switch (attributeConfiguration.getFieldType()) {
                             case TEXT:
                                 return new TextFieldPanel(id,
-                                        createModel(itemModel.getObject()));
+                                        new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
                             case NUMBER:
                                 return new TextFieldPanel(id,
-                                        createModel(itemModel.getObject()));
+                                        new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
                             case DROPDOWN:
                                 final DropDownPanel ddp =
                                         new DropDownPanel(id,
-                                                createModel(itemModel.getObject()),
+                                                new ComplexMetadataAttributeModel<String>(itemModel.getObject()),
                                                 attributeConfiguration.getValues());
 
                                 return ddp;
-                            case COMPLEX:
+                            /*case COMPLEX:
                                 return new AttributesTablePanel(id,
                                         new AttributeDataProvider(attributeConfiguration.getTypename(),
-                                                attributeConfiguration.getLabel()), createModel(itemModel.getObject(), metadataModel));
+                                                attributeConfiguration.getLabel()), 
+                                                new Model<ComplexMetadataMap>(
+                                                        metadataModel.getObject().subMap(attributeConfiguration.getLabel())));*/
                         }
-                    } else {
-                        RepeatableAttributeDataProvider repeatableDataProvider = new RepeatableAttributeDataProvider(attributeConfiguration, metadataModel);
+                        
+                        //note: I don't get this
+                   /* } else {
+                        RepeatableAttributeDataProvider<String> repeatableDataProvider = 
+                                new RepeatableAttributeDataProvider<String>(String.class, attributeConfiguration, metadataModel);
                         return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), repeatableDataProvider, metadataModel);
-                    }
+                    }*/
                 }
                 return null;
             }
         };
     }
 
-    private IModel<MetadataMap> createModel(AttributeInput attributeInput, IModel<MetadataMap> metadataModel) {
+    /*private IModel<MetadataMap> createModel(AttributeInput attributeInput, IModel<MetadataMap> metadataModel) {
         if (attributeInput.getInputValue() == null) {
             MetadataMap map = new MetadataMap();
             attributeInput.setInputValue(map);
         }
         return new AbstractPropertyModel<MetadataMap>(attributeInput.getInputValue()) {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -7316718174035675097L;
 
             @Override
@@ -135,9 +133,6 @@ public class RepeatableAttributesTablePanel extends Panel {
 
     private IModel<String> createModel(AttributeInput attributeInput) {
         return new IModel<String>() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = 2768539968982801563L;
 
             @Override
@@ -155,6 +150,6 @@ public class RepeatableAttributesTablePanel extends Panel {
 
             }
         };
-    }
+    }*/
 
 }
