@@ -12,8 +12,24 @@
 
 	<wicket:extend>
         <form wicket:id="form">
-            <div wicket:id="metadataTemplatePanel"></div>
-            <input type="submit" value="submit"/>
+            <fieldset>
+                <ul>
+                    <li>
+                        <label for="name"><wicket:message key="name"/></label>
+                        <input id="name" wicket:id="name" type="text" class="text" />
+
+                        <label for="description"><wicket:message key="descriptionField"/></label>
+                        <input id="description" wicket:id="description" type="text" class="text" />
+                    </li>
+                    <li>
+                        <div wicket:id="metadataTemplatePanel"></div>
+                        <div class="button-group selfclear">
+                            <a href="#" wicket:id="save"><wicket:message key="save"/></a>
+                            <a href="#" wicket:id="cancel"><wicket:message key="cancel"/></a>
+                        </div>
+                    </li>
+                </ul>
+            </fieldset>
         </form>
     </wicket:extend>
 <p>TEST</p>

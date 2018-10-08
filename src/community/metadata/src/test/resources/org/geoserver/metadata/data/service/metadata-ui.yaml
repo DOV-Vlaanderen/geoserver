@@ -17,6 +17,10 @@ attributes:
     fieldType: COMPLEX
     typename: inputadres
     occurrence: REPEAT
+  - label: Objecten catalogus
+    fieldType: COMPLEX
+    typename: objectCatalog
+    occurrence: REPEAT
 
 complextypes:
   - typename: inputadres
@@ -39,6 +43,36 @@ complextypes:
               - man
               - vrouw
               - onbekend
+  - typename: objectCatalog
+    attributes:
+        - label: naam
+          fieldType: TEXT
+        - label: Type
+          fieldType: DROPDOWN
+          values:
+              - String
+              - Date
+              - Geometry
+              - Integer
+              - byte[]
+        - label: Definitie
+          fieldType: TEXT
+        - label: Minimale cardinaliteit
+          fieldType: NUMBER
+        - label: Maximale cardinaliteit
+          fieldType: NUMBER
+        - label: Domain
+          fieldType: COMPLEX
+          typename: domain
+          occurrence: REPEAT
+  - typename: domain
+    attributes:
+        - label: code
+          fieldType: TEXT
+        - label: waarde
+          fieldType: TEXT
+        - label: Definitie
+          fieldType: TEXT
 
 geonetworks:
   - name: geonetwork full url
