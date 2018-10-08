@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataAttribute;
 
@@ -25,7 +25,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap  {
     /**
      * the underlying flat map
      */
-    private MetadataMap delegate;
+    private Map<String, Serializable> delegate;
     
     /**
      * for submaps
@@ -44,7 +44,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap  {
     private HashMap<String, ArrayList<ComplexMetadataIndexReference>> indexes = 
             new HashMap<String, ArrayList<ComplexMetadataIndexReference>>();
 
-    public ComplexMetadataMapImpl(MetadataMap delegate) {
+    public ComplexMetadataMapImpl(Map<String, Serializable> delegate) {
         this.delegate = delegate;
         this.basePath = new String[] {};
         this.baseIndexRef = new ComplexMetadataIndexReference(new int[] {});

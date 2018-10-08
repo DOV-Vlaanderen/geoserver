@@ -7,9 +7,9 @@ package org.geoserver.metadata.data.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bouncycastle.util.Arrays;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataAttribute;
 import org.geotools.util.Converters;
 
@@ -18,7 +18,7 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
 
     private static final long serialVersionUID = 7309095204153589550L;
 
-    private MetadataMap map;
+    private Map<String, Serializable> map;
     
     private String strPath;
     
@@ -26,7 +26,7 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
     
     private Class<T> clazz;
     
-    public ComplexMetadataAttributeImpl(MetadataMap map, 
+    public ComplexMetadataAttributeImpl(Map<String, Serializable> map, 
             String strPath, ComplexMetadataIndexReference indexRef, Class<T> clazz) {
         this.map = map;
         this.strPath = strPath;

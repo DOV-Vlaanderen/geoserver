@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.web.layer.resource;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.ResourceInfo;
@@ -18,12 +21,20 @@ import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 public class MetadataTabPanel extends ResourceConfigurationPanel  {
 
     private static final long serialVersionUID = -552158739086379566L;
+    
+    public final static String CUSTOM_METADATA_KEY = "custom";
 
     public MetadataTabPanel(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
+        Serializable custom = model.getObject().getMetadata().get(CUSTOM_METADATA_KEY);
+        if (!(custom instanceof HashMap<?, ?>)) {
+            custom = new HashMap<String, Serializable>();
+            model.getObject().getMetadata().put(CUSTOM_METADATA_KEY, custom);
+        }
+        @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(
-                new ComplexMetadataMapImpl(model.getObject().getMetadata()));
+                new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
         this.add(new MetadataPanel("metadataPanel", metadataModel));
     }
 
