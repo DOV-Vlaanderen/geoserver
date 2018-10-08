@@ -13,8 +13,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataMap;
@@ -44,7 +42,7 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     public MetadataTemplatePage() {
         this(new Model<MetadataTemplate>(new MetadataTemplate()));
-        metadataTemplateModel.getObject().setMetadata(new MetadataMap());
+        metadataTemplateModel.getObject().setMetadata(new ComplexMetadataMapImpl(new MetadataMap()));
     }
 
     public MetadataTemplatePage(Model<MetadataTemplate> metadataTemplateModel) {
@@ -54,9 +52,8 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     public void onInitialize() {
         super.onInitialize();
-        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(getMetadataMap());
+        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(metadataTemplateModel.getObject().getMetadata());
 
-        MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel);
         Form<?> form = new Form<Object>("form") {
             private static final long serialVersionUID = -5120413426598396101L;
 

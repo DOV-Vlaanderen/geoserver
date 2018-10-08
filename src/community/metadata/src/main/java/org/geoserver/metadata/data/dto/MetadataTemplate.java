@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.dto;
 
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.ComplexMetadataMap;
 
 import java.io.Serializable;
 
@@ -18,7 +19,7 @@ public class MetadataTemplate implements Serializable {
 
     private String description;
 
-    private MetadataMap metadata;
+    private ComplexMetadataMap metadata;
 
     public String getName() {
         return name;
@@ -36,11 +37,11 @@ public class MetadataTemplate implements Serializable {
         this.description = description;
     }
 
-    public MetadataMap getMetadata() {
+    public ComplexMetadataMap getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(MetadataMap metadata) {
+    public void setMetadata(ComplexMetadataMap metadata) {
         this.metadata = metadata;
     }
 }

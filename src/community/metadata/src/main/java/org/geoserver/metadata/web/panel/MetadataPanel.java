@@ -9,7 +9,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.ComplexMetadataMap;
-import org.geoserver.metadata.data.mapper.ViewObjectMetadataMapper;
 import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
@@ -29,28 +28,10 @@ public class MetadataPanel extends Panel /*implements IFormModelUpdateListener *
 
     private boolean geonetworkPanelVisible = true;
 
-    private ViewObjectMetadataMapper mapper = new ViewObjectMetadataMapper();
 
     public MetadataPanel(String id, IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
-        /*this.metadataModel = new IModel<MetadataMap>() {
-            private static final long serialVersionUID = -4105614402367347930L;
 
-            @Override
-            public MetadataMap getObject() {
-                return mapper.toViewModel(metadataModel);
-            }
-
-            @Override
-            public void setObject(MetadataMap object) {
-
-            }
-
-            @Override
-            public void detach() {
-
-            }
-        };*/
     }
 
 
