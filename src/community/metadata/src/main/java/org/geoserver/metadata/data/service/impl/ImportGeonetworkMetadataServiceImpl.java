@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.service.impl;
 
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
 import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
@@ -49,7 +50,7 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
 
 
     @Override
-    public MetadataMap importMetadata(String url, MetadataMap metadataMap) throws IOException {
+    public void importMetadata(String url, ComplexMetadataMap metadataMap) throws IOException {
         Document doc = readXmlMetadata(url);
         /*if (doc.hasChildNodes()) {
             printNote(doc.getChildNodes());
@@ -58,11 +59,8 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
         AttributeMappingConfiguration mapping = yamlService.readMapping();
 
         for (AttributeMapping attributeMapping : mapping.getGeonetworkmapping()) {
-            addAttribute(metadataMap, attributeMapping, doc, null, mapping.getObjectmapping());
+            //addAttribute(metadataMap, attributeMapping, doc, null, mapping.getObjectmapping());
         }
-
-
-        return metadataMap;
     }
 
     private void addAttribute(MetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {

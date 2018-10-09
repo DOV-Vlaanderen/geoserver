@@ -59,7 +59,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
             @Override
             protected void onSubmit() {
-                System.out.println("Form submitted.");
                 metadataModel.getObject();
             }
         };

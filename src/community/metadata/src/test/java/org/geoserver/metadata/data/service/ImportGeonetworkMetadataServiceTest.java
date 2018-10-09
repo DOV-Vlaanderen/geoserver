@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ public class ImportGeonetworkMetadataServiceTest extends AbstractMetadataTest{
 
     @Test
     public void testImport() throws IOException {
-        MetadataMap metadataMap = importService.importMetadata("https://oefen.dov.vlaanderen.be/geonetwork/srv/api/records/1a2c6739-3c62-432b-b2a0-aaa589a9e3a1/formatters/xml", new MetadataMap());
+        MetadataMap metadataMap = new MetadataMap();
+        importService.importMetadata("https://oefen.dov.vlaanderen.be/geonetwork/srv/api/records/1a2c6739-3c62-432b-b2a0-aaa589a9e3a1/formatters/xml", new ComplexMetadataMapImpl(metadataMap));
         Assert.assertEquals("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1",metadataMap.get("indentifier-single"));
 
     }

@@ -6,6 +6,8 @@ package org.geoserver.metadata.web.panel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -55,15 +57,15 @@ public class ImportGeonetworkPanel extends Panel {
         TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
         form.add(inputUUID);
 
-        form.add(new AjaxFallbackLink<Object>("link") {
+        form.add(new AjaxSubmitLink("link") {
             /**
              * 
              */
             private static final long serialVersionUID = -8718015688839770852L;
 
-            public void onClick(AjaxRequestTarget target) {
-                //String url = generateMetadataUrl(dropDown.getModelValue(), inputUUID.getValue());
-                String url = "https://oefen.dov.vlaanderen.be/geonetwork/srv/api/records/1a2c6739-3c62-432b-b2a0-aaa589a9e3a1/formatters/xml";
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
                 handleImport(url, target);
             }
         });
