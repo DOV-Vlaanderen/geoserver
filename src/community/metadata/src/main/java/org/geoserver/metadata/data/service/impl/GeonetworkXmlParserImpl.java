@@ -12,7 +12,7 @@ import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
-import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
+import org.geoserver.metadata.data.service.GeonetworkXmlParser;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
@@ -39,18 +39,16 @@ import java.util.Iterator;
 import java.util.List;
 
 @Repository
-public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMetadataService {
+public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
-    private static final java.util.logging.Logger LOGGER = Logging.getLogger(ImportGeonetworkMetadataServiceImpl.class);
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(GeonetworkXmlParserImpl.class);
 
     @Autowired
     private YamlService yamlService;
 
 
     @Override
-    public void importMetadata(Resource xmlFile, ComplexMetadataMap metadataMap) throws IOException {
-        Document doc = readXmlMetadata(xmlFile);
-
+    public void parseMetadata(Document doc, ComplexMetadataMap metadataMap) throws IOException {
         AttributeMappingConfiguration mapping = yamlService.readMapping();
 
         for (AttributeMapping attributeMapping : mapping.getGeonetworkmapping()) {

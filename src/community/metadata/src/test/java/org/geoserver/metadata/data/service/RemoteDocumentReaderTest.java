@@ -11,9 +11,17 @@ import org.geoserver.platform.resource.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 
@@ -22,10 +30,10 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class ImportGeonetworkMetadataServiceTest extends AbstractMetadataTest{
+public class RemoteDocumentReaderTest extends AbstractMetadataTest {
 
     @Autowired
-    ImportGeonetworkMetadataService importService;
+    GeonetworkXmlParser xmlParser;
 
     @Autowired
     private GeoServerDataDirectory dataDirectory;
@@ -35,7 +43,9 @@ public class ImportGeonetworkMetadataServiceTest extends AbstractMetadataTest{
         MetadataMap metadataMap = new MetadataMap();
         ComplexMetadataMapImpl complexMetadataMap = new ComplexMetadataMapImpl(metadataMap);
 
-        importService.importMetadata(getFileAsResource("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"), complexMetadataMap);
+        Document fileAsResource = getDocument("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml");
+
+        xmlParser.parseMetadata(fileAsResource, complexMetadataMap);
 
         //simple single
         Assert.assertEquals("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("indentifier-single"));
@@ -68,12 +78,29 @@ public class ImportGeonetworkMetadataServiceTest extends AbstractMetadataTest{
 
     }
 
-    private Resource getFileAsResource(String fileName) throws IOException {
+    private Document getDocument(String fileName) throws IOException {
         for (Resource resource : dataDirectory.get("metadata").list()) {
-            if(resource.name().equals(fileName)){
-                return resource;
+            if (resource.name().equals(fileName)) {
+                try {
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    dbf.setNamespaceAware(true);
+                    InputStream stream = resource.in();
+                    DocumentBuilder db = dbf.newDocumentBuilder();
+                    Document doc = db.parse(stream);
+                    doc.getDocumentElement().normalize();
+                    return doc;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
-        throw new IOException("Resource not found: "+fileName);
+        throw new IOException("Resource not found: " + fileName);
     }
 }

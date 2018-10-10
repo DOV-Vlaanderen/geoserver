@@ -18,6 +18,7 @@ import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
 import java.util.ArrayList;
@@ -55,30 +56,41 @@ public class ImportGeonetworkPanel extends Panel {
         }
 
         DropDownChoice<String> dropDown = createDropDown(optionsGeonetwork);
-        dropDown.setRequired(true);
-        dropDown.setOutputMarkupId(true);
+        /*dropDown.setRequired(true);
+        dropDown.setOutputMarkupId(true);*/
         form.add(dropDown);
 
         TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
-        inputUUID.setRequired(true);
-        inputUUID.setOutputMarkupId(true);
+        /*inputUUID.setRequired(true);
+        inputUUID.setOutputMarkupId(true);*/
         form.add(inputUUID);
 
         form.add(new AjaxSubmitLink("link") {
             /**
-             * 
+             *
              */
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
-                handleImport(url, target);
-            }
-            @Override
-            public void onError(AjaxRequestTarget target, Form<?> form) {
+                boolean valid = true;
+                if (dropDown.getModelObject() == null) {
+                    error(new ParamResourceModel("errorSelectGeonetwork",
+                            ImportGeonetworkPanel.this).getString());
+                    valid = false;
+                }
+                if ("".equals(inputUUID.getValue())) {
+                    error(new ParamResourceModel("errorUuidRequired",
+                            ImportGeonetworkPanel.this).getString());
+                    valid = false;
+                }
+                if (valid) {
+                    String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
+                    handleImport(url, target);
+                }
                 target.add(getFeedbackPanel());
             }
+
         });
         add(form);
     }
@@ -116,7 +128,7 @@ public class ImportGeonetworkPanel extends Panel {
     private IModel<String> createStringModel() {
         return new IModel<String>() {
             /**
-             * 
+             *
              */
             private static final long serialVersionUID = 7255270070196033720L;
             public String option;

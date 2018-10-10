@@ -7,17 +7,17 @@ package org.geoserver.metadata.data.service;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.platform.resource.Resource;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Import the metadata from a geonetwork server.
  *
  * @author Timothy De Bock
  */
-public interface ImportGeonetworkMetadataService {
+public interface RemoteDocumentReader {
 
-    void importMetadata(Resource xmlFile, ComplexMetadataMap metadataMap) throws IOException;
-
-
+    Document readDocument(URL url) throws IOException;
 }

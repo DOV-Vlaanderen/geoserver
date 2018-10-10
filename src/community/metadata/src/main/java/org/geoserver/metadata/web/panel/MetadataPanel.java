@@ -9,16 +9,19 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.ComplexMetadataMap;
-import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
+import org.geoserver.metadata.data.service.GeonetworkXmlParser;
+import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 import org.geoserver.platform.resource.URIs;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Logger;
 
 public class MetadataPanel extends Panel {
@@ -47,14 +50,13 @@ public class MetadataPanel extends Panel {
 
             @Override
             public void handleImport(String url, AjaxRequestTarget target) {
-                ImportGeonetworkMetadataService metadataService = GeoServerApplication.get().getApplicationContext().getBean(ImportGeonetworkMetadataService.class);
+                RemoteDocumentReader geonetworkReader = GeoServerApplication.get().getApplicationContext().getBean(RemoteDocumentReader.class);
+                GeonetworkXmlParser xmlParser = GeoServerApplication.get().getApplicationContext().getBean(GeonetworkXmlParser.class);
                 //import metadata
                 try {
-                    metadataService.importMetadata(URIs.asResource(new URI(url)), getMetadataModel().getObject());
+                    Document doc = geonetworkReader.readDocument(new URL(url));
+                    xmlParser.parseMetadata(doc, getMetadataModel().getObject());
                 } catch (IOException e) {
-                    LOGGER.severe(e.getMessage());
-                    getPage().error(e.getMessage());
-                } catch (URISyntaxException e) {
                     LOGGER.severe(e.getMessage());
                     getPage().error(e.getMessage());
                 }
