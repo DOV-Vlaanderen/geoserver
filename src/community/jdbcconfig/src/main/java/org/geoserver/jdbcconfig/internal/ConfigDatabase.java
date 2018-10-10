@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Striped;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -47,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
@@ -124,6 +127,8 @@ public class ConfigDatabase {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
 
+    private static final int LOCK_SIZE = 50;
+
     private Dialect dialect;
 
     private DataSource dataSource;
@@ -144,11 +149,12 @@ public class ConfigDatabase {
 
     private Cache<ServiceIdentity, ServiceInfo> serviceCache;
 
+    private Striped<ReadWriteLock> locks;
+
     private InfoRowMapper<CatalogInfo> catalogRowMapper;
 
     private InfoRowMapper<Info> configRowMapper;
 
-    private CatalogClearingListener catalogListener;
     private ConfigClearingListener configListener;
 
     /** Protected default constructor needed by spring-jdbc instrumentation */
@@ -180,6 +186,7 @@ public class ConfigDatabase {
         cache = cacheProvider.getCache("catalog");
         identityCache = cacheProvider.getCache("catalogNames");
         serviceCache = cacheProvider.getCache("services");
+        locks = Striped.readWriteLock(LOCK_SIZE);
     }
 
     private Dialect dialect() {
@@ -315,7 +322,6 @@ public class ConfigDatabase {
         final Filter simplifiedFilter =
                 (Filter) sqlBuilder.getSupportedFilter().accept(filterSimplifier, null);
         if (simplifiedFilter instanceof PropertyIsEqualTo) {
-            String id = null;
             PropertyIsEqualTo isEqualTo = (PropertyIsEqualTo) simplifiedFilter;
             if (isEqualTo.getExpression1() instanceof PropertyName
                     && isEqualTo.getExpression2() instanceof Literal
@@ -511,45 +517,51 @@ public class ConfigDatabase {
 
         final String id = info.getId();
 
-        byte[] value = binding.objectToEntry(info);
+        final Lock lock = locks.get(id).writeLock();
+        lock.lock();
+        try {
+            byte[] value = binding.objectToEntry(info);
 
-        final String blob = new String(value);
-        final Class<T> interf = ClassMappings.fromImpl(info.getClass()).getInterface();
-        final Integer typeId = dbMappings.getTypeId(interf);
+            final String blob = new String(value);
+            final Class<T> interf = ClassMappings.fromImpl(info.getClass()).getInterface();
+            final Integer typeId = dbMappings.getTypeId(interf);
 
-        Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
-        final String statement =
-                String.format(
-                        "insert into object (oid, type_id, id, blob) values (%s, :type_id, :id, :blob)",
-                        dialect.nextVal("seq_OBJECT"));
-        logStatement(statement, params);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int updateCount =
-                template.update(
-                        statement,
-                        new MapSqlParameterSource(params),
-                        keyHolder,
-                        new String[] {"oid"});
-        checkState(updateCount == 1, "Insert statement failed");
-        // looks like some db's return the pk different than others, so lets try both ways
-        Number key = (Number) keyHolder.getKeys().get("oid");
-        if (key == null) {
-            key = keyHolder.getKey();
-        }
-        addAttributes(info, key);
-
-        cache.put(id, info);
-
-        for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
-            if (identityCache.getIfPresent(identity) == null) {
-                identityCache.put(identity, id);
-            } else {
-                // not a unique identity
-                identityCache.invalidate(identity);
+            Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
+            final String statement =
+                    String.format(
+                            "insert into object (oid, type_id, id, blob) values (%s, :type_id, :id, :blob)",
+                            dialect.nextVal("seq_OBJECT"));
+            logStatement(statement, params);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            int updateCount =
+                    template.update(
+                            statement,
+                            new MapSqlParameterSource(params),
+                            keyHolder,
+                            new String[] {"oid"});
+            checkState(updateCount == 1, "Insert statement failed");
+            // looks like some db's return the pk different than others, so lets try both ways
+            Number key = (Number) keyHolder.getKeys().get("oid");
+            if (key == null) {
+                key = keyHolder.getKey();
             }
-        }
+            addAttributes(info, key);
 
-        return getById(id, interf);
+            cache.put(id, info);
+
+            for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
+                if (identityCache.getIfPresent(identity) == null) {
+                    identityCache.put(identity, id);
+                } else {
+                    // not a unique identity
+                    identityCache.invalidate(identity);
+                }
+            }
+
+            return getById(id, interf);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public <T extends Info> void addNames(String id, String... names) {}
@@ -757,30 +769,38 @@ public class ConfigDatabase {
         rollbackFor = Exception.class
     )
     public void remove(Info info) {
-        Integer oid;
+
+        final Lock lock = locks.get(info.getId()).writeLock();
+        lock.lock();
         try {
-            oid = findObjectId(info);
-        } catch (EmptyResultDataAccessException notFound) {
-            return;
+            identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
+            cache.invalidate(info.getId());
+
+            Integer oid;
+            try {
+                oid = findObjectId(info);
+            } catch (EmptyResultDataAccessException notFound) {
+                return;
+            }
+
+            String deleteObject = "delete from object where id = :id";
+            String deleteRelatedProperties = "delete from object_property where related_oid = :oid";
+
+            int updateCount = template.update(deleteObject, ImmutableMap.of("id", info.getId()));
+            if (updateCount != 1) {
+                LOGGER.warning(
+                        "Requested to delete "
+                                + info
+                                + " ("
+                                + info.getId()
+                                + ") but nothing happened on the database.");
+            }
+            final int relatedPropCount =
+                    template.update(deleteRelatedProperties, params("oid", oid));
+            LOGGER.fine("Removed " + relatedPropCount + " related properties of " + info.getId());
+        } finally {
+            lock.unlock();
         }
-
-        identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
-        cache.invalidate(info.getId());
-
-        String deleteObject = "delete from object where id = :id";
-        String deleteRelatedProperties = "delete from object_property where related_oid = :oid";
-
-        int updateCount = template.update(deleteObject, ImmutableMap.of("id", info.getId()));
-        if (updateCount != 1) {
-            LOGGER.warning(
-                    "Requested to delete "
-                            + info
-                            + " ("
-                            + info.getId()
-                            + ") but nothing happened on the database.");
-        }
-        final int relatedPropCount = template.update(deleteRelatedProperties, params("oid", oid));
-        LOGGER.fine("Removed " + relatedPropCount + " related properties of " + info.getId());
     }
 
     /** @param info */
@@ -793,99 +813,109 @@ public class ConfigDatabase {
         checkNotNull(info);
 
         final String id = info.getId();
-
         checkNotNull(id, "Can't modify an object with no id");
 
-        final ModificationProxy modificationProxy = ModificationProxy.handler(info);
-        Preconditions.checkNotNull(modificationProxy, "Not a modification proxy: ", info);
-
-        final Info oldObject = (Info) modificationProxy.getProxyObject();
-
-        identityCache.invalidateAll(InfoIdentities.get().getIdentities(oldObject));
-        cache.invalidate(id);
-
-        // get changed properties before h.commit()s
-        final Iterable<Property> changedProperties = dbMappings.changedProperties(oldObject, info);
-
-        // see HACK block bellow
-        final boolean updateResouceLayersName =
-                info instanceof ResourceInfo
-                        && modificationProxy.getPropertyNames().contains("name");
-        final boolean updateResouceLayersAdvertised =
-                info instanceof ResourceInfo
-                        && modificationProxy.getPropertyNames().contains("advertised");
-        final boolean updateResourceLayersEnabled =
-                info instanceof ResourceInfo
-                        && modificationProxy.getPropertyNames().contains("enabled");
-        final boolean updateResourceLayersKeywords =
-                CollectionUtils.exists(
-                        modificationProxy.getPropertyNames(),
-                        new Predicate() {
-                            @Override
-                            public boolean evaluate(Object input) {
-                                return ((String) input).contains("keyword");
-                            }
-                        });
-
-        modificationProxy.commit();
-
-        Map<String, ?> params;
-
-        // get the object's internal id
-        final Integer objectId = findObjectId(info);
-        final String blob;
+        final Lock lock = locks.get(id).writeLock();
+        lock.lock();
         try {
-            byte[] value = binding.objectToEntry(info);
-            blob = new String(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw Throwables.propagate(e);
+
+            final ModificationProxy modificationProxy = ModificationProxy.handler(info);
+            Preconditions.checkNotNull(modificationProxy, "Not a modification proxy: ", info);
+
+            final Info oldObject = (Info) modificationProxy.getProxyObject();
+
+            identityCache.invalidateAll(InfoIdentities.get().getIdentities(oldObject));
+            cache.invalidate(id);
+
+            // get changed properties before h.commit()s
+            final Iterable<Property> changedProperties =
+                    dbMappings.changedProperties(oldObject, info);
+
+            // see HACK block bellow
+            final boolean updateResouceLayersName =
+                    info instanceof ResourceInfo
+                            && modificationProxy.getPropertyNames().contains("name");
+            final boolean updateResouceLayersAdvertised =
+                    info instanceof ResourceInfo
+                            && modificationProxy.getPropertyNames().contains("advertised");
+            final boolean updateResourceLayersEnabled =
+                    info instanceof ResourceInfo
+                            && modificationProxy.getPropertyNames().contains("enabled");
+            final boolean updateResourceLayersKeywords =
+                    CollectionUtils.exists(
+                            modificationProxy.getPropertyNames(),
+                            new Predicate() {
+                                @Override
+                                public boolean evaluate(Object input) {
+                                    return ((String) input).contains("keyword");
+                                }
+                            });
+
+            modificationProxy.commit();
+
+            Map<String, ?> params;
+
+            // get the object's internal id
+            final Integer objectId = findObjectId(info);
+            final String blob;
+            try {
+                byte[] value = binding.objectToEntry(info);
+                blob = new String(value, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw Throwables.propagate(e);
+            }
+            String updateStatement = "update object set blob = :blob where oid = :oid";
+            params = params("blob", blob, "oid", objectId);
+            logStatement(updateStatement, params);
+            template.update(updateStatement, params);
+
+            updateQueryableProperties(oldObject, objectId, changedProperties);
+
+            cache.invalidate(id);
+            Class<T> clazz = ClassMappings.fromImpl(oldObject.getClass()).getInterface();
+
+            // / <HACK>
+            // we're explicitly changing the resourceinfo's layer name property here because
+            // LayerInfo.getName() is a derived property. This can be removed once LayerInfo.name
+            // become
+            // a regular JavaBean property
+            if (info instanceof ResourceInfo) {
+                if (updateResouceLayersName) {
+                    updateResourceLayerProperty(
+                            (ResourceInfo) info, "name", ((ResourceInfo) info).getName());
+                }
+                if (updateResouceLayersAdvertised) {
+                    updateResourceLayerProperty(
+                            (ResourceInfo) info,
+                            "advertised",
+                            ((ResourceInfo) info).isAdvertised());
+                }
+                if (updateResourceLayersEnabled) {
+                    updateResourceLayerProperty(
+                            (ResourceInfo) info, "enabled", ((ResourceInfo) info).isEnabled());
+                }
+                if (updateResourceLayersKeywords) {
+                    updateResourceLayerProperty(
+                            (ResourceInfo) info,
+                            "resource.keywords.value",
+                            ((ResourceInfo) info).getKeywords());
+                }
+            }
+            // / </HACK>
+
+            for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
+                if (identityCache.getIfPresent(identity) == null) {
+                    identityCache.put(identity, id);
+                } else {
+                    // not a unique identity
+                    identityCache.invalidate(identity);
+                }
+            }
+
+            return getById(id, clazz);
+        } finally {
+            lock.unlock();
         }
-        String updateStatement = "update object set blob = :blob where oid = :oid";
-        params = params("blob", blob, "oid", objectId);
-        logStatement(updateStatement, params);
-        template.update(updateStatement, params);
-
-        updateQueryableProperties(oldObject, objectId, changedProperties);
-
-        cache.invalidate(id);
-        Class<T> clazz = ClassMappings.fromImpl(oldObject.getClass()).getInterface();
-
-        // / <HACK>
-        // we're explicitly changing the resourceinfo's layer name property here because
-        // LayerInfo.getName() is a derived property. This can be removed once LayerInfo.name become
-        // a regular JavaBean property
-        if (info instanceof ResourceInfo) {
-            if (updateResouceLayersName) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "name", ((ResourceInfo) info).getName());
-            }
-            if (updateResouceLayersAdvertised) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "advertised", ((ResourceInfo) info).isAdvertised());
-            }
-            if (updateResourceLayersEnabled) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "enabled", ((ResourceInfo) info).isEnabled());
-            }
-            if (updateResourceLayersKeywords) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info,
-                        "resource.keywords.value",
-                        ((ResourceInfo) info).getKeywords());
-            }
-        }
-        // / </HACK>
-
-        for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
-            if (identityCache.getIfPresent(identity) == null) {
-                identityCache.put(identity, id);
-            } else {
-                // not a unique identity
-                identityCache.invalidate(identity);
-            }
-        }
-
-        return getById(id, clazz);
     }
 
     private <T> void updateResourceLayerProperty(
@@ -1029,41 +1059,49 @@ public class ConfigDatabase {
     public <T extends Info> T getById(final String id, final Class<T> type) {
         Assert.notNull(id, "id");
 
-        Info info = null;
+        final Lock lock = locks.get(id).readLock();
+        lock.lock();
         try {
-            final Callable<? extends Info> valueLoader;
-            if (CatalogInfo.class.isAssignableFrom(type)) {
-                valueLoader = new CatalogLoader(id);
-            } else {
-                valueLoader = new ConfigLoader(id);
+            Info info = null;
+            try {
+                final Callable<? extends Info> valueLoader;
+                if (CatalogInfo.class.isAssignableFrom(type)) {
+                    valueLoader = new CatalogLoader(id);
+                } else {
+                    valueLoader = new ConfigLoader(id);
+                }
+
+                info = cache.get(id, valueLoader);
+
+            } catch (CacheLoader.InvalidCacheLoadException notFound) {
+                return null;
+            } catch (ExecutionException e) {
+                Throwables.propagate(e.getCause());
             }
 
-            info = cache.get(id, valueLoader);
+            if (info == null) {
+                return null;
+            }
+            if (info instanceof CatalogInfo) {
+                info = resolveCatalog((CatalogInfo) info);
+            } else if (info instanceof ServiceInfo) {
+                resolveTransient((ServiceInfo) info);
+            }
 
-        } catch (CacheLoader.InvalidCacheLoadException notFound) {
+            if (type.isAssignableFrom(info.getClass())) {
+                // use ModificationProxy only in this case as returned object is cached.
+                // saveInternal
+                // follows suite checking whether the object being saved is a mod proxy, but that's
+                // not
+                // mandatory in this implementation and should only be the case when the object was
+                // obtained by id
+                return ModificationProxy.create(type.cast(info), type);
+            }
+
             return null;
-        } catch (ExecutionException e) {
-            Throwables.propagate(e.getCause());
+        } finally {
+            lock.unlock();
         }
-
-        if (info == null) {
-            return null;
-        }
-        if (info instanceof CatalogInfo) {
-            info = resolveCatalog((CatalogInfo) info);
-        } else if (info instanceof ServiceInfo) {
-            resolveTransient((ServiceInfo) info);
-        }
-
-        if (type.isAssignableFrom(info.getClass())) {
-            // use ModificationProxy only in this case as returned object is cached. saveInternal
-            // follows suite checking whether the object being saved is a mod proxy, but that's not
-            // mandatory in this implementation and should only be the case when the object was
-            // obtained by id
-            return ModificationProxy.create(type.cast(info), type);
-        }
-
-        return null;
     }
 
     @Nullable
@@ -1462,8 +1500,14 @@ public class ConfigDatabase {
     }
 
     void clear(Info info) {
-        identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
-        cache.invalidate(info.getId());
+        final Lock lock = locks.get(info.getId()).writeLock();
+        lock.lock();
+        try {
+            identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
+            cache.invalidate(info.getId());
+        } finally {
+            lock.unlock();
+        }
     }
 
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
