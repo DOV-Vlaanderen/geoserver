@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataMap;
+import org.geoserver.platform.resource.Resource;
 
 import java.io.IOException;
 
@@ -16,7 +17,7 @@ import java.io.IOException;
  */
 public interface ImportGeonetworkMetadataService {
 
-    void importMetadata(String url, ComplexMetadataMap metadataMap) throws IOException;
+    void importMetadata(Resource xmlFile, ComplexMetadataMap metadataMap) throws IOException;
 
 
 }

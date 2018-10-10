@@ -65,6 +65,7 @@ public class ImportGeonetworkPanel extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                //TODO selectie en uui verplicht maken
                 String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
                 handleImport(url, target);
             }

@@ -5,7 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 
-import org.geoserver.catalog.MetadataMap;
+import org.geoserver.metadata.data.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
 import org.geoserver.metadata.data.dto.AttributeMapping;
@@ -14,6 +14,7 @@ import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
 import org.geoserver.metadata.data.service.YamlService;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -33,10 +34,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,32 +48,27 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
 
 
     @Override
-    public void importMetadata(String url, ComplexMetadataMap metadataMap) throws IOException {
-        Document doc = readXmlMetadata(url);
-        /*if (doc.hasChildNodes()) {
-            printNote(doc.getChildNodes());
-        }
-*/
+    public void importMetadata(Resource xmlFile, ComplexMetadataMap metadataMap) throws IOException {
+        Document doc = readXmlMetadata(xmlFile);
+
         AttributeMappingConfiguration mapping = yamlService.readMapping();
 
         for (AttributeMapping attributeMapping : mapping.getGeonetworkmapping()) {
-            //addAttribute(metadataMap, attributeMapping, doc, null, mapping.getObjectmapping());
+            addAttribute(metadataMap, attributeMapping, doc, null, mapping.getObjectmapping());
         }
     }
 
-    private void addAttribute(MetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
+    private void addAttribute(ComplexMetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
         NodeList nodes = findNode(doc, attributeMapping.getGeonetwork(), node);
 
         if (nodes != null && nodes.getLength() > 0) {
             switch (attributeMapping.getOccurrence()) {
                 case SINGLE:
                     mapNode(metadataMap, attributeMapping, doc, nodes.item(0), mapping);
-                    //metadataMap.put(attributeMapping.getGeoserver(), nodes.item(0).getNodeValue());
                     break;
                 case REPEAT:
                     for (int count = 0; count < nodes.getLength(); count++) {
                         mapNode(metadataMap, attributeMapping, doc, nodes.item(count), mapping);
-                        //metadataMap.put(attributeMapping.getGeoserver(), nodes.item(count).getNodeValue());
                     }
                     break;
             }
@@ -85,14 +78,14 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
     }
 
     @SuppressWarnings("unchecked")
-    private void mapNode(MetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
+    private void mapNode(ComplexMetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
         if (FieldTypeEnum.COMPLEX.equals(attributeMapping.getFieldType())) {
             for (AttributeComplexTypeMapping complexTypeMapping : mapping) {
                 if (attributeMapping.getTypename().equals(complexTypeMapping.getTypename())) {
                     for (AttributeMapping aMapping : complexTypeMapping.getMapping()) {
                         AttributeMapping am = new AttributeMapping(aMapping);
                         am.setOccurrence(attributeMapping.getOccurrence());
-                        am.setGeoserver(attributeMapping.getGeoserver() + "_" + am.getGeoserver());
+                        am.setGeoserver(attributeMapping.getGeoserver() + "_" + attributeMapping.getGeoserver() + "_" + am.getGeoserver());
                         addAttribute(metadataMap, am, doc, node, mapping);
                     }
                     break;
@@ -100,28 +93,26 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
             }
         } else {
             if (OccurenceEnum.SINGLE.equals(attributeMapping.getOccurrence())) {
-                metadataMap.put(attributeMapping.getGeoserver(), node.getNodeValue());
-            } else {
-                if(!metadataMap.containsKey(attributeMapping.getGeoserver())){
-                    metadataMap.put(attributeMapping.getGeoserver(), new ArrayList<>());
-                }
-                ((List<String>) metadataMap.get(attributeMapping.getGeoserver())).add(node.getNodeValue());
+                ComplexMetadataAttribute<String> att =
+                        metadataMap.get(String.class, attributeMapping.getGeoserver());
+                att.setValue(node.getNodeValue());
 
+            } else {
+                int currentSize = metadataMap.size(attributeMapping.getGeoserver());
+                ComplexMetadataAttribute<String> att =
+                        metadataMap.get(String.class, attributeMapping.getGeoserver(), currentSize);
+                att.setValue(node.getNodeValue());
             }
         }
     }
 
 
-    private Document readXmlMetadata(String geonetworkUrl) {
+    private Document readXmlMetadata(Resource resource) throws IOException {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            URL url = new URL(geonetworkUrl);
-            InputStream stream = url.openStream();
-            //System.out.println(IOUtils.toString(stream));
-            //Document doc = builder.parse(new FileInputStream(new File("sample.xml")));
-            Document doc = db.parse(stream);
+            Document doc = db.parse(resource.in());
             doc.getDocumentElement().normalize();
             return doc;
         } catch (MalformedURLException e) {
@@ -130,10 +121,8 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
             e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
+        throw new IOException("Could not read resource:" + resource);
     }
 
 

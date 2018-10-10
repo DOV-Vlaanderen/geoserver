@@ -51,14 +51,16 @@ public abstract class AbstractMetadataTest {
             //copy test files to data directory
             File metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata");
             metadata.mkdirs();
-            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml"), 
-                   new File(metadata, "fouteinhoud.yaml"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml"),
+                    new File(metadata, "fouteinhoud.yaml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-geonetwork.yaml"), 
                     new File(metadata, "metadata-geonetwork.yaml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-mapping.yaml"), 
                     new File(metadata, "metadata-mapping.yaml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui.yaml"), 
                     new File(metadata, "metadata-ui.yaml"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"),
+                    new File(metadata, "geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"));
         }
     }
     

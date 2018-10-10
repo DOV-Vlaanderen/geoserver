@@ -12,10 +12,13 @@ import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ImportGeonetworkMetadataService;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
+import org.geoserver.platform.resource.URIs;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 public class MetadataPanel extends Panel {
@@ -47,8 +50,11 @@ public class MetadataPanel extends Panel {
                 ImportGeonetworkMetadataService metadataService = GeoServerApplication.get().getApplicationContext().getBean(ImportGeonetworkMetadataService.class);
                 //import metadata
                 try {
-                    metadataService.importMetadata(url, getMetadataModel().getObject());
+                    metadataService.importMetadata(URIs.asResource(new URI(url)), getMetadataModel().getObject());
                 } catch (IOException e) {
+                    //TODO show message
+                    LOGGER.severe(e.getMessage());
+                } catch (URISyntaxException e) {
                     LOGGER.severe(e.getMessage());
                 }
                 target.add(MetadataPanel.this);

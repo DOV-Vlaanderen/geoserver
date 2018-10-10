@@ -1,48 +1,36 @@
 attributes:
-  - label: input-tekst
+  - label: indentifier-single
     fieldType: TEXT
-    occurrence: REPEAT
-  - label: number
+  - label: number-field
     fieldType: NUMBER
-  - label: beheerder
-    fieldType: COMPLEX
-    typename: persoon
-  - label: dropdown
+  - label: dropdown-field
     fieldType: DROPDOWN
     values:
-        - Selecteer mij
-        - of selecteer deze rij
-        - deze best niet selecteren
-  - label: contact adres
-    fieldType: COMPLEX
-    typename: inputadres
+        - Select me
+        - Or select this row
+        - Don't select this one
+  - label: refsystem-as-list
+    fieldType: TEXT
     occurrence: REPEAT
-  - label: Objecten catalogus
+  - label: referencesystem-object
+    fieldType: COMPLEX
+    typename: referencesystem
+  - label: referencesystem-object-list
+    fieldType: COMPLEX
+    typename: referencesystem
+    occurrence: REPEAT
+  - label: Object catalog
     fieldType: COMPLEX
     typename: objectCatalog
     occurrence: REPEAT
 
 complextypes:
-  - typename: inputadres
+  - typename: referencesystem
     attributes:
-        - label: gemeente
+        - label: code
           fieldType: TEXT
-        - label: straat
+        - label: codeSpace
           fieldType: TEXT
-        - label: huisnummer
-          fieldType: TEXT
-        - label: postcode
-          fieldType: TEXT
-  - typename: persoon
-    attributes:
-        - label: naam
-          fieldType: TEXT
-        - label: geslacht
-          fieldType: DROPDOWN
-          values:
-              - man
-              - vrouw
-              - onbekend
   - typename: objectCatalog
     attributes:
         - label: naam
