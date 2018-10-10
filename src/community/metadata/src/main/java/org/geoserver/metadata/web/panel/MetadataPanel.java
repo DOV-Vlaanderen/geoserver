@@ -52,12 +52,14 @@ public class MetadataPanel extends Panel {
                 try {
                     metadataService.importMetadata(URIs.asResource(new URI(url)), getMetadataModel().getObject());
                 } catch (IOException e) {
-                    //TODO show message
                     LOGGER.severe(e.getMessage());
+                    getPage().error(e.getMessage());
                 } catch (URISyntaxException e) {
                     LOGGER.severe(e.getMessage());
+                    getPage().error(e.getMessage());
                 }
                 target.add(MetadataPanel.this);
+                target.add(getPage());
             }
         };
         add(geonetworkPanel);

@@ -102,6 +102,7 @@ public class MetadataTemplatePage extends GeoServerBasePage {
     }
 
     private AjaxSubmitLink createSaveButton() {
+        /*TODO gans het gedoe met updaten van gelinkte metadata*/
         return new AjaxSubmitLink("save") {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {

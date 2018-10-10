@@ -5,7 +5,6 @@
 
 package org.geoserver.metadata.web;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 /**
  * Manages the metadata templates. Shows all existing templates, create, edit and delete templates.

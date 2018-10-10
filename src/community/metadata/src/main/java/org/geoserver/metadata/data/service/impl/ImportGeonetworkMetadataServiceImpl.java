@@ -121,6 +121,8 @@ public class ImportGeonetworkMetadataServiceImpl implements ImportGeonetworkMeta
             e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
         throw new IOException("Could not read resource:" + resource);
     }

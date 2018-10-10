@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
@@ -44,6 +45,8 @@ public class ImportGeonetworkPanel extends Panel {
     @Override
     public void onInitialize() {
         super.onInitialize();
+        add(new FeedbackPanel("feedback").setOutputMarkupId(true));
+
         Form<Object> form = new Form<Object>("form");
 
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
@@ -52,9 +55,13 @@ public class ImportGeonetworkPanel extends Panel {
         }
 
         DropDownChoice<String> dropDown = createDropDown(optionsGeonetwork);
+        dropDown.setRequired(true);
+        dropDown.setOutputMarkupId(true);
         form.add(dropDown);
 
         TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
+        inputUUID.setRequired(true);
+        inputUUID.setOutputMarkupId(true);
         form.add(inputUUID);
 
         form.add(new AjaxSubmitLink("link") {
@@ -65,9 +72,12 @@ public class ImportGeonetworkPanel extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                //TODO selectie en uui verplicht maken
                 String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
                 handleImport(url, target);
+            }
+            @Override
+            public void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(getFeedbackPanel());
             }
         });
         add(form);
@@ -80,19 +90,21 @@ public class ImportGeonetworkPanel extends Panel {
     private String generateMetadataUrl(String modelValue, String uuid) {
         String url = "";
 
-        for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
-            if (modelValue.equals(geonetwork.getName())) {
-                url = geonetwork.getUrl();
+        if (modelValue != null) {
+            for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
+                if (modelValue.equals(geonetwork.getName())) {
+                    url = geonetwork.getUrl();
+                }
             }
-        }
-        if (!url.contains("xml_iso19139_save?uuid=")) {
-            //assume we got the base url.
-            if (!url.endsWith("/")) {
-                url = url + "/";
+            if (!url.contains("xml_iso19139_save?uuid=")) {
+                //assume we got the base url.
+                if (!url.endsWith("/")) {
+                    url = url + "/";
+                }
+                url = url + "srv/xml_iso19139_save?uuid=";
             }
-            url = url + "srv/xml_iso19139_save?uuid=";
+            url = url + uuid;
         }
-        url = url + uuid;
         return url;
     }
 
@@ -125,4 +137,8 @@ public class ImportGeonetworkPanel extends Panel {
         };
     }
 
+
+    public FeedbackPanel getFeedbackPanel() {
+        return (FeedbackPanel) get("feedback");
+    }
 }
