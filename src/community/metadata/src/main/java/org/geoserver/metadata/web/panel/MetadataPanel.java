@@ -24,6 +24,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Logger;
 
+/**
+ * The dynamically generated metadata input panel. All fields are added on the fly based on the yaml configuration.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class MetadataPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 

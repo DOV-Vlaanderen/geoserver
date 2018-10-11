@@ -21,10 +21,15 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
 
     private static final long serialVersionUID = -255037580716257623L;
 
-    public static String KEY_VALUE = "value";
+    public static String KEY_VALUE = " ";
+
+    public static String KEY_REMOVE_ROW= "";
 
     private final Property<ComplexMetadataAttribute<T>> VALUE = 
             new BeanProperty<ComplexMetadataAttribute<T>>(KEY_VALUE, "value");
+
+    private final Property<ComplexMetadataAttribute<T>> REMOVE_ROW =
+            new BeanProperty<ComplexMetadataAttribute<T>>(KEY_REMOVE_ROW, "value");
 
     private final MetadataAttributeConfiguration template;
     
@@ -52,7 +57,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
 
     @Override
     protected List<Property<ComplexMetadataAttribute<T>>> getProperties() {
-        return Arrays.asList(VALUE);
+        return Arrays.asList(VALUE, REMOVE_ROW);
     }
 
     @Override
@@ -64,8 +69,12 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
         items.add(metadataModel.getObject().get(clazz, template.getKey(), items.size()));
     }
 
-    public void removeFields(List<ComplexMetadataAttribute<T>> attributes) {
-        items.removeAll(attributes);
+    public void removeField(ComplexMetadataAttribute<T> attribute) {
+        int index = items.indexOf(attribute);
+        //remove from model
+        metadataModel.getObject().delete(template.getKey(), index);
+        //remove from view
+        items.remove(index);
     }
     
     public MetadataAttributeConfiguration getConfiguration() {

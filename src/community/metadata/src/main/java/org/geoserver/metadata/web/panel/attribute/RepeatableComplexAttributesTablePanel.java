@@ -7,10 +7,12 @@ package org.geoserver.metadata.web.panel.attribute;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
+import org.geoserver.metadata.data.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -26,11 +28,11 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
 
     public RepeatableComplexAttributesTablePanel(String id,
-            RepeatableComplexAttributeDataProvider dataProvider, 
-            IModel<ComplexMetadataMap> metadataModel) {
+                                                 RepeatableComplexAttributeDataProvider dataProvider,
+                                                 IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
 
-        GeoServerTablePanel<ComplexMetadataMap> tablePanel = 
+        GeoServerTablePanel<ComplexMetadataMap> tablePanel =
                 createAttributesTablePanel(dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
@@ -41,18 +43,6 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         tablePanel.setSortable(false);
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
-
-        add(new AjaxSubmitLink("removeSelected") {
-
-            private static final long serialVersionUID = -8829474855848647384L;
-
-            @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                dataProvider.removeFields(tablePanel.getSelection());
-                tablePanel.clearSelection();
-                target.add(tablePanel);
-            }
-        });
 
         add(new AjaxSubmitLink("addNew") {
 
@@ -73,18 +63,37 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
             private static final long serialVersionUID = 4333335931795175790L;
 
             @Override
-            protected Component getComponentForProperty(String id, 
-                    IModel<ComplexMetadataMap> itemModel, 
-                    GeoServerDataProvider.Property<ComplexMetadataMap> property) {
-                if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
-                    MetadataAttributeConfiguration attributeConfiguration = 
+            protected Component getComponentForProperty(String id,
+                                                        IModel<ComplexMetadataMap> itemModel,
+                                                        GeoServerDataProvider.Property<ComplexMetadataMap> property) {
+                if (property.getName().equals(RepeatableComplexAttributeDataProvider.KEY_VALUE)) {
+                    MetadataAttributeConfiguration attributeConfiguration =
                             dataProvider.getConfiguration();
-                   
+
                     return new AttributesTablePanel(id,
-                         new AttributeDataProvider(attributeConfiguration.getTypename()),
-                             itemModel);
+                            new AttributeDataProvider(attributeConfiguration.getTypename()), itemModel);
+
+                } else if (property.getName().equals(RepeatableComplexAttributeDataProvider.KEY_REMOVE_ROW)) {
+                    AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
+
+                        private static final long serialVersionUID = -8829474855848647384L;
+
+                        @Override
+                        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                            removeFields(target, itemModel);
+                        }
+                    };
+                    deleteAction.add(new AttributeAppender("class", "remove-link"));
+                    return deleteAction;
+
                 }
                 return null;
+            }
+
+            private void removeFields(AjaxRequestTarget target, IModel<ComplexMetadataMap> itemModel) {
+                ComplexMetadataMap object = itemModel.getObject();
+                dataProvider.removeField(object);
+                target.add(this);
             }
         };
     }

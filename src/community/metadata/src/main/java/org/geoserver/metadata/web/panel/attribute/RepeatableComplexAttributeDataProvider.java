@@ -5,6 +5,7 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.model.IModel;
+import org.geoserver.metadata.data.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -14,35 +15,42 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RepeatableComplexAttributeDataProvider
-    extends GeoServerDataProvider<ComplexMetadataMap> {
+        extends GeoServerDataProvider<ComplexMetadataMap> {
 
     private static final long serialVersionUID = -255037580716257623L;
-    
+
     public static String KEY_VALUE = "value";
 
-    public static final Property<ComplexMetadataMap> VALUE = 
+
+    public static String KEY_REMOVE_ROW = "";
+
+    public static final Property<ComplexMetadataMap> VALUE =
             new BeanProperty<ComplexMetadataMap>(KEY_VALUE, "value");
-    
+
+
+    private final GeoServerDataProvider.Property<ComplexMetadataMap> REMOVE_ROW =
+            new GeoServerDataProvider.BeanProperty<ComplexMetadataMap>(KEY_REMOVE_ROW, "value");
+
     private IModel<ComplexMetadataMap> metadataModel;
-    
+
     private MetadataAttributeConfiguration attributeConfiguration;
 
     private List<ComplexMetadataMap> items = new ArrayList<>();
-    
-    public RepeatableComplexAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration, 
-            IModel<ComplexMetadataMap> metadataModel) {
+
+    public RepeatableComplexAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration,
+                                                  IModel<ComplexMetadataMap> metadataModel) {
         this.metadataModel = metadataModel;
         this.attributeConfiguration = attributeConfiguration;
-        
+
         items = new ArrayList<ComplexMetadataMap>();
         for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
             items.add(metadataModel.getObject().subMap(attributeConfiguration.getKey(), i));
-        }        
+        }
     }
 
     @Override
     protected List<Property<ComplexMetadataMap>> getProperties() {
-        return Arrays.asList(VALUE);
+        return Arrays.asList(VALUE, REMOVE_ROW);
     }
 
     @Override
@@ -54,10 +62,14 @@ public class RepeatableComplexAttributeDataProvider
         items.add(metadataModel.getObject().subMap(attributeConfiguration.getKey(), items.size()));
     }
 
-    public void removeFields(List<ComplexMetadataMap> attributes) {
-        items.removeAll(attributes);
+    public void removeField(ComplexMetadataMap attribute) {
+        int index = items.indexOf(attribute);
+        //remove from model
+        metadataModel.getObject().delete(attributeConfiguration.getKey(), index);
+        //remove from view
+        items.remove(index);
     }
-    
+
     public MetadataAttributeConfiguration getConfiguration() {
         return attributeConfiguration;
     }

@@ -7,6 +7,7 @@ package org.geoserver.metadata.web.panel.attribute;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
@@ -19,6 +20,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class RepeatableAttributesTablePanel extends Panel {
@@ -28,12 +30,12 @@ public class RepeatableAttributesTablePanel extends Panel {
 
 
     public RepeatableAttributesTablePanel(String id,
-            RepeatableAttributeDataProvider<String> dataProvider, 
-            IModel<ComplexMetadataMap> metadataModel) {
+                                          RepeatableAttributeDataProvider<String> dataProvider,
+                                          IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
 
-        GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel = 
-                createAttributesTablePanel( dataProvider);
+        GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
+                createAttributesTablePanel(dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -43,7 +45,7 @@ public class RepeatableAttributesTablePanel extends Panel {
         tablePanel.setSortable(false);
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
-
+/*
         add(new AjaxSubmitLink("removeSelected") {
 
             private static final long serialVersionUID = -8829474855848647384L;
@@ -54,7 +56,7 @@ public class RepeatableAttributesTablePanel extends Panel {
                 tablePanel.clearSelection();
                 target.add(tablePanel);
             }
-        });
+        });*/
 
         add(new AjaxSubmitLink("addNew") {
 
@@ -70,50 +72,58 @@ public class RepeatableAttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> createAttributesTablePanel(
-           RepeatableAttributeDataProvider<String> dataProvider) {
-        return new GeoServerTablePanel<ComplexMetadataAttribute<String>>("attributesTablePanel", dataProvider) {
-            private static final long serialVersionUID = 4333335931795175790L;
+            RepeatableAttributeDataProvider<String> dataProvider) {
+        GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
+                new GeoServerTablePanel<ComplexMetadataAttribute<String>>("attributesTablePanel", dataProvider) {
 
-            @Override
-            protected Component getComponentForProperty(String id, 
-                    IModel<ComplexMetadataAttribute<String>> itemModel, 
-                    GeoServerDataProvider.Property<ComplexMetadataAttribute<String>> property) {
-                if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
-                    MetadataAttributeConfiguration attributeConfiguration = 
-                            dataProvider.getConfiguration();
-                    //if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
-                        switch (attributeConfiguration.getFieldType()) {
-                            case TEXT:
-                                return new TextFieldPanel(id,
-                                        new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
-                            case NUMBER:
-                                return new TextFieldPanel(id,
-                                        new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
-                            case DROPDOWN:
-                                final DropDownPanel ddp =
-                                        new DropDownPanel(id,
-                                                new ComplexMetadataAttributeModel<String>(itemModel.getObject()),
-                                                attributeConfiguration.getValues());
+                    private static final long serialVersionUID = 4333335931795175790L;
 
-                                return ddp;
-                            /*case COMPLEX:
-                                return new AttributesTablePanel(id,
-                                        new AttributeDataProvider(attributeConfiguration.getTypename(),
-                                                attributeConfiguration.getLabel()), 
-                                                new Model<ComplexMetadataMap>(
-                                                        metadataModel.getObject().subMap(attributeConfiguration.getLabel())));*/
+                    @Override
+                    protected Component getComponentForProperty(String id,
+                                                                IModel<ComplexMetadataAttribute<String>> itemModel,
+                                                                GeoServerDataProvider.Property<ComplexMetadataAttribute<String>> property) {
+                        if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
+                            MetadataAttributeConfiguration attributeConfiguration =
+                                    dataProvider.getConfiguration();
+                            switch (attributeConfiguration.getFieldType()) {
+                                case TEXT:
+                                    return new TextFieldPanel(id,
+                                            new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
+                                case NUMBER:
+                                    return new TextFieldPanel(id,
+                                            new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
+                                case DROPDOWN:
+                                    final DropDownPanel ddp =
+                                            new DropDownPanel(id,
+                                                    new ComplexMetadataAttributeModel<String>(itemModel.getObject()),
+                                                    attributeConfiguration.getValues());
+
+                                    return ddp;
+                            }
+                        } else if (property.getName().equals(RepeatableAttributeDataProvider.KEY_REMOVE_ROW)) {
+                            AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
+
+                                private static final long serialVersionUID = -8829474855848647384L;
+
+                                @Override
+                                public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                                    removeFields(target, itemModel);
+                                }
+                            };
+                            deleteAction.add(new AttributeAppender("class", "remove-link"));
+                            return deleteAction;
+
                         }
-                        
-                        //note: I don't get this
-                   /* } else {
-                        RepeatableAttributeDataProvider<String> repeatableDataProvider = 
-                                new RepeatableAttributeDataProvider<String>(String.class, attributeConfiguration, metadataModel);
-                        return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), repeatableDataProvider, metadataModel);
-                    }*/
-                }
-                return null;
-            }
-        };
+                        return null;
+                    }
+
+                    private void removeFields(AjaxRequestTarget target, IModel<ComplexMetadataAttribute<String>> itemModel) {
+                        ComplexMetadataAttribute<String> object = itemModel.getObject();
+                        dataProvider.removeField(object);
+                        target.add(this);
+                    }
+                };
+        return tablePanel;
     }
 
 

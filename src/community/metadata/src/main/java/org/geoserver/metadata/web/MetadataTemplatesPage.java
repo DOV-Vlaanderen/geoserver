@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 
 /**
- * Manages the metadata templates. Shows all existing templates, create, edit and delete templates.
+ * Manages the metadata templates. Shows all existing templates,allows to create, edit and delete templates.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

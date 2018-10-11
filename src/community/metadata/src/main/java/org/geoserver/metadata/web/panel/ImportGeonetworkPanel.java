@@ -26,6 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * A panel that lets the user select a geonetwork endpoint and input a uuid of the metadata record in geonetwork.
+ *
+ * The available geonetwork endpoints are configured in the yaml.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class ImportGeonetworkPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -57,13 +64,9 @@ public class ImportGeonetworkPanel extends Panel {
         }
 
         DropDownChoice<String> dropDown = createDropDown(optionsGeonetwork);
-        /*dropDown.setRequired(true);
-        dropDown.setOutputMarkupId(true);*/
         form.add(dropDown);
 
         TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
-        /*inputUUID.setRequired(true);
-        inputUUID.setOutputMarkupId(true);*/
         form.add(inputUUID);
 
         form.add(new AjaxSubmitLink("link") {

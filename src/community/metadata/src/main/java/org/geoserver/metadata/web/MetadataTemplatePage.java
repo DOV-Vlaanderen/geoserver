@@ -29,6 +29,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The template page, view or edit the values in the template.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class MetadataTemplatePage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplatePage.class);
@@ -95,7 +100,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
     }
 
     private AjaxSubmitLink createSaveButton() {
-        /*TODO gans het gedoe met updaten van gelinkte metadata*/
         return new AjaxSubmitLink("save") {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -116,8 +120,14 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                     if (message != null) {
                         form.error(message);
                     }
+                    //TODO use the new syntax
                     target.add(getFeedbackPanel());
                 }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(getFeedbackPanel());
             }
         };
     }

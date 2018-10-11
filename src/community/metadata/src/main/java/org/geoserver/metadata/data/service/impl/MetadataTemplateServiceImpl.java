@@ -61,6 +61,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Override
     public void update(MetadataTemplate metadataTemplate) throws IOException {
+        /*TODO gans het gedoe met updaten van gelinkte metadata*/
         delete(metadataTemplate);
 
         List<MetadataTemplate> tempates = list();
