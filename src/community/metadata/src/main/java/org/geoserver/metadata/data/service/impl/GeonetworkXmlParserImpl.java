@@ -83,7 +83,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
                     for (AttributeMapping aMapping : complexTypeMapping.getMapping()) {
                         AttributeMapping am = new AttributeMapping(aMapping);
                         am.setOccurrence(attributeMapping.getOccurrence());
-                        am.setGeoserver(attributeMapping.getGeoserver() + "_" + attributeMapping.getGeoserver() + "_" + am.getGeoserver());
+                        am.setGeoserver(attributeMapping.getGeoserver() + "_" + am.getGeoserver());
                         addAttribute(metadataMap, am, doc, node, mapping);
                     }
                     break;
