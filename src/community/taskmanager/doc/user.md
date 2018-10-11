@@ -44,6 +44,13 @@ Task Manager allows any number of databases to be used both as sources and targe
 	<!-- optional --> <property name="schema" value="schema" /> 
 	<property name="username" value="username" />
 	<property name="password" value="password" /> 
+  <!-- optional, for security purposes -->
+  <property name="roles">
+    <list>
+      <value>ROLE1</value>
+      <value>ROLE2</value>
+    </list>
+  </property>
 </bean>
 ```
 
@@ -57,9 +64,18 @@ Task Manager allows any number of databases to be used both as sources and targe
   	 <map>
   	    <entry key="mygs" value="java:/comp/env/jdbc/my-jndi-source-on-mygs" />
   	 </map>
-  	</property>
+  	</property>    
+    <!-- optional, for security purposes -->
+    <property name="roles">
+      <list>
+        <value>ROLE1</value>
+        <value>ROLE2</value>
+      </list>
+    </property>
 </bean>
 ```
+
+Roles can be specified for [security](#security) purposes.
 
 There is also support for Informix, but it only works as a source database (not for publishing).
 
@@ -97,21 +113,39 @@ Regular file services provide support for rasters that are stored on the hard dr
 <bean class="org.geoserver.taskmanager.fileservice.impl.FileServiceImpl">
     <property name="rootFolder" value="/tmp"/>
     <property name="name" value="Temporary Directory"/>
+    <!-- optional, for security purposes -->
+    <property name="roles">
+      <list>
+        <value>ROLE1</value>
+        <value>ROLE2</value>
+      </list>
+    </property>
 </bean>
 ```
+Roles can be specified for [security](#security) purposes.
 
 #### S3 File Service
 
 S3 File Services provide support for rasters that are stored on an S3 compatible server.
 
 They do not need to be configured via the application context, but are taken from the properties file provided via the property `s3.properties.location` 
-(see [S3 DataStore](https://github.com/geotools/geotools/tree/master/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services).
+(see [S3 DataStore](https://github.com/geotools/geotools/tree/master/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services)).
 
 A service will be created for each service and each bucket. We must add one line per alias to the `s3.properties` file:
 
 `alias.s3.rootfolder=comma,separated,list,of,buckets`
 
 The above example will create five s3 file services: alias-comma, alias-separated, alias-list, alias-of and alias-buckets.
+
+Roles can optionally be specified for [security](#security) purposes as follows:
+
+`alias.s3.rootfolder.bucket=comma,separated,list,of,roles`
+
+#### Prepare script
+
+The task manager GUI allows immediate upload of files to file services for local publication. It may be handy to perform some preprocessing tasks
+on the uploaded data before publication (such as GDAL commands). You may do this by creating a file in the taskmanager configuration directory named
+`prepare.sh`. If the user ticks the prepare checkbox in the upload dialog, this script will be run with the uploaded file as its first parameter.
 
 ## Security
 
@@ -122,6 +156,8 @@ Each configuration and each independent batch is associated with a workspace in 
 * If the user has writing permissions on the workspace, they may run the batch or the batches in the configuration.
 
 * If the user has administrative permissions on the workspace, they may edit the configuration/batch.
+
+Each Database or File Service may be associated with a list of roles. If you do so, only users with those roles will have access to the database or file service in question. If you want to disable security restrictions, do not include the `roles` property at all (because an empty list will result in no access.)
 
 ## Graphical User Interface
 
@@ -188,6 +224,14 @@ Once you open a new or existing batch, one can add or remove tasks from it and c
 * `RemoteFilePublicationTask` Publish a file layer locally (taster or shapefile). The user can specify a target geoserver, a source layer and a target file service and path (optional). All information is taken from the source layer except for the file service and path which may be different. Supports commit/rollback through creating a temporary (unadvertised) layer.
 
 * `MetaDataSyncTask` Synchronise the metadata between a local layer and a layer on another geoserver (without re-publishing). The user can specify a target geoserver, a local and a remote layer. Does not support commit/rollback.
+
+* `RemoteFilePublicationTask` Publish a file layer locally (taster or shapefile). The user can specify a target geoserver, a source layer and a target file service and path (optional). All information is taken from the source layer except for the file service and path which may be different. Supports commit/rollback through creating a temporary (unadvertised) layer.
+
+* `MetaDataSyncTask` Synchronise the metadata between a local layer and a layer on another geoserver (without re-publishing). The user can specify a target geoserver, a local and a remote layer. Does not support commit/rollback.
+
+* `ConfigureCachedLayer`: Configure caching for a layer on a remote geoserver with internal GWC, synchronise the settings with the local geoserver. This task may turn caching on or off depending on local configuration.
+
+* `ClearCachedLayer`: Clear (truncate) all tiles of a cached layer on a remote geoserver with internal GWC.
 
 ## Import Tool
 
