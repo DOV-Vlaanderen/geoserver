@@ -36,16 +36,14 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput>
      * Provide attributes for the given complex type configuration.
      *
      * @param typename
-     * @param label
      */
-    public AttributeDataProvider(String typename, String label) {
+    public AttributeDataProvider(String typename) {
         super();
         MetadataEditorConfigurationService metadataConfigurationService = GeoServerApplication.get().getApplicationContext().getBean(MetadataEditorConfigurationService.class);
         for (MetadataAttributeComplexTypeConfiguration complexTypeConfiguration : metadataConfigurationService.readConfiguration().getComplextypes()) {
             if (complexTypeConfiguration.getTypename().equals(typename)) {
                 for (MetadataAttributeConfiguration config : complexTypeConfiguration.getAttributes()) {
                     AttributeInput attributeInput = new AttributeInput(config);
-                    attributeInput.getAttributeConfiguration().setLabel(label + "_" + attributeInput.getAttributeConfiguration().getLabel());
                     items.add(attributeInput);
                 }
             }

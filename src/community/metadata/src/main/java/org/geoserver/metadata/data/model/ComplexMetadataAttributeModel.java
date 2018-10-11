@@ -1,4 +1,4 @@
-package org.geoserver.metadata.web.panel.attribute;
+package org.geoserver.metadata.data.model;
 
 import java.io.Serializable;
 

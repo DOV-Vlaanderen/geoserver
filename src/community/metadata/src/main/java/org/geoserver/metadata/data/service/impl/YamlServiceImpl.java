@@ -9,6 +9,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
+import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geoserver.platform.resource.Resource;
@@ -28,7 +29,7 @@ import java.io.InputStream;
  */
 @Component
 public class YamlServiceImpl implements YamlService {
-    
+
     @Autowired
     private GeoServerDataDirectory dataDirectory;
 
@@ -49,7 +50,16 @@ public class YamlServiceImpl implements YamlService {
                 try (InputStream in = file.in()) {
                     MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfiguration.class);
                     //Merge configuration
-                    configuration.getAttributes().addAll(config.getAttributes());
+                    for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
+                        if (attribute.getKey() == null) {
+                            throw new IOException("The key of an attribute may not be null. " + attribute.getLabel());
+                        }
+                        if (attribute.getLabel() == null) {
+                            attribute.setLabel(attribute.getKey());
+
+                        }
+                        configuration.getAttributes().add(attribute);
+                    }
                     configuration.getGeonetworks().addAll(config.getGeonetworks());
                     configuration.getComplextypes().addAll(config.getComplextypes());
                 } catch (IOException e) {
@@ -69,7 +79,7 @@ public class YamlServiceImpl implements YamlService {
         LOGGER.info("Searching for yamls in: " + folder.path());
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         AttributeMappingConfiguration configuration = new AttributeMappingConfiguration();
-        try {            
+        try {
             for (Resource file : Resources.list(folder, new Resources.ExtensionFilter("YAML"))) {
                 try (InputStream in = file.in()) {
                     AttributeMappingConfiguration config = mapper.readValue(in, AttributeMappingConfiguration.class);

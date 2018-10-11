@@ -12,6 +12,8 @@ public class MetadataAttributeConfiguration implements Serializable{
 
     private static final long serialVersionUID = 3130368513874060531L;
 
+    String key;
+
     String label;
 
     FieldTypeEnum fieldType;
@@ -25,13 +27,15 @@ public class MetadataAttributeConfiguration implements Serializable{
     public MetadataAttributeConfiguration() {
     }
 
-    public MetadataAttributeConfiguration(String label, FieldTypeEnum fieldType) {
-        this.label = label;
+    public MetadataAttributeConfiguration(String key, FieldTypeEnum fieldType) {
+        this.key = key;
+        this.label = key;
         this.fieldType = fieldType;
     }
 
     public MetadataAttributeConfiguration(MetadataAttributeConfiguration other) {
         if (other != null) {
+            key = other.getKey();
             label = other.getLabel();
             fieldType = other.getFieldType();
             occurrence = other.getOccurrence();
@@ -40,6 +44,14 @@ public class MetadataAttributeConfiguration implements Serializable{
                 this.values.add(values);
             }
         }
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getLabel() {

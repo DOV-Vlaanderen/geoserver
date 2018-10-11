@@ -9,6 +9,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
+import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
 
 public class EditorFactory {
 
@@ -19,20 +20,19 @@ public class EditorFactory {
             case TEXT:
                 return new TextFieldPanel(id, 
                         new ComplexMetadataAttributeModel<String>(
-                                metadataModel.getObject().get(String.class, configuration.getLabel())));
+                                metadataModel.getObject().get(String.class, configuration.getKey())));
             case NUMBER:
                 return new TextFieldPanel(id, 
                         new ComplexMetadataAttributeModel<String>(
-                                metadataModel.getObject().get(String.class, configuration.getLabel())));
+                                metadataModel.getObject().get(String.class, configuration.getKey())));
             case DROPDOWN:
                 return new DropDownPanel(id, 
                         new ComplexMetadataAttributeModel<String>(
-                                metadataModel.getObject().get(String.class, configuration.getLabel())),
+                                metadataModel.getObject().get(String.class, configuration.getKey())),
                         configuration.getValues());
             case COMPLEX:
-                return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename(), 
-                        configuration.getLabel()), 
-                        new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getLabel())));
+                return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
+                        new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getKey())));
         }
         return null;
     }

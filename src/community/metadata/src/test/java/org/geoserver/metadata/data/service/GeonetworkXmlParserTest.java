@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class RemoteDocumentReaderTest extends AbstractMetadataTest {
+public class GeonetworkXmlParserTest extends AbstractMetadataTest {
 
     @Autowired
     GeonetworkXmlParser xmlParser;

@@ -21,10 +21,6 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
 
     private static final long serialVersionUID = -255037580716257623L;
 
-    /*
-    public static Property<ComplexMetadataAttribute<?>> NAME = 
-            new BeanProperty<ComplexMetadataAttribute<?>>("Name", "attributeConfiguration.label");*/
-    
     public static String KEY_VALUE = "value";
 
     private final Property<ComplexMetadataAttribute<T>> VALUE = 
@@ -44,24 +40,11 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
         this.metadataModel = metadataModel;
 
         this.template = new MetadataAttributeConfiguration(attributeConfiguration);
-        template.setOccurrence(OccurenceEnum.SINGLE); //note: I don't get this
-
-        /*if (metadataMap.get(attributeConfiguration.getLabel()) == null) {
-            ArrayList<Object> elements = new ArrayList<>();
-            ComplexMetadataAttribute<T> att = new ComplexMetadataAttribute<T>(template);
-            elements.add(ComplexMetadataAttribute<T>);
-            metadataMap.put(attributeConfiguration.getLabel(), elements);
-        }
-        items = (List<ComplexMetadataAttribute<T>>) metadataMap.get(attributeConfiguration.getLabel());
-        for (ComplexMetadataAttribute<T> item : items) {
-            if(item.getAttributeConfiguration() == null){
-                item.setAttributeConfiguration(new MetadataAttributeConfiguration(template));
-            }
-        }*/
+        template.setOccurrence(OccurenceEnum.SINGLE);
         
         items = new ArrayList<ComplexMetadataAttribute<T>>();
-        for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getLabel()); i++) {
-            items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getLabel(), i));
+        for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
+            items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getKey(), i));
         }
         
     }
@@ -78,8 +61,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     }
 
     public void addField() {
-        items.add(metadataModel.getObject().get(clazz, template.getLabel(), 
-                items.size()));
+        items.add(metadataModel.getObject().get(clazz, template.getKey(), items.size()));
     }
 
     public void removeFields(List<ComplexMetadataAttribute<T>> attributes) {

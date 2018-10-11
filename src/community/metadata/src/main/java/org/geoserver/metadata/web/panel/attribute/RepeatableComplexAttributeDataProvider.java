@@ -35,8 +35,8 @@ public class RepeatableComplexAttributeDataProvider
         this.attributeConfiguration = attributeConfiguration;
         
         items = new ArrayList<ComplexMetadataMap>();
-        for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getLabel()); i++) {
-            items.add(metadataModel.getObject().subMap(attributeConfiguration.getLabel(), i));
+        for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
+            items.add(metadataModel.getObject().subMap(attributeConfiguration.getKey(), i));
         }        
     }
 
@@ -51,9 +51,7 @@ public class RepeatableComplexAttributeDataProvider
     }
 
     public void addField() {
-        items.add(metadataModel.getObject().subMap(
-                attributeConfiguration.getLabel(), 
-                items.size()));
+        items.add(metadataModel.getObject().subMap(attributeConfiguration.getKey(), items.size()));
     }
 
     public void removeFields(List<ComplexMetadataMap> attributes) {

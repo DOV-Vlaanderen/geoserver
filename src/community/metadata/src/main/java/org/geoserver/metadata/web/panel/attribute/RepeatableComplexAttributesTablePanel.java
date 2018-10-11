@@ -25,13 +25,13 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
     private static final Logger LOGGER = Logging.getLogger(RepeatableComplexAttributesTablePanel.class);
 
 
-    public RepeatableComplexAttributesTablePanel(String id, String fieldprefix, 
+    public RepeatableComplexAttributesTablePanel(String id,
             RepeatableComplexAttributeDataProvider dataProvider, 
             IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
 
         GeoServerTablePanel<ComplexMetadataMap> tablePanel = 
-                createAttributesTablePanel(fieldprefix, dataProvider);
+                createAttributesTablePanel(dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -48,7 +48,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((RepeatableComplexAttributeDataProvider) dataProvider).removeFields(tablePanel.getSelection());
+                dataProvider.removeFields(tablePanel.getSelection());
                 tablePanel.clearSelection();
                 target.add(tablePanel);
             }
@@ -60,7 +60,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((RepeatableComplexAttributeDataProvider) dataProvider).addField();
+                dataProvider.addField();
 
                 target.add(tablePanel);
             }
@@ -68,7 +68,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<ComplexMetadataMap> createAttributesTablePanel(
-            String fieldprefix, RepeatableComplexAttributeDataProvider dataProvider) {
+            RepeatableComplexAttributeDataProvider dataProvider) {
         return new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 4333335931795175790L;
 
@@ -81,8 +81,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                             dataProvider.getConfiguration();
                    
                     return new AttributesTablePanel(id,
-                         new AttributeDataProvider(attributeConfiguration.getTypename(),
-                               attributeConfiguration.getLabel()), 
+                         new AttributeDataProvider(attributeConfiguration.getTypename()),
                              itemModel);
                 }
                 return null;

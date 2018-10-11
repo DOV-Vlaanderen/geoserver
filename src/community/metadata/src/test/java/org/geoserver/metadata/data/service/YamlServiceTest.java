@@ -14,7 +14,7 @@ import java.io.IOException;
 
 
 /**
- * Test data methods.
+ * Test yaml parsing.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -27,9 +27,9 @@ public class YamlServiceTest extends AbstractMetadataTest {
     public void testFileRegistry() throws IOException {
         MetadataEditorConfiguration configuration = yamlService.readConfiguration();
         Assert.assertNotNull(configuration);
-        Assert.assertEquals(5, configuration.getAttributes().size());
+        Assert.assertEquals(7, configuration.getAttributes().size());
         Assert.assertEquals(3, configuration.getGeonetworks().size());
-        Assert.assertEquals(2, configuration.getComplextypes().size());
+        Assert.assertEquals(3, configuration.getComplextypes().size());
 
     }
 

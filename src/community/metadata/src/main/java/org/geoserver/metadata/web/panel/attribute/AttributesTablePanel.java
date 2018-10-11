@@ -59,16 +59,16 @@ public class AttributesTablePanel extends Panel {
                         RepeatableComplexAttributeDataProvider repeatableDataProvider = 
                                 new RepeatableComplexAttributeDataProvider(attributeConfiguration, 
                                 getMetadataModel());
-                        return new RepeatableComplexAttributesTablePanel(id, attributeConfiguration.getLabel(), 
+
+                        return new RepeatableComplexAttributesTablePanel(id,
                                 repeatableDataProvider,
                                 getMetadataModel());
                     } else {
-                        /*return new ListAttributesPanel(attributeConfiguration,id,metadataModel);*/
                         RepeatableAttributeDataProvider<String> repeatableDataProvider = 
                                 new RepeatableAttributeDataProvider<String>(String.class, attributeConfiguration, 
                                 getMetadataModel());
-                        return new RepeatableAttributesTablePanel(id, attributeConfiguration.getLabel(), 
-                                repeatableDataProvider,
+                        return new RepeatableAttributesTablePanel(id,
+                                  repeatableDataProvider,
                                 getMetadataModel());
                     }
                 }

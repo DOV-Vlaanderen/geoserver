@@ -1,25 +1,31 @@
 attributes:
-  - label: indentifier-single
+  - label: Indentifier single
+    key: indentifier-single
     fieldType: TEXT
-  - label: number-field
+  - key: number-field
     fieldType: NUMBER
-  - label: dropdown-field
+  - label: dropdown field
+    key: dropdown-field
     fieldType: DROPDOWN
     values:
         - Select me
         - Or select this row
         - Don't select this one
-  - label: refsystem-as-list
+  - label: refsystem as list
+    key: refsystem-as-list
     fieldType: TEXT
     occurrence: REPEAT
-  - label: referencesystem-object
+  - label: Referencesystem object
+    key: referencesystem-object
     fieldType: COMPLEX
     typename: referencesystem
-  - label: referencesystem-object-list
+  - label: Referencesystem object list
+    key: referencesystem-object-list
     fieldType: COMPLEX
     typename: referencesystem
     occurrence: REPEAT
   - label: Object catalog
+    key: object-catalog
     fieldType: COMPLEX
     typename: objectCatalog
     occurrence: REPEAT
@@ -27,15 +33,19 @@ attributes:
 complextypes:
   - typename: referencesystem
     attributes:
-        - label: code
+        - label: Code
+          key: code
           fieldType: TEXT
         - label: codeSpace
+          key: code-space
           fieldType: TEXT
   - typename: objectCatalog
     attributes:
-        - label: naam
+        - label: Name
+          key: name
           fieldType: TEXT
         - label: Type
+          key: type
           fieldType: DROPDOWN
           values:
               - String
@@ -43,30 +53,37 @@ complextypes:
               - Geometry
               - Integer
               - byte[]
-        - label: Definitie
+        - label: Definition
+          key: definition
           fieldType: TEXT
         - label: Minimale cardinaliteit
+          key: min-occurence
           fieldType: NUMBER
         - label: Maximale cardinaliteit
+          key: max-occurence
           fieldType: NUMBER
         - label: Domain
+          key: domain
           fieldType: COMPLEX
           typename: domain
           occurrence: REPEAT
   - typename: domain
     attributes:
-        - label: code
+        - label: Code
+          key: code
           fieldType: TEXT
-        - label: waarde
+        - label: Value
+          key: value
           fieldType: TEXT
-        - label: Definitie
+        - label: Definition
+          key: definition
           fieldType: TEXT
 
 geonetworks:
-  - name: geonetwork full url
-    url: https://www.dov.vlaanderen.be/geonetwork/srv/xml_iso19139_save?uuid=
-  - name: geonetwork base url
+  - name: geonetwork url
     url: https://www.dov.vlaanderen.be/geonetwork/
+  - name: geonetwork oefen url
+    url: https://oefen.dov.vlaanderen.be/geonetwork/
 
 geonetworkmapping:
     -  geoserver: indentifier-other

@@ -14,6 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
+import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
@@ -26,13 +27,13 @@ public class RepeatableAttributesTablePanel extends Panel {
     private static final Logger LOGGER = Logging.getLogger(RepeatableAttributesTablePanel.class);
 
 
-    public RepeatableAttributesTablePanel(String id, String fieldprefix, 
+    public RepeatableAttributesTablePanel(String id,
             RepeatableAttributeDataProvider<String> dataProvider, 
             IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
 
         GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel = 
-                createAttributesTablePanel(fieldprefix, dataProvider);
+                createAttributesTablePanel( dataProvider);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -61,7 +62,7 @@ public class RepeatableAttributesTablePanel extends Panel {
 
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((RepeatableAttributeDataProvider<String>) dataProvider).addField();
+                dataProvider.addField();
 
                 target.add(tablePanel);
             }
@@ -69,7 +70,7 @@ public class RepeatableAttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> createAttributesTablePanel(
-            String fieldprefix, RepeatableAttributeDataProvider<String> dataProvider) {
+           RepeatableAttributeDataProvider<String> dataProvider) {
         return new GeoServerTablePanel<ComplexMetadataAttribute<String>>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 4333335931795175790L;
 
@@ -115,41 +116,5 @@ public class RepeatableAttributesTablePanel extends Panel {
         };
     }
 
-    /*private IModel<MetadataMap> createModel(AttributeInput attributeInput, IModel<MetadataMap> metadataModel) {
-        if (attributeInput.getInputValue() == null) {
-            MetadataMap map = new MetadataMap();
-            attributeInput.setInputValue(map);
-        }
-        return new AbstractPropertyModel<MetadataMap>(attributeInput.getInputValue()) {
-            private static final long serialVersionUID = -7316718174035675097L;
-
-            @Override
-            protected String propertyExpression() {
-                return "";
-            }
-        };
-    }
-
-
-    private IModel<String> createModel(AttributeInput attributeInput) {
-        return new IModel<String>() {
-            private static final long serialVersionUID = 2768539968982801563L;
-
-            @Override
-            public String getObject() {
-                return (String) attributeInput.getInputValue();
-            }
-
-            @Override
-            public void setObject(String object) {
-                attributeInput.setInputValue(object);
-            }
-
-            @Override
-            public void detach() {
-
-            }
-        };
-    }*/
 
 }
