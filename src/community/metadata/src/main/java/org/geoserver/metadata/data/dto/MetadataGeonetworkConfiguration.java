@@ -6,6 +6,13 @@ package org.geoserver.metadata.data.dto;
 
 import java.io.Serializable;
 
+/**
+ * Object that matches yaml structure.
+ *
+ * Describe a geonetwork endpoint.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class MetadataGeonetworkConfiguration implements Serializable{
 
     private static final long serialVersionUID = -652210940618705299L;

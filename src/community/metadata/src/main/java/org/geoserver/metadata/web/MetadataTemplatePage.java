@@ -17,7 +17,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
-import org.geoserver.metadata.data.dto.MetadataTemplate;
+import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.ComponentAuthorizer;
@@ -54,14 +54,7 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         super.onInitialize();
         IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(metadataTemplateModel.getObject().getMetadata());
 
-        Form<?> form = new Form<Object>("form") {
-            private static final long serialVersionUID = -5120413426598396101L;
-
-            @Override
-            protected void onSubmit() {
-                metadataModel.getObject();
-            }
-        };
+        Form<?> form = new Form<Object>("form");
 
 
         AjaxSubmitLink saveButton = createSaveButton();

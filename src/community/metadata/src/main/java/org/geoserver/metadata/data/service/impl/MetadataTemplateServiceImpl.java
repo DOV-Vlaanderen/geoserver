@@ -5,7 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.metadata.data.dto.MetadataTemplate;
+import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;

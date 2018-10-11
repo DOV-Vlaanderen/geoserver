@@ -8,6 +8,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Object that matches yaml structure.
+ *
+ * The part describes a complex object. The complex object contains a list of mappings that make the object.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class MetadataAttributeComplexTypeConfiguration implements Serializable{
 
     private static final long serialVersionUID = 7617959011871570119L;

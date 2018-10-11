@@ -8,6 +8,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Object that matches yaml structure.
+ *
+ * The configuration descibes one field for the gui.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class MetadataAttributeConfiguration implements Serializable{
 
     private static final long serialVersionUID = 3130368513874060531L;

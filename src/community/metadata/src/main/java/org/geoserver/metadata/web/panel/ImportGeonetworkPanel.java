@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
@@ -60,7 +61,7 @@ public class ImportGeonetworkPanel extends Panel {
         dropDown.setOutputMarkupId(true);*/
         form.add(dropDown);
 
-        TextField<String> inputUUID = new TextField<>("textfield", createStringModel());
+        TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
         /*inputUUID.setRequired(true);
         inputUUID.setOutputMarkupId(true);*/
         form.add(inputUUID);
@@ -122,32 +123,9 @@ public class ImportGeonetworkPanel extends Panel {
 
 
     private DropDownChoice<String> createDropDown(final ArrayList<String> optionsGeonetwork) {
-        return new DropDownChoice<String>("geonetworkName", createStringModel(), optionsGeonetwork);
+        return new DropDownChoice<String>("geonetworkName", new Model<String>(""), optionsGeonetwork);
     }
 
-    private IModel<String> createStringModel() {
-        return new IModel<String>() {
-            /**
-             *
-             */
-            private static final long serialVersionUID = 7255270070196033720L;
-            public String option;
-
-            @Override
-            public String getObject() {
-                return option;
-            }
-
-            @Override
-            public void setObject(String t) {
-                option = t;
-            }
-
-            @Override
-            public void detach() {
-            }
-        };
-    }
 
 
     public FeedbackPanel getFeedbackPanel() {

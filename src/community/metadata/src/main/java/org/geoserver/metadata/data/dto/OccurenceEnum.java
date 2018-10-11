@@ -4,6 +4,13 @@
  */
 package org.geoserver.metadata.data.dto;
 
+/**
+ * Object that matches in fixed choice in the yaml structure.
+ *
+ * Choose if the field is repeatable or not.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public enum OccurenceEnum {
     SINGLE, REPEAT;
 

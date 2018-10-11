@@ -7,6 +7,14 @@ package org.geoserver.metadata.data.dto;
 
 import java.io.Serializable;
 
+/**
+ * Object that matches yaml structure.
+ *
+ * The part describes one mapping between the geoserver fields en the xml metadata from geonetwork.
+ * The geonetwork field is described as an xpath expression.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class AttributeMapping implements Serializable {
 
     private static final long serialVersionUID = -2528238667226248014L;
@@ -18,7 +26,6 @@ public class AttributeMapping implements Serializable {
     FieldTypeEnum fieldType = FieldTypeEnum.TEXT;
 
     OccurenceEnum occurrence = OccurenceEnum.SINGLE;
-
 
     String typename;
 

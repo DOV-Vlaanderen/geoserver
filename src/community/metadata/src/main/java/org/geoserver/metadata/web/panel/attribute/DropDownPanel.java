@@ -7,6 +7,8 @@ package org.geoserver.metadata.web.panel.attribute;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+
 import java.util.List;
 
 public class DropDownPanel extends Panel {
@@ -17,30 +19,13 @@ public class DropDownPanel extends Panel {
 
         super(id, model);
 
-        add(createDropDown(values));
+        add(createDropDown(model, values));
 
 
     }
 
-    private DropDownChoice<String> createDropDown(List<String> values) {
-        return new DropDownChoice<String>("dropdown", new IModel<String>() {
-            private static final long serialVersionUID = -8063978137850431963L;
-            public String option;
-
-            @Override
-            public String getObject() {
-                return option;
-            }
-
-            @Override
-            public void setObject(String t) {
-                option = t;
-            }
-
-            @Override
-            public void detach() {
-            }
-        }, values);
+    private DropDownChoice<String> createDropDown(IModel<String> model, List<String> values) {
+        return new DropDownChoice<String>("dropdown", model, values);
     }
 
 }

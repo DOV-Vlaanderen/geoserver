@@ -9,6 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Toplevel Object that matches yaml structure.
+ *
+ * This part or the yaml contains the configuration that matches fields in the xml (Xpath expressions)
+ * to the field configuration of the geoserver metadata GUI.
+ *
+ * example of the yaml file: metadata-mapping.yaml
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AttributeMappingConfiguration {
 

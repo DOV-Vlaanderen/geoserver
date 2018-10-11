@@ -4,6 +4,13 @@
  */
 package org.geoserver.metadata.data.dto;
 
+/**
+ * Object that matches in fixed choice in the yaml structure.
+ *
+ * Choose the Gui component Type.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public enum FieldTypeEnum {
     TEXT, NUMBER, DROPDOWN, COMPLEX;
 

@@ -9,6 +9,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Toplevel Object that matches yaml structure.
+ *
+ * Contains the Gui description for the metadata and a list of geonetwork endpoints for importing geonetwork metadata.
+ * The Gui is constructed of MetadataAttributeConfiguration and MetadataAttributeComplexTypeConfiguration.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MetadataEditorConfiguration {
 
