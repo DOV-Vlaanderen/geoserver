@@ -80,11 +80,11 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         if (FieldTypeEnum.COMPLEX.equals(attributeMapping.getFieldType())) {
             for (AttributeComplexTypeMapping complexTypeMapping : mapping) {
                 if (attributeMapping.getTypename().equals(complexTypeMapping.getTypename())) {
+                    ComplexMetadataMap submap = metadataMap.subMap(attributeMapping.getGeoserver());
                     for (AttributeMapping aMapping : complexTypeMapping.getMapping()) {
                         AttributeMapping am = new AttributeMapping(aMapping);
                         am.setOccurrence(attributeMapping.getOccurrence());
-                        am.setGeoserver(attributeMapping.getGeoserver() + "_" + am.getGeoserver());
-                        addAttribute(metadataMap, am, doc, node, mapping);
+                        addAttribute(submap, am, doc, node, mapping);
                     }
                     break;
                 }
