@@ -173,7 +173,13 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap  {
             }
         }
         if (object instanceof List<?>) {
-            ((List<Object>) object).remove(index[index.length - 1]);
+            int elementIndex = index[index.length - 1];
+            List list = (List) object;
+            // null elements are not added to the end of the list.
+            // So removing them would result in IndexOutOfboundException
+            if (elementIndex < list.size()) {
+                ((List<Object>) object).remove(elementIndex);
+            }
         }
         // update indexes
         ArrayList<ComplexMetadataIndexReference> list = indexes.get(path);
