@@ -20,7 +20,6 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class RepeatableAttributesTablePanel extends Panel {

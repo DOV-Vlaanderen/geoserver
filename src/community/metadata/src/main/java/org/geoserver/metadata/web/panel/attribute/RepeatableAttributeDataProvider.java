@@ -8,7 +8,6 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
-import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 import java.io.Serializable;
@@ -31,7 +30,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     private final Property<ComplexMetadataAttribute<T>> REMOVE_ROW =
             new BeanProperty<ComplexMetadataAttribute<T>>(KEY_REMOVE_ROW, "value");
 
-    private final MetadataAttributeConfiguration template;
+    private final MetadataAttributeConfiguration attributeConfiguration;
     
     private IModel<ComplexMetadataMap> metadataModel;
 
@@ -44,8 +43,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
         this.clazz = clazz;
         this.metadataModel = metadataModel;
 
-        this.template = new MetadataAttributeConfiguration(attributeConfiguration);
-        template.setOccurrence(OccurenceEnum.SINGLE);
+        this.attributeConfiguration = attributeConfiguration;
         
         items = new ArrayList<ComplexMetadataAttribute<T>>();
         for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
@@ -53,7 +51,6 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
         }
         
     }
-
 
     @Override
     protected List<Property<ComplexMetadataAttribute<T>>> getProperties() {
@@ -66,18 +63,18 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     }
 
     public void addField() {
-        items.add(metadataModel.getObject().get(clazz, template.getKey(), items.size()));
+        items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getKey(), items.size()));
     }
 
     public void removeField(ComplexMetadataAttribute<T> attribute) {
         int index = items.indexOf(attribute);
         //remove from model
-        metadataModel.getObject().delete(template.getKey(), index);
+        metadataModel.getObject().delete(attributeConfiguration.getKey(), index);
         //remove from view
         items.remove(index);
     }
     
     public MetadataAttributeConfiguration getConfiguration() {
-        return template;
+        return attributeConfiguration;
     }
 }
