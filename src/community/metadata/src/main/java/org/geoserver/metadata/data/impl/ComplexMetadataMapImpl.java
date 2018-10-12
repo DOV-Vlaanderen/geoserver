@@ -126,10 +126,12 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap  {
         Object object = delegate.get(path);
         for (int i = 0; i < index.length; i++) {
             if (object instanceof ArrayList<?>) {
-                object = ((ArrayList<Object>) object).get(index[i]);
-            } else {
-                return object == null ? 0 : 1;
-            }
+                if (index[i] < ((ArrayList<Object>) object).size()) {
+                    object = ((ArrayList<Object>) object).get(index[i]);
+                } else {
+                    object = null;
+                }
+            } 
         }
         if (object instanceof ArrayList<?>) {
             return ((ArrayList<Object>) object).size();
