@@ -49,7 +49,13 @@ public class MetadataPanel extends Panel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        this.setOutputMarkupId(true);
+        //the attributes panel
+        AttributesTablePanel attributesPanel =
+                new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), getMetadataModel());
+        attributesPanel.setOutputMarkupId(true);
+        add(attributesPanel);
+
+        //Geonetwork import panel
         geonetworkPanel = new ImportGeonetworkPanel("geonetworkPanel") {
             private static final long serialVersionUID = -4620394948554985874L;
 
@@ -65,15 +71,14 @@ public class MetadataPanel extends Panel {
                     LOGGER.severe(e.getMessage());
                     getPage().error(e.getMessage());
                 }
-                target.add(MetadataPanel.this);
+                attributesPanel.replaceWith(new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), getMetadataModel()));
+                target.add(attributesPanel);
                 target.add(getPage());
             }
         };
         add(geonetworkPanel);
         geonetworkPanel.setVisible(geonetworkPanelVisible);
-        //the attributes panel
-        add(new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), 
-                getMetadataModel()));
+
 
     }
     
