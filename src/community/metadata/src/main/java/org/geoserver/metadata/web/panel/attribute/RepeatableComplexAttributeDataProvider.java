@@ -5,7 +5,7 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.metadata.data.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 

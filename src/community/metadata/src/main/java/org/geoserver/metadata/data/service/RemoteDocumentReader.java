@@ -4,9 +4,6 @@
  */
 package org.geoserver.metadata.data.service;
 
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.ComplexMetadataMap;
-import org.geoserver.platform.resource.Resource;
 import org.w3c.dom.Document;
 
 import java.io.IOException;

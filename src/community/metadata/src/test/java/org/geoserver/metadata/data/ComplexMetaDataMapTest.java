@@ -4,9 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ComplexMetaDataMapTest {
@@ -153,6 +157,19 @@ public class ComplexMetaDataMapTest {
         assertEquals("alteredYetYetOtherValue", att4.getValue());
         assertEquals("alteredYetYetOtherValue", ((ArrayList<?>) underlying.get("object-as-list_field 04")).get(0));
     }
+/*
+    @Test
+    public void testMergeMetadataMap() {
+        MetadataMap underlying = createMap();
+        ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
+
+        List<ComplexMetadataAttribute> attributes = map.getAttributes();
+        Assert.assertEquals(3, attributes.size());
+
+        List<ComplexMetadataMap> maps = map.getSubmaps();
+        Assert.assertEquals(3, maps.size());
+
+    }*/
 
     private MetadataMap createMap() {
         MetadataMap map = new MetadataMap();
@@ -195,6 +212,23 @@ public class ComplexMetaDataMapTest {
         map.put("object-as-list_field 03", fieldAsListObjectValue03);
 
         map.put("object-as-list_field 04", "object single value");
+
+
+        return map;
+    }
+
+    private MetadataMap createOtherMap() {
+        MetadataMap map = new MetadataMap();
+        //String
+        map.put("field-single", "other single value string");
+
+        // list String
+        ArrayList<Object> fieldAsList = new ArrayList<>();
+        fieldAsList.add("other field list value");
+        map.put("field-as-list", fieldAsList);
+
+        //Object
+        map.put("object-field_field1", "ohter object field 01");
 
 
         return map;

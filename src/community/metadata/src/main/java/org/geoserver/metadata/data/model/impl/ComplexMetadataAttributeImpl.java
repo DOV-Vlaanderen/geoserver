@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.data.impl;
+package org.geoserver.metadata.data.model.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bouncycastle.util.Arrays;
-import org.geoserver.metadata.data.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geotools.util.Converters;
 
 public class ComplexMetadataAttributeImpl<T extends Serializable> 
@@ -100,4 +100,8 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
         }
     }
 
+    /*@Override
+    public String getPath() {
+        return strPath;
+    }*/
 }

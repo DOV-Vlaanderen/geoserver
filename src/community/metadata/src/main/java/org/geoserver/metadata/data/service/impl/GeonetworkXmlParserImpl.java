@@ -5,8 +5,8 @@
 package org.geoserver.metadata.data.service.impl;
 
 
-import org.geoserver.metadata.data.ComplexMetadataAttribute;
-import org.geoserver.metadata.data.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
 import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;

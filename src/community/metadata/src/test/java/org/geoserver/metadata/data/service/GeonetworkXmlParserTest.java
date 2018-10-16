@@ -6,7 +6,7 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.platform.resource.Resource;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 

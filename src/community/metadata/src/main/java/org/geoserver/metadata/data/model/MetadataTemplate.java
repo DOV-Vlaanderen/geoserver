@@ -5,9 +5,6 @@
 package org.geoserver.metadata.data.model;
 
 
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.ComplexMetadataMap;
-
 import java.io.Serializable;
 
 /**

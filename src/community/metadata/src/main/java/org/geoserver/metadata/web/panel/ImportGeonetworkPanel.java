@@ -69,7 +69,12 @@ public class ImportGeonetworkPanel extends Panel {
         TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
         form.add(inputUUID);
 
-        form.add(new AjaxSubmitLink("link") {
+        form.add(createImportAction(dropDown, inputUUID));
+        add(form);
+    }
+
+    private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID) {
+        return new AjaxSubmitLink("link") {
             /**
              *
              */
@@ -95,8 +100,7 @@ public class ImportGeonetworkPanel extends Panel {
                 target.add(getFeedbackPanel());
             }
 
-        });
-        add(form);
+        };
     }
 
     public void handleImport(String url, AjaxRequestTarget target) {

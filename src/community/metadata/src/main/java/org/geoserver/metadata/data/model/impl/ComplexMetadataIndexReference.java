@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.data.impl;
+package org.geoserver.metadata.data.model.impl;
 
 import java.io.Serializable;
 

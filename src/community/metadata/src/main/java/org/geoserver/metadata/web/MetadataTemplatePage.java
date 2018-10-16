@@ -15,8 +15,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.ComplexMetadataMap;
-import org.geoserver.metadata.data.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.panel.MetadataPanel;
@@ -80,7 +80,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         form.add(metadataTemplatePanel);
 
         this.add(form);
-        metadataTemplatePanel.setGeonetworkPanelVisible(false);
     }
 
     protected ComponentAuthorizer getPageAuthorizer() {

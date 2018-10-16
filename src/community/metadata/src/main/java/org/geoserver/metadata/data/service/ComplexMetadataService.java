@@ -5,13 +5,17 @@
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.w3c.dom.Document;
+import org.geoserver.metadata.data.model.MetadataTemplate;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.List;
 
-public interface GeonetworkXmlParser extends Serializable {
+/**
+ * @author Timothy De Bock
+ */
+public interface ComplexMetadataService {
 
-    void parseMetadata(Document doc, ComplexMetadataMap metadataMap) throws IOException;
+
+    void merge(ComplexMetadataMap parent, ComplexMetadataMap child);
 
 }
