@@ -125,16 +125,16 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     private int sizeInternal(String path, int[] index) {
         Object object = delegate.get(path);
         for (int i = 0; i < index.length; i++) {
-            if (object instanceof ArrayList<?>) {
-                if (index[i] < ((ArrayList<Object>) object).size()) {
-                    object = ((ArrayList<Object>) object).get(index[i]);
+            if (object instanceof List<?>) {
+                if (index[i] < ((List<Object>) object).size()) {
+                    object = ((List<Object>) object).get(index[i]);
                 } else {
                     object = null;
                 }
             }
         }
-        if (object instanceof ArrayList<?>) {
-            return ((ArrayList<Object>) object).size();
+        if (object instanceof List<?>) {
+            return ((List<Object>) object).size();
         } else {
             return object == null ? 0 : 1;
         }
@@ -169,7 +169,11 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         Object object = delegate.get(path);
         for (int i = 0; i < index.length - 1; i++) {
             if (object instanceof List<?>) {
-                object = ((List<Object>) object).get(index[i]);
+                if (index[i] < ((List<Object>) object).size()) {
+                    object = ((List<Object>) object).get(index[i]);
+                } else {
+                    return;
+                }
             } else {
                 return;
             }
