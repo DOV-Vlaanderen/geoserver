@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.GeonetworkXmlParser;
@@ -39,13 +40,13 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     public final static String CUSTOM_METADATA_KEY = "custom";
 
-    public MetadataTabPanel(String id, IModel<LayerInfo> model) {
+    public MetadataTabPanel(String id, IModel<LayerInfo> model/*, IModel<ResourceInfo> resourceModel*/) {
         super(id, model);
 
         Serializable custom = model.getObject().getResource().getMetadata().get(CUSTOM_METADATA_KEY);
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
-            model.getObject().getMetadata().put(CUSTOM_METADATA_KEY, custom);
+            model.getObject().getResource().getMetadata().put(CUSTOM_METADATA_KEY, custom);
         }
 
 
