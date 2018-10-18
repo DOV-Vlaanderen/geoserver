@@ -63,10 +63,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     }
 
     public void addField() {
-        ComplexMetadataAttribute<T> att = 
-                metadataModel.getObject().get(clazz, attributeConfiguration.getKey(), items.size());
-        att.setValue(null);
-        items.add(att );
+        items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getKey(), items.size()));
     }
 
     public void removeField(ComplexMetadataAttribute<T> attribute) {
