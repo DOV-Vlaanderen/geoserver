@@ -17,32 +17,20 @@ public class EditorFactory {
     static Component create(MetadataAttributeConfiguration configuration, String id, 
             IModel<ComplexMetadataMap> metadataModel) {
         switch (configuration.getFieldType()) {
-            case TEXT: {
-                
-                ComplexMetadataAttributeModel<String> model =
-                    new ComplexMetadataAttributeModel<String>(
-                        metadataModel.getObject().get(String.class, configuration.getKey()));
-                model.setObject(null);
-                return new TextFieldPanel(id, model);
-                
-            } case NUMBER: {
-                
-                ComplexMetadataAttributeModel<String> model =
-                new ComplexMetadataAttributeModel<String>(
-                    metadataModel.getObject().get(String.class, configuration.getKey()));
-                model.setObject(null);
-                return new TextFieldPanel(id, model);
-                
-            } case DROPDOWN: {
-
-                ComplexMetadataAttributeModel<String> model =
-                      new ComplexMetadataAttributeModel<String>(
-                               metadataModel.getObject().get(String.class, configuration.getKey()));
-                model.setObject(null);                
-                return new DropDownPanel(id, model,
+            case TEXT:
+                return new TextFieldPanel(id, 
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getKey())));
+            case NUMBER:
+                return new TextFieldPanel(id, 
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getKey())));
+            case DROPDOWN:
+                return new DropDownPanel(id, 
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getKey())),
                         configuration.getValues());
-                
-            } case COMPLEX:
+            case COMPLEX:
                 return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
                         new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getKey())));
         }
