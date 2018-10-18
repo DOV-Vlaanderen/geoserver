@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.GeonetworkXmlParser;
@@ -23,22 +24,25 @@ import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.data.resource.ResourceConfigurationPanel;
+import org.geoserver.web.publish.PublishedEditTabPanel;
+import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
 /**
  * A generic configuration panel for all basic ResourceInfo properties
  */
-public class MetadataTabPanel extends ResourceConfigurationPanel {
+public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     private static final long serialVersionUID = -552158739086379566L;
+    
+    private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);
 
     public final static String CUSTOM_METADATA_KEY = "custom";
 
-    public MetadataTabPanel(String id, IModel<ResourceInfo> model) {
+    public MetadataTabPanel(String id, IModel<LayerInfo> model) {
         super(id, model);
 
-        Serializable custom = model.getObject().getMetadata().get(CUSTOM_METADATA_KEY);
+        Serializable custom = model.getObject().getResource().getMetadata().get(CUSTOM_METADATA_KEY);
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
             model.getObject().getMetadata().put(CUSTOM_METADATA_KEY, custom);

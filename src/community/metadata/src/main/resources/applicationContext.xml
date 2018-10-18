@@ -26,10 +26,10 @@
         <property name="authorizer" ref="metadataMenuAuthorizer"/>
     </bean>
 
-    <bean id="metadataEditTabPanel" class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
+    <bean id="metadataEditTabPanel" class="org.geoserver.metadata.web.layer.resource.MetadataTabPanelInfo">
         <property name="id" value="metadataEditTabPanel" />
-        <property name="titleKey" value="test" />
-        <property name="descriptionKey" value="test" />
+        <property name="titleKey" value="MetadataTabPanelInfo.title" />
+        <property name="descriptionKey" value="MetadataTabPanelInfo.description" />
         <property name="componentClass"
                   value="org.geoserver.metadata.web.layer.resource.MetadataTabPanel" />
     </bean>
