@@ -179,7 +179,11 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             }
         }
         if (object instanceof List<?>) {
-            ((List<Object>) object).remove(index[index.length - 1]);
+            if (index[index.length - 1] < ((List<Object>) object).size()) {
+                ((List<Object>) object).remove(index[index.length - 1]);
+            } else {
+                return;
+            }
         }
         // update indexes
         ArrayList<ComplexMetadataIndexReference> list = indexes.get(path);
