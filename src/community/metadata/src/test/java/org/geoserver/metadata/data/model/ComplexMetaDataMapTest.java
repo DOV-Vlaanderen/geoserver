@@ -158,19 +158,6 @@ public class ComplexMetaDataMapTest {
         assertEquals("alteredYetYetOtherValue", att4.getValue());
         assertEquals("alteredYetYetOtherValue", ((ArrayList<?>) underlying.get("object-as-list_field 04")).get(0));
     }
-/*
-    @Test
-    public void testMergeMetadataMap() {
-        MetadataMap underlying = createMap();
-        ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
-
-        List<ComplexMetadataAttribute> attributes = map.getAttributes();
-        Assert.assertEquals(3, attributes.size());
-
-        List<ComplexMetadataMap> maps = map.getSubmaps();
-        Assert.assertEquals(3, maps.size());
-
-    }*/
 
     private MetadataMap createMap() {
         MetadataMap map = new MetadataMap();

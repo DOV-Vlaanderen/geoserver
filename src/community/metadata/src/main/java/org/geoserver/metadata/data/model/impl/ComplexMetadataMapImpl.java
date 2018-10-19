@@ -211,48 +211,4 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         return ArrayUtils.addAll(first, second);
     }
 
-
-    /*@Override
-    public List<ComplexMetadataAttribute> getAttributes() {
-        ArrayList<ComplexMetadataAttribute> result = new ArrayList<>();
-        for (String key : delegate.keySet()) {
-            //remove basepath
-            String basePathString = String.join(PATH_SEPARATOR, basePath);
-            String cleanKey = key.replace(basePathString + PATH_SEPARATOR, "");
-            if (!cleanKey.contains(PATH_SEPARATOR)) {
-                int size = size(cleanKey);
-                for (int i = 0; i < size; i++) {
-                    ComplexMetadataAttribute<String> attribute = get(String.class, cleanKey, i);
-                    result.add(attribute);
-                }
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public List<ComplexMetadataMap> getSubmaps() {
-        ArrayList<ComplexMetadataMap> result = new ArrayList<>();
-        ArrayList<String> pathsAdded = new ArrayList<>();
-        for (String key : delegate.keySet()) {
-            //remove basepath
-            String cleanKey = key;
-            String basePathString = String.join(PATH_SEPARATOR, basePath);
-            if (!"".equals(basePathString)) {
-                cleanKey = key.replace(basePathString + PATH_SEPARATOR, "");
-            }
-            if (cleanKey.contains(PATH_SEPARATOR)) {
-                int size = size(cleanKey);
-                String ojectPath = cleanKey.split(PATH_SEPARATOR)[0];
-                if (!pathsAdded.contains(ojectPath)) {
-                    for (int i = 0; i < size; i++) {
-                        ComplexMetadataMap map = subMap(ojectPath, i);
-                        result.add(map);
-                    }
-                    pathsAdded.add(ojectPath);
-                }
-            }
-        }
-        return result;
-    }*/
 }

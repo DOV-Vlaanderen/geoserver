@@ -22,23 +22,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
 
     @Override
     public void merge(ComplexMetadataMap parent, ComplexMetadataMap child) {
-        ArrayList<String> pathsProcessed = new ArrayList<>();
-        //TODO this code this not work, a list is created internally
-        /*for (ComplexMetadataAttribute attribute : child.getAttributes()) {
-            if (!pathsProcessed.contains(attribute.getPath())) {
-                clearData(parent, attribute.getPath());
-            }
-            pathsProcessed.add(attribute.getPath());
-            String value = (String) attribute.getValue();
-            if (value != null) {
-                parent.get(String.class, attribute.getPath(),parent.size(attribute.getPath())).setValue(value);
-            }
-        }*/
+
     }
 
-    private void clearData(ComplexMetadataMap parent, String path) {
-        for (int i = 0; i < parent.size(path); i++) {
-            parent.delete(path, i);
-        }
-    }
 }

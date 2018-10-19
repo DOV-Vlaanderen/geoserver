@@ -16,8 +16,4 @@ public interface ComplexMetadataMap extends Serializable {
     void delete(String att, int... index);
     
     int size(String att, int... index);
-
-   /* List<ComplexMetadataAttribute> getAttributes();
-
-    List<ComplexMetadataMap> getSubmaps();*/
 }

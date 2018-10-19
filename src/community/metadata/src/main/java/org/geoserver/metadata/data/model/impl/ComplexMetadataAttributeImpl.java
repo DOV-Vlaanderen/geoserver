@@ -100,8 +100,4 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
         }
     }
 
-    /*@Override
-    public String getPath() {
-        return strPath;
-    }*/
 }

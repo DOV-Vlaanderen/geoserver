@@ -12,5 +12,4 @@ public interface ComplexMetadataAttribute <T extends Serializable> extends Seria
     
     public void setValue(T value);
 
-    //String getPath();
 }
