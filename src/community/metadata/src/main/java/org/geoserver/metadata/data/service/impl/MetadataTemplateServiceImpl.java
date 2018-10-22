@@ -37,7 +37,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     private GeoServerDataDirectory dataDirectory;
 
     private Resource getFolder() {
-        return dataDirectory.get("metadata");
+        return dataDirectory.get(MetaDataConstants.DIRECTORY);
     }
 
     @Override

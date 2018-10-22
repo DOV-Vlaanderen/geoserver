@@ -36,7 +36,7 @@ public class YamlServiceImpl implements YamlService {
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
 
     private Resource getFolder() {
-        return dataDirectory.get("metadata");
+        return dataDirectory.get(MetaDataConstants.DIRECTORY);
     }
 
     @Override
