@@ -5,10 +5,6 @@
 package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.model.MetadataTemplate;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Timothy De Bock

@@ -75,7 +75,6 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
     }
 
-    @SuppressWarnings("unchecked")
     private void mapNode(ComplexMetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
         if (FieldTypeEnum.COMPLEX.equals(attributeMapping.getFieldType())) {
             for (AttributeComplexTypeMapping complexTypeMapping : mapping) {

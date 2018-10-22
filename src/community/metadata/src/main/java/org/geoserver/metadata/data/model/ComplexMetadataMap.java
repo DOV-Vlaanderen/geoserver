@@ -5,7 +5,6 @@
 package org.geoserver.metadata.data.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 public interface ComplexMetadataMap extends Serializable {    
     

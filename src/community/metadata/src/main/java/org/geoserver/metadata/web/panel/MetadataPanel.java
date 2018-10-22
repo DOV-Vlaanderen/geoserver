@@ -4,21 +4,13 @@
  */
 package org.geoserver.metadata.web.panel;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.service.GeonetworkXmlParser;
-import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
-import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
-import org.w3c.dom.Document;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.logging.Logger;
 
 /**

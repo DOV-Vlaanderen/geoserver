@@ -96,6 +96,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     }
 
 
+    @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
         Resource folder = getFolder();
         Resource file = folder.get("templates.config");
@@ -105,7 +106,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                 ObjectInputStream objectIn = new ObjectInputStream(file.in());
                 Object obj = objectIn.readObject();
                 if (obj instanceof List) {
-                    return (List) obj;
+                    return (List<MetadataTemplate>) obj;
                 }
             } catch (ClassNotFoundException e) {
                 LOGGER.severe(e.getMessage());

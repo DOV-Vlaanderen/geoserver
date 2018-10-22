@@ -53,6 +53,7 @@ public class ImportTemplatePanel extends Panel {
         super(id, metadataModel);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onInitialize() {
         super.onInitialize();
@@ -193,6 +194,7 @@ public class ImportTemplatePanel extends Panel {
         //add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);
         //todo load the data
+        @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> model = (IModel<ComplexMetadataMap>) getDefaultModel();
 
         ComplexMetadataService service =

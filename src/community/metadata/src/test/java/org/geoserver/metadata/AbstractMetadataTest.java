@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.data.service;
+package org.geoserver.metadata;
 
 import org.apache.wicket.util.file.File;
 import org.geoserver.config.GeoServer;

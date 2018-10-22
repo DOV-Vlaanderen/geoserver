@@ -1,16 +1,17 @@
-package org.geoserver.metadata.data;
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.metadata.data.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ComplexMetaDataMapTest {

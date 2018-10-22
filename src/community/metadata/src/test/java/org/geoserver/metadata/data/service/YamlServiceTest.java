@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.service;
 
+import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.junit.Assert;
