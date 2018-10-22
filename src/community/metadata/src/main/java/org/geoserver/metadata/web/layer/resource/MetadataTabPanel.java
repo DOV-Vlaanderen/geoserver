@@ -21,8 +21,6 @@ import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
-import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
-import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geotools.util.logging.Logging;
@@ -78,7 +76,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                     LOGGER.severe(e.getMessage());
                     getPage().error(e.getMessage());
                 }
-                metadataPanel.replaceWith(new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), metadataModel));
+                metadataPanel.replaceWith(new MetadataPanel("metadataPanel", metadataModel));
                 target.add(metadataPanel);
                 target.add(getPage());
             }
