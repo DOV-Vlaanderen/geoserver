@@ -39,7 +39,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
             ArrayList<ComplexMetadataMap> reversed = new ArrayList<ComplexMetadataMap>(children);
             Collections.reverse(reversed);
             for (ComplexMetadataMap child : reversed) {
-                mergeAttribute(parent, child, config.getAttributes(), config.getComplextypes());
+                mergeAttribute(parent, child, config.getAttributes(), config.getTypes());
             }
         } catch (IOException e) {
             //TODO welke fout gooien?

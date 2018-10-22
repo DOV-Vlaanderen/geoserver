@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.service;
 
+import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.junit.Assert;
 import org.junit.Test;

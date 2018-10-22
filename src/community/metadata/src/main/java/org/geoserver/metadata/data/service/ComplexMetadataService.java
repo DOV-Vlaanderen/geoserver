@@ -6,6 +6,8 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
+import java.util.List;
+
 /**
  * @author Timothy De Bock
  */

@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service;
 
 
+import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.junit.Assert;
@@ -30,7 +31,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Test
     public void testList() throws IOException {
         List<MetadataTemplate> actual = service.list();
-        Assert.assertEquals(4, actual.size());
+        Assert.assertEquals(6, actual.size());
         Assert.assertEquals("allData", actual.get(0).getName());
         Assert.assertNotNull(actual.get(0).getMetadata());
     }
@@ -84,10 +85,12 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
     @Test
     public void testDelete() throws IOException {
+        int initial = service.list().size();
+
         MetadataTemplate actual = service.load("allData");
         service.delete(actual);
 
-        Assert.assertEquals(3, service.list().size());
+        Assert.assertEquals(initial - 1, service.list().size());
     }
 
 }
