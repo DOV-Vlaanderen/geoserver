@@ -48,29 +48,41 @@ public class YamlServiceImpl implements YamlService {
         try {
             for (Resource file : Resources.list(folder, new Resources.ExtensionFilter("YAML"))) {
                 try (InputStream in = file.in()) {
-                    MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfiguration.class);
-                    //Merge configuration
-                    for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
-                        if (attribute.getKey() == null) {
-                            throw new IOException("The key of an attribute may not be null. " + attribute.getLabel());
-                        }
-                        if (attribute.getLabel() == null) {
-                            attribute.setLabel(attribute.getKey());
-
-                        }
-                        configuration.getAttributes().add(attribute);
-                    }
-                    configuration.getGeonetworks().addAll(config.getGeonetworks());
-                    configuration.getTypes().addAll(config.getTypes());
-                } catch (IOException e) {
-                    LOGGER.severe(e.getMessage());
-                }
+                    readConfiguration(in, configuration, mapper);
+                } 
+            }            
+            //add feature catalog
+            try (InputStream in  = getClass().getResourceAsStream(MetaDataConstants.FEATURE_CATALOG)) {
+                readConfiguration(in, configuration, mapper);
             }
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }
 
         return configuration;
+    }
+    
+    private void readConfiguration(InputStream in, MetadataEditorConfiguration configuration, ObjectMapper mapper) {
+        try {
+            MetadataEditorConfiguration config = mapper.readValue(in,
+                    MetadataEditorConfiguration.class);
+            // Merge configuration
+            for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
+                if (attribute.getKey() == null) {
+                    throw new IOException(
+                            "The key of an attribute may not be null. " + attribute.getLabel());
+                }
+                if (attribute.getLabel() == null) {
+                    attribute.setLabel(attribute.getKey());
+
+                }
+                configuration.getAttributes().add(attribute);
+            }
+            configuration.getGeonetworks().addAll(config.getGeonetworks());
+            configuration.getTypes().addAll(config.getTypes());
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
     }
 
     @Override
