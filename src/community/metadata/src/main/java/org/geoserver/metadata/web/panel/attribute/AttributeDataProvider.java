@@ -40,7 +40,7 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput>
     public AttributeDataProvider(String typename) {
         super();
         MetadataEditorConfigurationService metadataConfigurationService = GeoServerApplication.get().getApplicationContext().getBean(MetadataEditorConfigurationService.class);
-        for (MetadataAttributeComplexTypeConfiguration complexTypeConfiguration : metadataConfigurationService.readConfiguration().getComplextypes()) {
+        for (MetadataAttributeComplexTypeConfiguration complexTypeConfiguration : metadataConfigurationService.readConfiguration().getTypes()) {
             if (complexTypeConfiguration.getTypename().equals(typename)) {
                 for (MetadataAttributeConfiguration config : complexTypeConfiguration.getAttributes()) {
                     AttributeInput attributeInput = new AttributeInput(config);

@@ -61,7 +61,7 @@ public class YamlServiceImpl implements YamlService {
                         configuration.getAttributes().add(attribute);
                     }
                     configuration.getGeonetworks().addAll(config.getGeonetworks());
-                    configuration.getComplextypes().addAll(config.getComplextypes());
+                    configuration.getTypes().addAll(config.getTypes());
                 } catch (IOException e) {
                     LOGGER.severe(e.getMessage());
                 }

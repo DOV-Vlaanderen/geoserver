@@ -24,7 +24,7 @@ public class MetadataEditorConfiguration {
 
     List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
 
-    List<MetadataAttributeComplexTypeConfiguration> complextypes = new ArrayList<>();
+    List<MetadataAttributeComplexTypeConfiguration> types = new ArrayList<>();
 
     public List<MetadataAttributeConfiguration> getAttributes() {
         return attributes;
@@ -42,11 +42,11 @@ public class MetadataEditorConfiguration {
         this.geonetworks = geonetworks;
     }
 
-    public List<MetadataAttributeComplexTypeConfiguration> getComplextypes() {
-        return complextypes;
+    public List<MetadataAttributeComplexTypeConfiguration> getTypes() {
+        return types;
     }
 
-    public void setComplextypes(List<MetadataAttributeComplexTypeConfiguration> complextypes) {
-        this.complextypes = complextypes;
+    public void setComplextypes(List<MetadataAttributeComplexTypeConfiguration> types) {
+        this.types = types;
     }
 }

@@ -30,7 +30,7 @@ attributes:
     typename: objectCatalog
     occurrence: REPEAT
 
-complextypes:
+types:
   - typename: referencesystem
     attributes:
         - label: Code

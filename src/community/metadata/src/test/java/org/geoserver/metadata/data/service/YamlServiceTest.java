@@ -30,7 +30,7 @@ public class YamlServiceTest extends AbstractMetadataTest {
         Assert.assertNotNull(configuration);
         Assert.assertEquals(7, configuration.getAttributes().size());
         Assert.assertEquals(3, configuration.getGeonetworks().size());
-        Assert.assertEquals(3, configuration.getComplextypes().size());
+        Assert.assertEquals(3, configuration.getTypes().size());
 
     }
 
