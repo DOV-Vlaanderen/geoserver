@@ -11,7 +11,11 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
  */
 public interface ComplexMetadataService {
 
-
-    void merge(ComplexMetadataMap parent, ComplexMetadataMap child);
+    /**
+     * The values in the template are applied in reverse order, i.e. the first child has the highest priority.
+     * @param parent
+     * @param children
+     */
+    void merge(ComplexMetadataMap parent, List<ComplexMetadataMap> children);
 
 }

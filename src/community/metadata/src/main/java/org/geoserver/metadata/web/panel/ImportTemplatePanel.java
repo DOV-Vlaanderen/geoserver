@@ -200,7 +200,10 @@ public class ImportTemplatePanel extends Panel {
         ComplexMetadataService service =
                 GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
 
-        service.merge(model.getObject(), selected.getMetadata());
+        ArrayList<ComplexMetadataMap> templates = new ArrayList<>();
+        templates.add(selected.getMetadata());
+
+        service.merge(model.getObject(), templates);
 
     }
 

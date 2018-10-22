@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
+ *
+ * TODO mage the file readable (XMl).
  * @author Timothy De Bock
  */
 @Component
@@ -32,6 +34,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplateServiceImpl.class);
 
+    private String resourcePath = "templates.config";
 
     @Autowired
     private GeoServerDataDirectory dataDirectory;
@@ -48,6 +51,10 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Override
     public void save(MetadataTemplate metadataTemplate) throws IOException {
+        if(metadataTemplate.getName() == null){
+            throw new IOException("Template with name required.");
+        }
+
         List<MetadataTemplate> tempates = list();
         for (MetadataTemplate tempate : tempates) {
             if (tempate.getName().equals(metadataTemplate.getName())) {
@@ -99,7 +106,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
         Resource folder = getFolder();
-        Resource file = folder.get("templates.config");
+        Resource file = folder.get(resourcePath);
 
         if (file != null) {
             try {
