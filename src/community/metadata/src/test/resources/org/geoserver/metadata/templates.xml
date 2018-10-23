@@ -774,6 +774,9 @@
         </entry>
       </indexes>
     </metadata>
+    <linkedLayers>
+      <string>gs:layer</string>
+    </linkedLayers>
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>template-nested-object</name>
@@ -1001,5 +1004,9 @@
         </entry>
       </indexes>
     </metadata>
+    <linkedLayers>
+      <string>gs:layer</string>
+      <string>gs:other</string>
+    </linkedLayers>
   </org.geoserver.metadata.data.model.MetadataTemplate>
 </list>

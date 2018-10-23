@@ -6,6 +6,8 @@ package org.geoserver.metadata.data.model;
 
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Timothy De Bock - timothy.debock.github@gmail.com
@@ -17,6 +19,8 @@ public class MetadataTemplate implements Serializable {
     private String description;
 
     private ComplexMetadataMap metadata;
+
+    private Set<String> linkedLayers = new HashSet<>();
 
     public String getName() {
         return name;
@@ -40,5 +44,13 @@ public class MetadataTemplate implements Serializable {
 
     public void setMetadata(ComplexMetadataMap metadata) {
         this.metadata = metadata;
+    }
+
+    public Set<String> getLinkedLayers() {
+        return linkedLayers;
+    }
+
+    public void setLinkedLayers(Set<String> linkedLayers) {
+        this.linkedLayers = linkedLayers;
     }
 }

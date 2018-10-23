@@ -40,6 +40,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
     public MetadataTabPanel(String id, IModel<LayerInfo> model/*, IModel<ResourceInfo> resourceModel*/) {
         super(id, model);
 
+
         Serializable custom = model.getObject().getResource().getMetadata().get(CUSTOM_METADATA_KEY);
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
@@ -52,7 +53,10 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                 new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
 
 
-        this.add(new ImportTemplatePanel("importTemplatePanel", metadataModel));
+        String name = model.getObject().getResource().getNativeName();
+        String workspace = model.getObject().getResource().getStore().getWorkspace().getName();
+
+        this.add(new ImportTemplatePanel("importTemplatePanel", workspace, name, metadataModel));
 
         MetadataPanel metadataPanel = new MetadataPanel("metadataPanel", metadataModel);
         this.add(metadataPanel);

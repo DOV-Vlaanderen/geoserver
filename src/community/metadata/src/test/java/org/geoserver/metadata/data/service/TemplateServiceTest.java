@@ -93,4 +93,40 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(initial - 1, service.list().size());
     }
 
+    @Test
+    public void testListLinked() throws IOException {
+        List<MetadataTemplate> actual =  service.listLinked("gs", "layer");
+        Assert.assertEquals(2, actual.size());
+
+        actual =  service.listLinked("gs", "other");
+        Assert.assertEquals(1, actual.size());
+        Assert.assertEquals("template-nested-object", actual.get(0).getName());
+    }
+
+    @Test
+    public void testAddLinked() throws IOException {
+        MetadataTemplate template = service.load("allData");
+
+        List<MetadataTemplate> actual =  service.listLinked("gs", "myLayer");
+        Assert.assertEquals(0, actual.size());
+
+        service.addLink(template, "gs", "myLayer");
+
+        actual =  service.listLinked("gs", "myLayer");
+        Assert.assertEquals(1, actual.size());
+        Assert.assertEquals("allData", actual.get(0).getName());
+    }
+
+    @Test
+    public void testRemoveLinked() throws IOException {
+        MetadataTemplate template = service.load("template-nested-object");
+        List<MetadataTemplate> actual =  service.listLinked("gs", "layer");
+        Assert.assertEquals(2, actual.size());
+
+        service.removeLink(template ,"gs", "layer");
+
+        actual =  service.listLinked("gs", "layer");
+        Assert.assertEquals(1, actual.size());
+    }
+
 }

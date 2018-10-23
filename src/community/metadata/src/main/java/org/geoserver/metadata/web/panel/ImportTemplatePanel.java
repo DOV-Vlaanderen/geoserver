@@ -29,11 +29,14 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
+ * The ImportTemplatePanel allows the user to link the metadata to values configured in the metadata template.
+ *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class ImportTemplatePanel extends Panel {
@@ -49,17 +52,16 @@ public class ImportTemplatePanel extends Panel {
 
     private MetadataTemplate selected;
 
-    public ImportTemplatePanel(String id, IModel<ComplexMetadataMap> metadataModel) {
+    public ImportTemplatePanel(String id, String workspace, String layerName,
+                               IModel<ComplexMetadataMap> metadataModel) {
         super(id, metadataModel);
+        linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onInitialize() {
         super.onInitialize();
-
-        linkedTemplatesDataProvider =
-                new ImportTemplateDataProvider((IModel<ComplexMetadataMap>) getDefaultModel());
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
@@ -83,7 +85,7 @@ public class ImportTemplatePanel extends Panel {
         templatesPanel.setFilterable(false);
         templatesPanel.getTopPager().setVisible(false);
         templatesPanel.getBottomPager().setVisible(false);
-        templatesPanel.setSelectable(false);
+        templatesPanel.setSelectable(true);
         templatesPanel.setSortable(false);
         templatesPanel.setOutputMarkupId(true);
 
@@ -122,7 +124,12 @@ public class ImportTemplatePanel extends Panel {
                     valid = false;
                 }
                 if (valid) {
-                    linkTemplate(dropDown.getModelObject());
+                    try {
+                        linkTemplate(dropDown.getModelObject());
+                    } catch (IOException e) {
+                        error(new ParamResourceModel("errorSelectGeonetwork",
+                                ImportTemplatePanel.this).getString());
+                    }
                 }
                 target.add(getFeedbackPanel());
                 target.add(templatesPanel);
@@ -140,7 +147,12 @@ public class ImportTemplatePanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                unlinkTemplate();
+                try {
+                    unlinkTemplate();
+                } catch (IOException e) {
+                    error(new ParamResourceModel("errorSelectGeonetwork",
+                            ImportTemplatePanel.this).getString());
+                }
                 target.add(templatesPanel);
                 target.add(dropDown);
             }
@@ -190,7 +202,7 @@ public class ImportTemplatePanel extends Panel {
      *
      * @param selected
      */
-    private void linkTemplate(MetadataTemplate selected) {
+    private void linkTemplate(MetadataTemplate selected) throws IOException {
         //add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);
         //todo load the data
@@ -210,7 +222,7 @@ public class ImportTemplatePanel extends Panel {
     /**
      * Link the template and the selected metadata
      */
-    private void unlinkTemplate() {
+    private void unlinkTemplate() throws IOException {
         //remove link from metadata
         for (MetadataTemplate metadataTemplate : templatesPanel.getSelection()) {
             linkedTemplatesDataProvider.removeLink(metadataTemplate);

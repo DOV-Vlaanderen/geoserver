@@ -16,13 +16,18 @@ public interface MetadataTemplateService {
 
     List<MetadataTemplate> list() throws IOException;
 
+    List<MetadataTemplate> listLinked(String workspace, String layerName) throws IOException;
+
     void save(MetadataTemplate metadataTemplate) throws IOException;
 
     void update(MetadataTemplate metadataTemplate) throws IOException;
 
     MetadataTemplate load(String templateName) throws IOException;
 
+
     void delete(MetadataTemplate metadataTemplate) throws IOException;
 
+    void addLink(MetadataTemplate modelObject, String workspace, String layerName) throws IOException;
 
+    void removeLink(MetadataTemplate modelObject, String workspace, String layerName) throws IOException;
 }
