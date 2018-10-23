@@ -5,6 +5,10 @@
 package org.geoserver.metadata.data.service.impl;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerFactory;
+import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.platform.resource.Files;
@@ -18,15 +22,16 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
+ * Service that manages the list of templates.
+ * When the config of a template is updated all linked metadata is also updated.
  *
- * TODO mage the file readable (XMl).
- * @author Timothy De Bock
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @Component
 public class MetadataTemplateServiceImpl implements MetadataTemplateService {
@@ -34,10 +39,18 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplateServiceImpl.class);
 
-    private String resourcePath = "templates.config";
+    XStreamPersister persister;
+
+    private static String FILE_NAME = "templates.xml";
 
     @Autowired
     private GeoServerDataDirectory dataDirectory;
+
+    public MetadataTemplateServiceImpl() {
+        this.persister = new XStreamPersisterFactory().createXMLPersister();
+        this.persister.getXStream().allowTypesByWildcard(new String[]{"org.geoserver.metadata.data.model.**"});
+
+    }
 
     private Resource getFolder() {
         return dataDirectory.get(MetaDataConstants.DIRECTORY);
@@ -51,7 +64,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Override
     public void save(MetadataTemplate metadataTemplate) throws IOException {
-        if(metadataTemplate.getName() == null){
+        if (metadataTemplate.getName() == null) {
             throw new IOException("Template with name required.");
         }
 
@@ -93,7 +106,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         List<MetadataTemplate> tempates = list();
         MetadataTemplate toDelete = null;
         for (MetadataTemplate tempate : tempates) {
-            if(tempate.getName().equals(metadataTemplate.getName())){
+            if (tempate.getName().equals(metadataTemplate.getName())) {
                 toDelete = tempate;
                 break;
             }
@@ -106,18 +119,14 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
         Resource folder = getFolder();
-        Resource file = folder.get(resourcePath);
+        Resource file = folder.get(FILE_NAME);
 
         if (file != null) {
             try {
-                ObjectInputStream objectIn = new ObjectInputStream(file.in());
-                Object obj = objectIn.readObject();
-                if (obj instanceof List) {
-                    return (List<MetadataTemplate>) obj;
-                }
-            } catch (ClassNotFoundException e) {
-                LOGGER.severe(e.getMessage());
-            } catch (EOFException exception){
+
+                List<MetadataTemplate> tempates = persister.load(file.in(), List.class);
+                return tempates;
+            } catch (EOFException exception) {
                 LOGGER.warning("File is empty");
             }
         }
@@ -127,16 +136,18 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     private void updateTemplates(List<MetadataTemplate> tempates) throws IOException {
         Resource folder = getFolder();
-        Resource file = folder.get("templates.config");
+        Resource file = folder.get("templates.xml");
 
         if (file == null) {
-            File fileResource = Resources.createNewFile(Files.asResource(new File(folder.dir(), "templates.config")));
+            File fileResource = Resources.createNewFile(Files.asResource(new File(folder.dir(), FILE_NAME)));
             file = Files.asResource(fileResource);
         }
-
-        ObjectOutputStream objectOut = new ObjectOutputStream(file.out());
-        objectOut.writeObject(tempates);
-        objectOut.close();
+        OutputStream out = file.out();
+        try {
+            persister.save(tempates, out);
+        } finally {
+            out.close();
+        }
 
     }
 

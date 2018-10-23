@@ -51,7 +51,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         MetadataTemplate metadataTemplate = new MetadataTemplate();
         metadataTemplate.setName("new-record");
         metadataTemplate.setDescription("new-record-description");
-        metadataTemplate.setMetadata(new ComplexMetadataMapImpl(new HashMap<String, Serializable>()));
+        metadataTemplate.setMetadata(new ComplexMetadataMapImpl(new HashMap<>()));
 
         service.save(metadataTemplate);
 
