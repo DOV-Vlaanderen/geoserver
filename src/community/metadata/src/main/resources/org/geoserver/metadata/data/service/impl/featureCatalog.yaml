@@ -17,16 +17,19 @@ types:
           values:
               - String
               - Date
+              - Number
               - Geometry
-              - Integer
-              - byte[]
+              - Unknown
+        - label: Length
+          key: length
+          fieldType: NUMBER
         - label: Definition
           key: definition
           fieldType: TEXT
-        - label: Minimale cardinaliteit
+        - label: Minimal Cardinality
           key: min-occurence
           fieldType: NUMBER
-        - label: Maximale cardinaliteit
+        - label: Maximal Cardinality
           key: max-occurence
           fieldType: NUMBER
         - label: Domain

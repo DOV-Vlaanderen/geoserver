@@ -18,6 +18,14 @@ public interface ComplexMetadataService {
      * @param parent
      * @param children
      */
-    void merge(ComplexMetadataMap parent, List<ComplexMetadataMap> children);
+    void merge(ComplexMetadataMap destination, List<ComplexMetadataMap> sources);
+    
+    /**
+     * The values in the template are applied in reverse order, i.e. the first child has the highest priority.
+     * @param destination
+     * @param source
+     */
+    void merge(ComplexMetadataMap destination, ComplexMetadataMap source,
+            String typeName);
 
 }

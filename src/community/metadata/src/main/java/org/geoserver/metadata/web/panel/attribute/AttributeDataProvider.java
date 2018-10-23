@@ -5,7 +5,7 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.geoserver.metadata.data.model.AttributeInput;
-import org.geoserver.metadata.data.dto.MetadataAttributeComplexTypeConfiguration;
+import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.web.GeoServerApplication;
@@ -40,12 +40,12 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput>
     public AttributeDataProvider(String typename) {
         super();
         MetadataEditorConfigurationService metadataConfigurationService = GeoServerApplication.get().getApplicationContext().getBean(MetadataEditorConfigurationService.class);
-        for (MetadataAttributeComplexTypeConfiguration complexTypeConfiguration : metadataConfigurationService.readConfiguration().getTypes()) {
-            if (complexTypeConfiguration.getTypename().equals(typename)) {
-                for (MetadataAttributeConfiguration config : complexTypeConfiguration.getAttributes()) {
-                    AttributeInput attributeInput = new AttributeInput(config);
-                    items.add(attributeInput);
-                }
+        MetadataAttributeTypeConfiguration typeConfiguration 
+            = metadataConfigurationService.readConfiguration().findType(typename);
+        if (typeConfiguration != null) {
+            for (MetadataAttributeConfiguration config : typeConfiguration.getAttributes()) {
+                AttributeInput attributeInput = new AttributeInput(config);
+                items.add(attributeInput);
             }
         }
     }

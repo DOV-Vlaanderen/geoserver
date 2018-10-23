@@ -5,7 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 
-import org.geoserver.metadata.data.dto.MetadataAttributeComplexTypeConfiguration;
+import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
@@ -31,27 +31,45 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     YamlService yamlService;
 
     @Override
-    public void merge(ComplexMetadataMap parent, List<ComplexMetadataMap> children) {
-        //TODO first clear stuff
-
+    public void merge(ComplexMetadataMap destination, List<ComplexMetadataMap> sources) {
+        MetadataEditorConfiguration config;
         try {
-            MetadataEditorConfiguration config = yamlService.readConfiguration();
-            ArrayList<ComplexMetadataMap> reversed = new ArrayList<ComplexMetadataMap>(children);
-            Collections.reverse(reversed);
-            for (ComplexMetadataMap child : reversed) {
-                mergeAttribute(parent, child, config.getAttributes(), config.getTypes());
-            }
+            config = yamlService.readConfiguration();
         } catch (IOException e) {
             //TODO welke fout gooien?
             throw new IllegalStateException("Metadata could not be merge." +
                     "The corresponding gui configuration cannot be read.");
         }
 
+        //TODO first clear stuff
+        ArrayList<ComplexMetadataMap> reversed = new ArrayList<ComplexMetadataMap>(sources);
+        Collections.reverse(reversed);
+        for (ComplexMetadataMap source : reversed) {
+            mergeAttribute(destination, source, config.getAttributes(), config);
+        }
+
+    }
+    
+    @Override
+    public void merge(ComplexMetadataMap destination, ComplexMetadataMap source,
+            String typeName) {
+        MetadataEditorConfiguration config;
+        try {
+            config = yamlService.readConfiguration();
+        } catch (IOException e) {
+            // TODO welke fout gooien?
+            throw new IllegalStateException("Metadata could not be merge."
+                    + "The corresponding gui configuration cannot be read.");
+        }
+        mergeAttribute(destination, source, 
+                typeName == null ? config.getAttributes()
+                        : config.findType(typeName).getAttributes(), 
+                config);
     }
 
     private void mergeAttribute(ComplexMetadataMap parent, ComplexMetadataMap child,
                                 List<MetadataAttributeConfiguration> attributes,
-                                List<MetadataAttributeComplexTypeConfiguration> complextypes) {
+                                MetadataEditorConfiguration config) {
         for (MetadataAttributeConfiguration attribute : attributes) {
             switch (attribute.getFieldType()) {
                 case TEXT:
@@ -64,7 +82,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                     mergeSimpleField(attribute, parent, child);
                     break;
                 case COMPLEX:
-                    mergeComplexField(attribute, complextypes, parent, child);
+                    mergeComplexField(attribute, config.findType(attribute.getTypename()), 
+                            config, parent, child);
                     break;
             }
         }
@@ -93,19 +112,15 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     }
 
     private void mergeComplexField(MetadataAttributeConfiguration attribute,
-                                   List<MetadataAttributeComplexTypeConfiguration> complextypes,
+                                   MetadataAttributeTypeConfiguration type,
+                                   MetadataEditorConfiguration config,
                                    ComplexMetadataMap parent, ComplexMetadataMap child) {
         switch (attribute.getOccurrence()) {
             case SINGLE:
                 if (child.size(attribute.getKey()) > 0) {
                     ComplexMetadataMap childMap = child.subMap(attribute.getKey());
                     ComplexMetadataMap parentMap = parent.subMap(attribute.getKey());
-                    for (MetadataAttributeComplexTypeConfiguration complextype : complextypes) {
-                        if (attribute.getTypename().equals(complextype.getTypename())) {
-                            mergeAttribute(parentMap, childMap, complextype.getAttributes(), complextypes);
-                            break;
-                        }
-                    }
+                    mergeAttribute(parentMap, childMap, type.getAttributes(), config);
                 }
                 break;
             case REPEAT:
@@ -113,12 +128,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                     ComplexMetadataMap childMap = child.subMap(attribute.getKey(), i);
                     int index = parent.size(attribute.getKey());
                     ComplexMetadataMap parentMap = parent.subMap(attribute.getKey(), index);
-                    for (MetadataAttributeComplexTypeConfiguration complextype : complextypes) {
-                        if (attribute.getTypename().equals(complextype.getTypename())) {
-                            mergeAttribute(parentMap, childMap, complextype.getAttributes(), complextypes);
-                            break;
-                        }
-                    }
+
+                    mergeAttribute(parentMap, childMap, type.getAttributes(), config);
                 }
                 break;
         }

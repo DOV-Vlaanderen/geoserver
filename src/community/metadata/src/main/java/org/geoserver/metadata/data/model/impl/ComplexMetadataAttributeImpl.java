@@ -87,9 +87,10 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
             ArrayList<Object> list = new ArrayList<Object>();
             if (index.length > 1) { 
                 int[] subIndex = Arrays.copyOfRange(index, 1, index.length);
-                for (int i = 0; i < index[0] + 1; i++) {
-                    list.add(setValueInternal(originalValue, subIndex, newValue));
+                while (list.size() < index[0] + 1) {
+                    list.add(null);
                 }
+                list.set(index[0], setValueInternal(originalValue, subIndex, newValue));
             } else {
                 for (int i = 0; i < index[0] + 1; i++) {
                     list.add(originalValue);

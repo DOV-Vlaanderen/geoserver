@@ -36,7 +36,7 @@ public class YamlServiceImpl implements YamlService {
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
 
     private Resource getFolder() {
-        return dataDirectory.get(MetaDataConstants.DIRECTORY);
+        return dataDirectory.get(MetadataConstants.DIRECTORY);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class YamlServiceImpl implements YamlService {
                 } 
             }            
             //add feature catalog
-            try (InputStream in  = getClass().getResourceAsStream(MetaDataConstants.FEATURE_CATALOG)) {
+            try (InputStream in  = getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
                 readConfiguration(in, configuration, mapper);
             }
         } catch (Exception e) {

@@ -163,6 +163,20 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             }
         }
     }
+    
+    @Override
+    public ComplexMetadataMap clone() {
+        Map<String, Serializable> newDelegate = new HashMap<String, Serializable>();
+        String strPath = String.join(PATH_SEPARATOR, basePath);
+        for (String key : delegate.keySet()) {
+            if (key.startsWith(strPath + PATH_SEPARATOR)) {
+                String strippedKey = key.substring(strPath.length() + 1);
+                newDelegate.put(strippedKey, 
+                        get(Serializable.class, strippedKey).getValue());
+            }
+        }
+        return new ComplexMetadataMapImpl(newDelegate);
+    }
 
     @SuppressWarnings("unchecked")
     private void deleteFromList(String path, int[] index) {
@@ -192,17 +206,21 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             while (it.hasNext()) {
                 ComplexMetadataIndexReference item = it.next();
                 if (item.getIndex().length >= index.length) {
-                    if (item.getIndex()[index.length - 1] == index[index.length - 1]) {
-                        item.setIndex(null);
-                        it.remove();
-                    } else if (item.getIndex()[index.length - 1] > index[index.length - 1]) {
-                        item.getIndex()[index.length - 1]--;
+                    int[] rootItemIndex = Arrays.copyOfRange(item.getIndex(), 0, index.length - 1);
+                    int[] rootIndex = Arrays.copyOfRange(index, 0, index.length - 1);
+                    if (Arrays.equals(rootIndex, rootItemIndex)) {
+                        if(item.getIndex()[index.length - 1] == index[index.length - 1]) {
+                            item.setIndex(null);
+                            it.remove();
+                        } else if (item.getIndex()[index.length - 1] > index[index.length - 1]) {
+                            item.getIndex()[index.length - 1]--;
+                        }
                     }
                 }
             }
         }
     }
-
+    
     protected static String[] concat(String[] first, String... second) {
         return (String[]) ArrayUtils.addAll(first, second);
     }

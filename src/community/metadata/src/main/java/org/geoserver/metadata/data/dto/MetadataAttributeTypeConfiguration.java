@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class MetadataAttributeComplexTypeConfiguration implements Serializable{
+public class MetadataAttributeTypeConfiguration implements Serializable{
 
     private static final long serialVersionUID = 7617959011871570119L;
 
