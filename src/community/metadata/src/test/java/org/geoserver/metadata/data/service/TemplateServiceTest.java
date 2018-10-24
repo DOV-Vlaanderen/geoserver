@@ -92,7 +92,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
         Assert.assertEquals(initial - 1, service.list().size());
     }
-
+/*
     @Test
     public void testListLinked() throws IOException {
         List<MetadataTemplate> actual =  service.listLinked("gs", "layer");
@@ -127,6 +127,6 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
         actual =  service.listLinked("gs", "layer");
         Assert.assertEquals(1, actual.size());
-    }
+    }*/
 
 }

@@ -63,18 +63,6 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     }
 
     @Override
-    public List<MetadataTemplate> listLinked(String workspace, String layerName) throws IOException {
-        ArrayList<MetadataTemplate> results = new ArrayList<>();
-        String key = getKey(workspace, layerName);
-        for (MetadataTemplate template : list()) {
-            if (template.getLinkedLayers() != null && template.getLinkedLayers().contains(key)){
-                results.add(template);
-            }
-        }
-        return results;
-    }
-
-    @Override
     public void save(MetadataTemplate metadataTemplate) throws IOException {
         if (metadataTemplate.getName() == null) {
             throw new IOException("Template with name required.");
@@ -163,30 +151,5 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     }
 
-    @Override
-    public void addLink(MetadataTemplate modelObject, String workspace, String layerName) throws IOException {
-        String key = getKey(workspace, layerName);
-        if(modelObject.getLinkedLayers() == null){
-            modelObject.setLinkedLayers(new HashSet<>());
-        }
-        if (!modelObject.getLinkedLayers().contains(key)) {
-            modelObject.getLinkedLayers().add(key);
-        }
-        update(modelObject);
-    }
-
-    @Override
-    public void removeLink(MetadataTemplate modelObject, String workspace, String layerName) throws IOException {
-        String key = getKey(workspace, layerName);
-        if (modelObject.getLinkedLayers() != null && modelObject.getLinkedLayers().contains(key)) {
-            modelObject.getLinkedLayers().remove(key);
-        }
-        update(modelObject);
-    }
-
-
-    private String getKey(String workspace, String layerName) {
-        return workspace + ":" + layerName;
-    }
 }
 

@@ -20,6 +20,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
+import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.MetadataTemplateDataProvider;
 import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.web.GeoServerApplication;
@@ -39,12 +40,10 @@ import java.util.logging.Logger;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class ImportTemplatePanel extends Panel {
+public abstract class ImportTemplatePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
     private static final Logger LOGGER = Logging.getLogger(ImportTemplatePanel.class);
-
-    private List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
 
     private GeoServerTablePanel<MetadataTemplate> templatesPanel;
 
@@ -52,10 +51,26 @@ public class ImportTemplatePanel extends Panel {
 
     private MetadataTemplate selected;
 
+    private IModel<List<MetadataTemplate>> templatesModel;
+
     public ImportTemplatePanel(String id, String workspace, String layerName,
-                               IModel<ComplexMetadataMap> metadataModel) {
+                               IModel<ComplexMetadataMap> metadataModel,
+                               IModel<List<MetadataTemplate>> templatesModel) {
         super(id, metadataModel);
-        linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName);
+        this.templatesModel = templatesModel;
+        try {
+            if (templatesModel.getObject() == null) {
+                MetadataTemplateService service =
+                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+                templatesModel.setObject(service.list());
+            }
+        } catch (IOException e) {
+            error(new ParamResourceModel("errorSelectGeonetwork",
+                    ImportTemplatePanel.this).getString());
+        }
+
+        linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName, templatesModel);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -134,7 +149,7 @@ public class ImportTemplatePanel extends Panel {
                 target.add(getFeedbackPanel());
                 target.add(templatesPanel);
                 target.add(dropDown);
-                target.add(getParent());
+                handleUpdate(target);
             }
 
         };
@@ -153,8 +168,10 @@ public class ImportTemplatePanel extends Panel {
                     error(new ParamResourceModel("errorSelectGeonetwork",
                             ImportTemplatePanel.this).getString());
                 }
+                target.add(getFeedbackPanel());
                 target.add(templatesPanel);
                 target.add(dropDown);
+                handleUpdate(target);
             }
         };
     }
@@ -205,18 +222,7 @@ public class ImportTemplatePanel extends Panel {
     private void linkTemplate(MetadataTemplate selected) throws IOException {
         //add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);
-        //todo load the data
-        @SuppressWarnings("unchecked")
-        IModel<ComplexMetadataMap> model = (IModel<ComplexMetadataMap>) getDefaultModel();
-
-        ComplexMetadataService service =
-                GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
-
-        ArrayList<ComplexMetadataMap> templates = new ArrayList<>();
-        templates.add(selected.getMetadata());
-
-        service.merge(model.getObject(), templates);
-
+        updateModel();
     }
 
     /**
@@ -227,7 +233,41 @@ public class ImportTemplatePanel extends Panel {
         for (MetadataTemplate metadataTemplate : templatesPanel.getSelection()) {
             linkedTemplatesDataProvider.removeLink(metadataTemplate);
         }
-        //todo enable the fields by reloading
+        updateModel();
+    }
 
+    /**
+     * Merge the model and the linked templates.
+     */
+    private void updateModel() {
+        @SuppressWarnings("unchecked")
+        IModel<ComplexMetadataMap> model = (IModel<ComplexMetadataMap>) getDefaultModel();
+        ComplexMetadataService service =
+                GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
+
+        ArrayList<ComplexMetadataMap> maps = new ArrayList<>();
+        for (MetadataTemplate template : linkedTemplatesDataProvider.getItems()) {
+            maps.add(template.getMetadata());
+        }
+
+        service.merge(model.getObject(), maps);
+    }
+
+
+    protected abstract void handleUpdate(AjaxRequestTarget target);
+
+    /**
+     * Store the changes in the links.
+     */
+    public void save() {
+        MetadataTemplateService service =
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+            try {
+                for (MetadataTemplate template : templatesModel.getObject()) {
+                    service.update(template);
+                }
+            } catch (IOException e) {
+                LOGGER.severe(e.getMessage());
+            }
     }
 }

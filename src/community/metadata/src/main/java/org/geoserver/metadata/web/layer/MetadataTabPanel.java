@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.GeonetworkXmlParser;
@@ -39,7 +41,9 @@ import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
 /**
- * A generic configuration panel for all basic ResourceInfo properties
+ * A tabpanel that adds the metadata configuration to the layer.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
@@ -48,8 +52,10 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);
 
     public final static String CUSTOM_METADATA_KEY = "custom";
-    
-    public MetadataTabPanel(String id, IModel<LayerInfo> model) {
+
+    private ImportTemplatePanel linkTemplatePanel;
+
+    public MetadataTabPanel(String id, IModel<LayerInfo> model, IModel<?> linkedTemplatesModel) {
         super(id, model);
 
 
@@ -68,7 +74,22 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         String name = model.getObject().getResource().getNativeName();
         String workspace = model.getObject().getResource().getStore().getWorkspace().getName();
 
-        this.add(new ImportTemplatePanel("importTemplatePanel", workspace, name, metadataModel));
+        //Link with templates panel
+        linkTemplatePanel = new ImportTemplatePanel("importTemplatePanel",
+                workspace,
+                name,
+                metadataModel,
+                (IModel<List<MetadataTemplate>>) linkedTemplatesModel) {
+            @Override
+            protected void handleUpdate(AjaxRequestTarget target) {
+                target.add(metadataPanel().replaceWith(
+                        new MetadataPanel("metadataPanel", metadataModel)));
+            }
+
+        };
+
+
+        this.add(linkTemplatePanel);
 
         add(new MetadataPanel("metadataPanel", metadataModel)
                 .setOutputMarkupId(true));
@@ -193,6 +214,9 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         }
     }
 
-
+    @Override
+    public void save() throws IOException {
+        linkTemplatePanel.save();
+    }
 
 }

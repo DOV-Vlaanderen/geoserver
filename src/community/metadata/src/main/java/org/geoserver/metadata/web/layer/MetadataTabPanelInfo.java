@@ -4,8 +4,14 @@
  */
 package org.geoserver.metadata.web.layer;
 
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.web.publish.PublishedEditTabPanelInfo;
+
+import java.util.List;
 
 public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo>  {
 
@@ -16,4 +22,8 @@ public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo>  
         return LayerInfo.class;
     }
 
+    @Override
+    public IModel<?> createOwnModel(IModel<? extends LayerInfo> model, boolean isNew) {
+        return new ListModel<List<MetadataTemplate>>();
+    }
 }

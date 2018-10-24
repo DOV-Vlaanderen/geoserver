@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.web.GeoServerApplication;
@@ -11,8 +12,10 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.util.logging.Logging;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -34,10 +37,23 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     private final String layerName;
 
-    public ImportTemplateDataProvider(String workspace, String layerName) {
+    private List<MetadataTemplate> allTemplates = new ArrayList<>();
+
+    private List<MetadataTemplate> linkedTemplates = new ArrayList<>();
+
+    public ImportTemplateDataProvider(String workspace, String layerName, IModel<?> templatesModel) {
         this.workspace = workspace;
         this.layerName = layerName;
-        getService();
+
+        allTemplates = (List<MetadataTemplate>) templatesModel.getObject();
+
+        for (MetadataTemplate template : allTemplates) {
+            if (template.getLinkedLayers() != null &&
+                    template.getLinkedLayers().contains(getKey(workspace, layerName))) {
+                linkedTemplates.add(template);
+            }
+        }
+
     }
 
 
@@ -48,37 +64,37 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     @Override
     protected List<MetadataTemplate> getItems() {
-        try {
-            return getService().listLinked(workspace, layerName);
-        } catch (IOException e) {
-            return Collections.emptyList();
-        }
+        return linkedTemplates;
     }
 
     public void addLink(MetadataTemplate modelObject) throws IOException {
-        getService().addLink(modelObject, workspace, layerName);
+        if (modelObject.getLinkedLayers() == null) {
+            modelObject.setLinkedLayers(new HashSet<>());
+        }
+        modelObject.getLinkedLayers().add(getKey(workspace, layerName));
+        linkedTemplates.add(modelObject);
     }
 
     public void removeLink(MetadataTemplate modelObject) throws IOException {
-        getService().removeLink(modelObject, workspace, layerName);
-    }
-
-    public List<MetadataTemplate> getUnlinkedItems() {
-        try {
-            List<MetadataTemplate> currentLinks = getService().listLinked(workspace, layerName);
-            List<MetadataTemplate> result = getService().list();
-
-            result.removeAll(currentLinks);
-            return result;
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
+        if (modelObject.getLinkedLayers() == null) {
+            modelObject.setLinkedLayers(new HashSet<>());
         }
-        return Collections.emptyList();
+        modelObject.getLinkedLayers().remove(getKey(workspace, layerName));
+        linkedTemplates.remove(modelObject);
+    }
 
+    /**
+     * The remain values are used in the dropdown.
+     * @return
+     */
+    public List<MetadataTemplate> getUnlinkedItems() {
+        List<MetadataTemplate> result = new ArrayList<>(allTemplates);
+        result.removeAll(linkedTemplates);
+        return result;
     }
 
 
-    private MetadataTemplateService getService() {
-       return GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+    private String getKey(String workspace, String layerName) {
+        return workspace + ":" + layerName;
     }
 }
