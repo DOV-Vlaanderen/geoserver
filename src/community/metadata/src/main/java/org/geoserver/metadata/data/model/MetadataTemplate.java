@@ -14,6 +14,8 @@ import java.util.Set;
  */
 public class MetadataTemplate implements Serializable {
 
+    private int priority;
+
     private String name;
 
     private String description;
@@ -21,6 +23,14 @@ public class MetadataTemplate implements Serializable {
     private ComplexMetadataMap metadata;
 
     private Set<String> linkedLayers = new HashSet<>();
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
     public String getName() {
         return name;

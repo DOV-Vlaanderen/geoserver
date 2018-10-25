@@ -76,6 +76,11 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                 new PropertyModel<String>(metadataTemplateModel, "description"));
         form.add(desicription);
 
+        TextField<Integer> priority = new TextField<Integer>("priority",
+                new PropertyModel<Integer>(metadataTemplateModel, "priority"));
+        priority.setType(Integer.class);
+        form.add(desicription);
+
         MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel, null);
         form.add(metadataTemplatePanel);
 

@@ -5,7 +5,11 @@
 package org.geoserver.metadata.data.service;
 
 
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractMetadataTest;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.junit.Assert;
@@ -84,6 +88,30 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
 
     @Test
+    public void testUpdate() throws IOException {
+        MetadataTemplate initial = service.load("simple fields");
+        Assert.assertEquals("template-identifier", initial.getMetadata().get(String.class,"indentifier-single").getValue());
+        Assert.assertTrue(initial.getLinkedLayers().contains("topp:mylayer"));
+
+        initial.getMetadata().get(String.class, "indentifier-single").setValue("updated value");
+
+        service.update(initial);
+
+        MetadataTemplate actual= service.load("simple fields");
+        Assert.assertEquals("updated value", actual.getMetadata().get(String.class,"indentifier-single").getValue());
+
+        //check if the linked metadata is updated.
+        LayerInfo myLayer = geoServer.getCatalog().getLayerByName("mylayer");
+        Serializable custom = myLayer.getResource().getMetadata().get("custom");
+        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(
+                new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
+
+
+        Assert.assertEquals("updated value", metadataModel.getObject().get(String.class, "indentifier-single").getValue());
+    }
+
+
+    @Test
     public void testDelete() throws IOException {
         int initial = service.list().size();
 
@@ -92,41 +120,5 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
         Assert.assertEquals(initial - 1, service.list().size());
     }
-/*
-    @Test
-    public void testListLinked() throws IOException {
-        List<MetadataTemplate> actual =  service.listLinked("gs", "layer");
-        Assert.assertEquals(2, actual.size());
-
-        actual =  service.listLinked("gs", "other");
-        Assert.assertEquals(1, actual.size());
-        Assert.assertEquals("template-nested-object", actual.get(0).getName());
-    }
-
-    @Test
-    public void testAddLinked() throws IOException {
-        MetadataTemplate template = service.load("allData");
-
-        List<MetadataTemplate> actual =  service.listLinked("gs", "myLayer");
-        Assert.assertEquals(0, actual.size());
-
-        service.addLink(template, "gs", "myLayer");
-
-        actual =  service.listLinked("gs", "myLayer");
-        Assert.assertEquals(1, actual.size());
-        Assert.assertEquals("allData", actual.get(0).getName());
-    }
-
-    @Test
-    public void testRemoveLinked() throws IOException {
-        MetadataTemplate template = service.load("template-nested-object");
-        List<MetadataTemplate> actual =  service.listLinked("gs", "layer");
-        Assert.assertEquals(2, actual.size());
-
-        service.removeLink(template ,"gs", "layer");
-
-        actual =  service.listLinked("gs", "layer");
-        Assert.assertEquals(1, actual.size());
-    }*/
 
 }

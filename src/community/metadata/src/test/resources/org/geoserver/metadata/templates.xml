@@ -421,9 +421,13 @@
         </entry>
       </indexes>
     </metadata>
+    <linkedLayers>
+      <string>topp:mylayer</string>
+    </linkedLayers>
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>simple fields</name>
+    <priority>10</priority>
     <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
@@ -496,6 +500,9 @@
         </entry>
       </indexes>
     </metadata>
+    <linkedLayers>
+      <string>topp:mylayer</string>
+    </linkedLayers>
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>template-list-simple</name>

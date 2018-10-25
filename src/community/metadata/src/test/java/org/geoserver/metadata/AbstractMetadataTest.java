@@ -21,6 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +64,13 @@ public abstract class AbstractMetadataTest {
                     new File(metadata, "templates.xml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"),
                     new File(metadata, "geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"));
+
+
+            File target = new File(DATA_DIRECTORY.getDataDirectoryRoot());
+            URL sourceUrl = AbstractMetadataTest.class.getClassLoader().getResource("datadir_layers");
+            File sourceDir = new File(sourceUrl.toURI());
+
+            IOUtils.deepCopy(sourceDir, target);
         }
     }
     

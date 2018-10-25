@@ -4,16 +4,26 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerFactory;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
+import org.geoserver.metadata.web.layer.MetadataTabPanel;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +33,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,6 +59,13 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Autowired
     private GeoServerDataDirectory dataDirectory;
+
+    @Autowired
+    private ComplexMetadataService metadataService;
+
+    //TODO is this correct?
+    @Autowired
+    protected GeoServer geoServer;
 
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
@@ -81,12 +101,33 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Override
     public void update(MetadataTemplate metadataTemplate) throws IOException {
-        /*TODO gans het gedoe met updaten van gelinkte metadata*/
         delete(metadataTemplate);
 
         List<MetadataTemplate> tempates = list();
         tempates.add(metadataTemplate);
         updateTemplates(tempates);
+        //update layers
+        Collections.sort(tempates, new MetadataTemplateComparator());
+        ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
+        for (MetadataTemplate tempate : tempates) {
+            sources.add(tempate.getMetadata());
+        }
+        for (String key : metadataTemplate.getLinkedLayers()) {
+            //TODO where did the workspace go?
+            //TODO move the static variable to an Enum
+            LayerInfo layer = geoServer.getCatalog().getLayerByName(key.split(":")[1]);
+
+            HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
+                    layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_DESCRIPTION_KEY);
+
+            Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
+            ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+
+            metadataService.merge(model, sources, descriptionMap);
+
+            geoServer.getCatalog().save(layer);
+        }
+
     }
 
 
