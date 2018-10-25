@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -41,12 +43,17 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("88", parent.get(String.class, "number-field").getValue());
         Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
 
-        service.merge(parent, children);
+        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        service.merge(parent, children, descriptionMap);
 
         //Should be updated simple fields
         Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
         Assert.assertEquals("template-88", parent.get(String.class, "number-field").getValue());
         Assert.assertEquals("Don't select this one", parent.get(String.class, "dropdown-field").getValue());
+
+        Assert.assertEquals(0, descriptionMap.get("indentifier-single").get(0).intValue());
+        Assert.assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
+        Assert.assertEquals(0, descriptionMap.get("dropdown-field").get(0).intValue());
         //list simple fields
         Assert.assertEquals(3, parent.size("refsystem-as-list"));
         Assert.assertEquals("list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
@@ -77,6 +84,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
     }
 
 
+
     @Test
     public void testMergeObject() throws IOException {
         ComplexMetadataMap parent = templateService.load("allData").getMetadata();
@@ -84,7 +92,8 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        service.merge(parent, children);
+        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        service.merge(parent, children, descriptionMap);
 
         //simple fields
         Assert.assertEquals("the-indentifier-single", parent.get(String.class, "indentifier-single").getValue());
@@ -99,6 +108,8 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         ComplexMetadataMap submap = parent.subMap("referencesystem-object");
         Assert.assertEquals("templateValue-code", submap.get(String.class, "code").getValue());
         Assert.assertEquals("templateValue-codeSpace", submap.get(String.class, "code-space").getValue());
+
+        Assert.assertEquals(0, descriptionMap.get("referencesystem-object").get(0).intValue());
 
         //list of objects
         Assert.assertEquals(2, parent.size("referencesystem-object-list"));
@@ -120,7 +131,8 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        service.merge(parent, children);
+        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        service.merge(parent, children, descriptionMap);
 
         //simple fields
         Assert.assertEquals("the-indentifier-single", parent.get(String.class, "indentifier-single").getValue());
@@ -133,6 +145,9 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
         Assert.assertEquals("template-value01", parent.get(String.class, "refsystem-as-list", 3).getValue());
         Assert.assertEquals("template--value02", parent.get(String.class, "refsystem-as-list", 4).getValue());
+
+        Assert.assertEquals(3, descriptionMap.get("refsystem-as-list").get(0).intValue());
+        Assert.assertEquals(4, descriptionMap.get("refsystem-as-list").get(1).intValue());
         //Object fields
         Assert.assertEquals("object-code", parent.get(String.class, "referencesystem-object_code").getValue());
         Assert.assertEquals("object-codeSpace", parent.get(String.class, "referencesystem-object_code-space").getValue());
@@ -155,7 +170,8 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        service.merge(parent, children);
+        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        service.merge(parent, children, descriptionMap);
 
         //simple fields
         Assert.assertEquals("the-indentifier-single", parent.get(String.class, "indentifier-single").getValue());
@@ -184,6 +200,9 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("template-code02", submap04.get(String.class, "code").getValue());
         Assert.assertEquals("template-codespace02", submap04.get(String.class, "code-space").getValue());
 
+        Assert.assertEquals(2, descriptionMap.get("referencesystem-object-list").get(0).intValue());
+        Assert.assertEquals(3, descriptionMap.get("referencesystem-object-list").get(1).intValue());
+
 
     }
 
@@ -195,7 +214,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        service.merge(parent, children);
+        service.merge(parent, children, createDescriptionMap());
 
         //list of objects
         Assert.assertEquals(2, parent.size("referencesystem-object-list"));
@@ -230,5 +249,61 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         children.add(child);
         service.merge(parent, children);
         Assert.assertEquals(3, 4);*/
+    }
+
+
+    @Test
+    public void testUnlink() throws IOException {
+
+        ComplexMetadataMap parent = templateService.load("allData").getMetadata();
+        ComplexMetadataMap child = templateService.load("template-list-simple").getMetadata();
+        ComplexMetadataMap child01 = templateService.load("simple fields").getMetadata();
+
+        ArrayList<ComplexMetadataMap> children = new ArrayList<>();
+        children.add(child);
+        children.add(child01);
+        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+
+        //LINK
+        service.merge(parent, children, descriptionMap);
+
+        Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
+        Assert.assertEquals("template-88", parent.get(String.class, "number-field").getValue());
+        Assert.assertEquals("Don't select this one", parent.get(String.class, "dropdown-field").getValue());
+        Assert.assertEquals(0, descriptionMap.get("indentifier-single").get(0).intValue());
+        Assert.assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
+        Assert.assertEquals(0, descriptionMap.get("dropdown-field").get(0).intValue());
+
+        Assert.assertEquals(5, parent.size("refsystem-as-list"));
+        Assert.assertEquals("list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
+        Assert.assertEquals("list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
+        Assert.assertEquals("list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
+        Assert.assertEquals("template-value01", parent.get(String.class, "refsystem-as-list", 3).getValue());
+        Assert.assertEquals("template--value02", parent.get(String.class, "refsystem-as-list", 4).getValue());
+        Assert.assertEquals(3, descriptionMap.get("refsystem-as-list").get(0).intValue());
+        Assert.assertEquals(4, descriptionMap.get("refsystem-as-list").get(1).intValue());
+
+        //UNLINK
+        service.merge(parent, new ArrayList<ComplexMetadataMap>(), descriptionMap);
+
+        Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
+        Assert.assertEquals("template-88", parent.get(String.class, "number-field").getValue());
+        Assert.assertEquals("Don't select this one", parent.get(String.class, "dropdown-field").getValue());
+        Assert.assertNull(descriptionMap.get("indentifier-single"));
+        Assert.assertNull(descriptionMap.get("number-field"));
+        Assert.assertNull(descriptionMap.get("dropdown-field"));
+
+        Assert.assertEquals(3, parent.size("refsystem-as-list"));
+        Assert.assertEquals("list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
+        Assert.assertEquals("list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
+        Assert.assertEquals("list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
+
+        Assert.assertNull(descriptionMap.get("refsystem-as-list"));
+
+    }
+
+
+    private HashMap<String, List<Integer>> createDescriptionMap() {
+        return new HashMap<>();
     }
 }

@@ -11,6 +11,9 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 import org.geotools.util.logging.Logging;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -23,11 +26,13 @@ public class MetadataPanel extends Panel {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataPanel.class);
 
+    private final HashMap<String, List<Integer>> descriptionMap;
 
 
-    public MetadataPanel(String id, IModel<ComplexMetadataMap> metadataModel) {
+    public MetadataPanel(String id, IModel<ComplexMetadataMap> metadataModel,
+                         HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
-
+        this.descriptionMap = descriptionMap;
     }
 
 
@@ -36,7 +41,11 @@ public class MetadataPanel extends Panel {
         super.onInitialize();
         //the attributes panel
         AttributesTablePanel attributesPanel =
-                new AttributesTablePanel("attributesPanel", new AttributeDataProvider(), getMetadataModel());
+                new AttributesTablePanel("attributesPanel",
+                        new AttributeDataProvider(),
+                        getMetadataModel(),
+                        descriptionMap);
+
         attributesPanel.setOutputMarkupId(true);
         add(attributesPanel);
 

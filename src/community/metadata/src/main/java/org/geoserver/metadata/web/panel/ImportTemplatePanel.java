@@ -32,6 +32,7 @@ import org.geotools.util.logging.Logging;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -45,6 +46,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private static final Logger LOGGER = Logging.getLogger(ImportTemplatePanel.class);
 
+
     private GeoServerTablePanel<MetadataTemplate> templatesPanel;
 
     private ImportTemplateDataProvider linkedTemplatesDataProvider;
@@ -53,9 +55,14 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private IModel<List<MetadataTemplate>> templatesModel;
 
-    public ImportTemplatePanel(String id, String workspace, String layerName,
+    private final HashMap<String, List<Integer>> descriptionMap;
+
+    public ImportTemplatePanel(String id,
+                               String workspace,
+                               String layerName,
                                IModel<ComplexMetadataMap> metadataModel,
-                               IModel<List<MetadataTemplate>> templatesModel) {
+                               IModel<List<MetadataTemplate>> templatesModel,
+                               HashMap<String,List<Integer>> customDescription) {
         super(id, metadataModel);
         this.templatesModel = templatesModel;
         try {
@@ -68,7 +75,7 @@ public abstract class ImportTemplatePanel extends Panel {
             error(new ParamResourceModel("errorSelectGeonetwork",
                     ImportTemplatePanel.this).getString());
         }
-
+        this.descriptionMap = customDescription;
         linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName, templatesModel);
 
     }
@@ -222,6 +229,7 @@ public abstract class ImportTemplatePanel extends Panel {
     private void linkTemplate(MetadataTemplate selected) throws IOException {
         //add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);
+        //
         updateModel();
     }
 
@@ -233,6 +241,7 @@ public abstract class ImportTemplatePanel extends Panel {
         for (MetadataTemplate metadataTemplate : templatesPanel.getSelection()) {
             linkedTemplatesDataProvider.removeLink(metadataTemplate);
         }
+        templatesPanel.clearSelection();
         updateModel();
     }
 
@@ -250,7 +259,7 @@ public abstract class ImportTemplatePanel extends Panel {
             maps.add(template.getMetadata());
         }
 
-        service.merge(model.getObject(), maps);
+        service.merge(model.getObject(), maps, descriptionMap);
     }
 
 

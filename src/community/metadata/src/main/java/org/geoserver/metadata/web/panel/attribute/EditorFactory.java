@@ -11,6 +11,11 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
 
+/**
+ * Factory to generate a component based on the configuration.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class EditorFactory {
 
 
@@ -32,7 +37,7 @@ public class EditorFactory {
                         configuration.getValues());
             case COMPLEX:
                 return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
-                        new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getKey())));
+                        new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getKey())), null);
         }
         return null;
     }

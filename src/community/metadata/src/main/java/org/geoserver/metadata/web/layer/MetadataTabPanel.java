@@ -53,16 +53,27 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     public final static String CUSTOM_METADATA_KEY = "custom";
 
+    public final static String CUSTOM_DESCRIPTION_KEY = "descriptionMap";
+
     private ImportTemplatePanel linkTemplatePanel;
+
+    HashMap<String, List<Integer>> descriptionMap ;
 
     public MetadataTabPanel(String id, IModel<LayerInfo> model, IModel<?> linkedTemplatesModel) {
         super(id, model);
 
 
+        descriptionMap = (HashMap<String, List<Integer>>)
+                        model.getObject().getResource().getMetadata().get(CUSTOM_DESCRIPTION_KEY);
+
         Serializable custom = model.getObject().getResource().getMetadata().get(CUSTOM_METADATA_KEY);
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
             model.getObject().getResource().getMetadata().put(CUSTOM_METADATA_KEY, custom);
+        }
+        if (!(descriptionMap instanceof HashMap<?, ?>)) {
+            descriptionMap = new HashMap<String, List<Integer>>();
+            model.getObject().getResource().getMetadata().put(CUSTOM_DESCRIPTION_KEY, descriptionMap);
         }
 
 
@@ -79,11 +90,12 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                 workspace,
                 name,
                 metadataModel,
-                (IModel<List<MetadataTemplate>>) linkedTemplatesModel) {
+                (IModel<List<MetadataTemplate>>) linkedTemplatesModel,
+                descriptionMap) {
             @Override
             protected void handleUpdate(AjaxRequestTarget target) {
                 target.add(metadataPanel().replaceWith(
-                        new MetadataPanel("metadataPanel", metadataModel)));
+                        new MetadataPanel("metadataPanel", metadataModel, descriptionMap)));
             }
 
         };
@@ -91,8 +103,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
         this.add(linkTemplatePanel);
 
-        add(new MetadataPanel("metadataPanel", metadataModel)
-                .setOutputMarkupId(true));
+        add(new MetadataPanel("metadataPanel", metadataModel, descriptionMap).setOutputMarkupId(true));
         
         GeoServerDialog dialog =  new GeoServerDialog("dialog");
         dialog.setInitialHeight(100);
@@ -120,7 +131,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                                     Component contents) {
                                 generateFeatureCatalog(metadataModel.getObject());
                                 target.add(metadataPanel().replaceWith(
-                                        new MetadataPanel("metadataPanel", metadataModel)));
+                                        new MetadataPanel("metadataPanel", metadataModel, descriptionMap)));
                                 return true;
                             }
                             
@@ -147,7 +158,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                     getPage().error(e.getMessage());
                 }
                 target.add(metadataPanel().replaceWith(
-                        new MetadataPanel("metadataPanel", metadataModel)));
+                        new MetadataPanel("metadataPanel", metadataModel, descriptionMap)));
             }
         };
         add(geonetworkPanel);
@@ -183,7 +194,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                 
                 ComplexMetadataMap oldMap = old.get(att.getName());
                 if (oldMap != null) {
-                    service.merge(attMap, oldMap, MetadataConstants.FEATURE_CATALOG_TYPENAME);
+                    service.merge(attMap, oldMap, MetadataConstants.FEATURE_CATALOG_TYPENAME, descriptionMap);
                 }
                 
                 attMap.get(String.class, MetadataConstants.FEATURE_CATALOG_ATT_NAME).setValue(

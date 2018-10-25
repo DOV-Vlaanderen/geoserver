@@ -8,6 +8,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
@@ -20,8 +21,16 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Generate the gui as a list of simple inputs (text, double, dropdown, ..).
+ * Add ui components to manage the list.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class RepeatableAttributesTablePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -30,11 +39,11 @@ public class RepeatableAttributesTablePanel extends Panel {
 
     public RepeatableAttributesTablePanel(String id,
                                           RepeatableAttributeDataProvider<String> dataProvider,
-                                          IModel<ComplexMetadataMap> metadataModel) {
+                                          IModel<ComplexMetadataMap> metadataModel,
+                                          HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
-
         GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
-                createAttributesTablePanel(dataProvider);
+                createAttributesTablePanel(dataProvider, descriptionMap);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -44,18 +53,6 @@ public class RepeatableAttributesTablePanel extends Panel {
         tablePanel.setSortable(false);
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
-/*
-        add(new AjaxSubmitLink("removeSelected") {
-
-            private static final long serialVersionUID = -8829474855848647384L;
-
-            @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                ((RepeatableAttributeDataProvider<String>) dataProvider).removeFields(tablePanel.getSelection());
-                tablePanel.clearSelection();
-                target.add(tablePanel);
-            }
-        });*/
 
         add(new AjaxSubmitLink("addNew") {
 
@@ -71,9 +68,15 @@ public class RepeatableAttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> createAttributesTablePanel(
-            RepeatableAttributeDataProvider<String> dataProvider) {
+            RepeatableAttributeDataProvider<String> dataProvider,
+            HashMap<String, List<Integer>> descriptionMap) {
+
         GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
                 new GeoServerTablePanel<ComplexMetadataAttribute<String>>("attributesTablePanel", dataProvider) {
+
+                    private int count = 0;
+
+                    private IModel<ComplexMetadataAttribute<String>> disabledValue = null;
 
                     private static final long serialVersionUID = 4333335931795175790L;
 
@@ -81,36 +84,65 @@ public class RepeatableAttributesTablePanel extends Panel {
                     protected Component getComponentForProperty(String id,
                                                                 IModel<ComplexMetadataAttribute<String>> itemModel,
                                                                 GeoServerDataProvider.Property<ComplexMetadataAttribute<String>> property) {
+                        MetadataAttributeConfiguration attributeConfiguration = dataProvider.getConfiguration();
+                        boolean enableInput = true;
+                        //disable input values from template
+                        if (descriptionMap != null &&
+                                descriptionMap.containsKey(attributeConfiguration.getKey())) {
+                            List<Integer> indexes= descriptionMap.get(attributeConfiguration.getKey());
+                            for (Integer index : indexes) {
+                                if(index.equals(count)){
+                                    enableInput = false;
+                                    disabledValue= itemModel;
+                                    break;
+                                }
+                            }
+                        }
                         if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
-                            MetadataAttributeConfiguration attributeConfiguration =
-                                    dataProvider.getConfiguration();
+                            //TODO use the factory?
+                            Component component = null;
                             switch (attributeConfiguration.getFieldType()) {
                                 case TEXT:
-                                    return new TextFieldPanel(id,
+                                    component= new TextFieldPanel(id,
                                             new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
+                                    break;
                                 case NUMBER:
-                                    return new TextFieldPanel(id,
+                                    component= new TextFieldPanel(id,
                                             new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
+                                    break;
                                 case DROPDOWN:
-                                    final DropDownPanel ddp =
+                                    component =
                                             new DropDownPanel(id,
                                                     new ComplexMetadataAttributeModel<String>(itemModel.getObject()),
                                                     attributeConfiguration.getValues());
-
-                                    return ddp;
+                                    break;
                             }
+
+                            if (component != null) {
+                                component.setEnabled(enableInput);
+                            }
+                            return component;
+
                         } else if (property.getName().equals(RepeatableAttributeDataProvider.KEY_REMOVE_ROW)) {
-                            AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
+                            //last column updates the row counter. TODO Is there a counter in the dataprovider or table?
+                            count++;
+                            if (itemModel.equals(disabledValue)) {
+                                //If the object is for a row that is not editable don't show the remove button
+                                disabledValue = null;
+                                return new Label(id, "");
+                            } else {
+                                AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
 
-                                private static final long serialVersionUID = -8829474855848647384L;
+                                    private static final long serialVersionUID = -8829474855848647384L;
 
-                                @Override
-                                public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                                    removeFields(target, itemModel);
-                                }
-                            };
-                            deleteAction.add(new AttributeAppender("class", "remove-link"));
-                            return deleteAction;
+                                    @Override
+                                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                                        removeFields(target, itemModel);
+                                    }
+                                };
+                                deleteAction.add(new AttributeAppender("class", "remove-link"));
+                                return deleteAction;
+                            }
 
                         }
                         return null;

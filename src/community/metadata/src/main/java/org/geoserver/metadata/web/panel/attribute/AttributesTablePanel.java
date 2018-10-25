@@ -17,8 +17,16 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
-
+/**
+ * Entry point for the gui generation.
+ * This parses the configuration and adds simple fields, complex fields (composition of multiple simple fields)
+ * and lists of simple or complex fields.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
+ */
 public class AttributesTablePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -26,12 +34,14 @@ public class AttributesTablePanel extends Panel {
 
 
 
-    public AttributesTablePanel(String id, GeoServerDataProvider<AttributeInput> dataProvider, 
-            IModel<ComplexMetadataMap> metadataModel) {
+    public AttributesTablePanel(String id,
+                                GeoServerDataProvider<AttributeInput> dataProvider,
+                                IModel<ComplexMetadataMap> metadataModel,
+                                HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
 
 
-        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(dataProvider);
+        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(dataProvider, descriptionMap);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -45,31 +55,43 @@ public class AttributesTablePanel extends Panel {
 
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider<AttributeInput> dataProvider) {
+    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider<AttributeInput> dataProvider,
+                                                                           HashMap<String, List<Integer>> descriptionMap) {
+
         return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override
-            protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel, GeoServerDataProvider.Property<AttributeInput> property) {
+            protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel,
+                                                        GeoServerDataProvider.Property<AttributeInput> property) {
                 if (property.equals(AttributeDataProvider.VALUE)) {
                     MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject().getAttributeConfiguration();
                     if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
-                        return EditorFactory.create(attributeConfiguration,id, getMetadataModel());
+                        Component component = EditorFactory.create(attributeConfiguration, id, getMetadataModel());
+                        //disable components with values from the templates
+                        if (component != null &&
+                                descriptionMap != null &&
+                                descriptionMap.containsKey(attributeConfiguration.getKey())) {
+                            boolean disableInput = descriptionMap.get(attributeConfiguration.getKey()).size() > 0;
+                            component.setEnabled(!disableInput);
+                        }
+                        return component;
                     } else if (attributeConfiguration.getFieldType() == FieldTypeEnum.COMPLEX){
                         RepeatableComplexAttributeDataProvider repeatableDataProvider = 
                                 new RepeatableComplexAttributeDataProvider(attributeConfiguration, 
                                 getMetadataModel());
-
                         return new RepeatableComplexAttributesTablePanel(id,
                                 repeatableDataProvider,
-                                getMetadataModel());
+                                getMetadataModel(),
+                                descriptionMap);
                     } else {
                         RepeatableAttributeDataProvider<String> repeatableDataProvider = 
                                 new RepeatableAttributeDataProvider<String>(String.class, attributeConfiguration, 
                                 getMetadataModel());
                         return new RepeatableAttributesTablePanel(id,
                                   repeatableDataProvider,
-                                getMetadataModel());
+                                getMetadataModel(),
+                                descriptionMap);
                     }
                 }
                 return null;

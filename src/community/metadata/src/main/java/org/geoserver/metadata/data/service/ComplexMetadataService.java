@@ -6,10 +6,13 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Timothy De Bock
+ * TODO consolidate methods.
+ *
+ * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public interface ComplexMetadataService {
 
@@ -17,15 +20,17 @@ public interface ComplexMetadataService {
      * The values in the template are applied in reverse order, i.e. the first child has the highest priority.
      * @param parent
      * @param children
+     * @param descriptionMap
      */
-    void merge(ComplexMetadataMap destination, List<ComplexMetadataMap> sources);
+    void merge(ComplexMetadataMap destination, List<ComplexMetadataMap> sources, HashMap<String, List<Integer>> descriptionMap);
     
     /**
-     * The values in the template are applied in reverse order, i.e. the first child has the highest priority.
+     * Apply the values from the source to the target.
      * @param destination
      * @param source
+     * @param descriptionMap
      */
     void merge(ComplexMetadataMap destination, ComplexMetadataMap source,
-            String typeName);
+               String typeName, HashMap<String, List<Integer>> descriptionMap);
 
 }
