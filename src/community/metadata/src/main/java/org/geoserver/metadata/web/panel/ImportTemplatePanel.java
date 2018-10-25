@@ -148,6 +148,7 @@ public abstract class ImportTemplatePanel extends Panel {
                 if (valid) {
                     try {
                         linkTemplate(dropDown.getModelObject());
+                        dropDown.setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
                     } catch (IOException e) {
                         error(new ParamResourceModel("errorSelectGeonetwork",
                                 ImportTemplatePanel.this).getString());
@@ -171,6 +172,7 @@ public abstract class ImportTemplatePanel extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 try {
                     unlinkTemplate();
+                    dropDown.setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
                 } catch (IOException e) {
                     error(new ParamResourceModel("errorSelectGeonetwork",
                             ImportTemplatePanel.this).getString());

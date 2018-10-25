@@ -24,7 +24,9 @@ import java.util.logging.Logger;
 
 /**
  * Implementation.
- * TODO insert templates values before user values in the list!(this way indexes are constant)
+ *
+ * Node: values for templates that are lists are added in front of the user defined values
+ * in order to keep the indexes in the description map constant even when the user modifies the list.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -85,92 +87,126 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                 config, new HashMap<>());
     }
 
-    private void mergeAttribute(ComplexMetadataMap parent, ComplexMetadataMap child,
+    private void mergeAttribute(ComplexMetadataMap destination, ComplexMetadataMap source,
                                 List<MetadataAttributeConfiguration> attributes,
                                 MetadataEditorConfiguration config, HashMap<String, List<Integer>> descriptionMap) {
         for (MetadataAttributeConfiguration attribute : attributes) {
-            List<Integer> indexes = new ArrayList<>();
             switch (attribute.getFieldType()) {
                 case TEXT:
-                    indexes = mergeSimpleField(attribute, parent, child);
+                    mergeSimpleField(attribute, destination, source, descriptionMap);
                     break;
                 case NUMBER:
-                    indexes = mergeSimpleField(attribute, parent, child);
+                    mergeSimpleField(attribute, destination, source, descriptionMap);
                     break;
                 case DROPDOWN:
-                    indexes = mergeSimpleField(attribute, parent, child);
+                    mergeSimpleField(attribute, destination, source, descriptionMap);
                     break;
                 case COMPLEX:
-                    indexes = mergeComplexField(attribute, config.findType(attribute.getTypename()),
-                            config, parent, child);
+                    mergeComplexField(attribute, config.findType(attribute.getTypename()),
+                            config,
+                            destination,
+                            source,
+                            descriptionMap);
                     break;
             }
-            //keep track of the values that are from the template
-            if (descriptionMap != null) {
-                if (!descriptionMap.containsKey(attribute.getKey())) {
-                    descriptionMap.put(attribute.getKey(), new ArrayList<>());
-                }
-                descriptionMap.get(attribute.getKey()).addAll(indexes);
-            }
         }
     }
 
-    private  List<Integer> mergeSimpleField(MetadataAttributeConfiguration attribute,
-                                  ComplexMetadataMap parent,
-                                  ComplexMetadataMap child) {
+    private  void mergeSimpleField(MetadataAttributeConfiguration attribute,
+                                            ComplexMetadataMap destination,
+                                            ComplexMetadataMap source, HashMap<String, List<Integer>> descriptionMap) {
+
+        if (descriptionMap != null && !descriptionMap.containsKey(attribute.getKey())) {
+            descriptionMap.put(attribute.getKey(), new ArrayList<>());
+        }
+        ArrayList<Integer> indexes = new ArrayList<>();
+
         switch (attribute.getOccurrence()) {
             case SINGLE:
-                String childValue = child.get(String.class, attribute.getKey()).getValue();
-                if (childValue != null) {
-                    parent.get(String.class, attribute.getKey()).setValue(childValue);
-                    ArrayList<Integer> indexes = new ArrayList<>();
+                String sourceValue = source.get(String.class, attribute.getKey()).getValue();
+                if (sourceValue != null) {
+                    destination.get(String.class, attribute.getKey()).setValue(sourceValue);
                     indexes.add(0);
-                    return indexes;
                 }
                 break;
             case REPEAT:
-                ArrayList<Integer> indexes = new ArrayList<>();
-                for (int i = 0; i < child.size(attribute.getKey()); i++) {
-                    childValue = child.get(String.class, attribute.getKey(), i).getValue();
-                    if (childValue != null) {
-                        int index = parent.size(attribute.getKey());
-                        indexes.add(index);
-                        parent.get(String.class, attribute.getKey(), index).setValue(childValue);
+                int startIndex = 0;
+                int sourceSize = source.size(attribute.getKey());
+                if (descriptionMap != null) {
+                    startIndex = descriptionMap.get(attribute.getKey()).size();
+                    //SHIFT user content
+                    for (int i = destination.size(attribute.getKey()) - 1; i >= 0 ; i--) {
+                        if(i >= startIndex){
+                            String value = destination.get(String.class, attribute.getKey(), i).getValue();
+                            destination.get(String.class, attribute.getKey(), i+sourceSize).setValue(value);
+                        }
                     }
                 }
-                return indexes;
+                //insert template content
+                for (int i = 0; i < sourceSize; i++) {
+                    sourceValue = source.get(String.class, attribute.getKey(), i).getValue();
+                    int index = startIndex  + i;
+                    indexes.add(index);
+                    destination.get(String.class, attribute.getKey(), index).setValue(sourceValue);
+
+                }
         }
-        return new ArrayList<>();
+        //keep track of the values that are from the template
+        if (descriptionMap != null) {
+            descriptionMap.get(attribute.getKey()).addAll(indexes);
+        }
+
     }
 
-    private  List<Integer> mergeComplexField(MetadataAttributeConfiguration attribute,
-                                   MetadataAttributeTypeConfiguration type,
-                                   MetadataEditorConfiguration config,
-                                   ComplexMetadataMap parent, ComplexMetadataMap child) {
+    private  void mergeComplexField(MetadataAttributeConfiguration attribute,
+                                             MetadataAttributeTypeConfiguration type,
+                                             MetadataEditorConfiguration config,
+                                             ComplexMetadataMap destination, ComplexMetadataMap source,
+                                             HashMap<String, List<Integer>> descriptionMap) {
+
+        ArrayList<Integer> indexes = new ArrayList<>();
+        if (descriptionMap != null) {
+            if (!descriptionMap.containsKey(attribute.getKey())) {
+                descriptionMap.put(attribute.getKey(), new ArrayList<>());
+            }
+        }
 
         switch (attribute.getOccurrence()) {
             case SINGLE:
-                if (child.size(attribute.getKey()) > 0) {
-                    ComplexMetadataMap childMap = child.subMap(attribute.getKey());
-                    ComplexMetadataMap parentMap = parent.subMap(attribute.getKey());
-                    mergeAttribute(parentMap, childMap, type.getAttributes(), config, null);
-                    ArrayList<Integer> indexes = new ArrayList<>();
+                if (source.size(attribute.getKey()) > 0) {
+                    ComplexMetadataMap sourceMap = source.subMap(attribute.getKey());
+                    ComplexMetadataMap destinationMap = destination.subMap(attribute.getKey());
+                    mergeAttribute(destinationMap, sourceMap, type.getAttributes(), config, null);
                     indexes.add(0);
-                    return indexes;
                 }
                 break;
             case REPEAT:
-                ArrayList<Integer> indexes = new ArrayList<>();
-                for (int i = 0; i < child.size(attribute.getKey()); i++) {
-                    ComplexMetadataMap childMap = child.subMap(attribute.getKey(), i);
-                    int index = parent.size(attribute.getKey());
-                    ComplexMetadataMap parentMap = parent.subMap(attribute.getKey(), index);
-                    indexes.add(index);
-                    mergeAttribute(parentMap, childMap, type.getAttributes(), config, null);
+                int startIndex = 0;
+                int sourceSize = source.size(attribute.getKey());
+                if (descriptionMap != null) {
+                    startIndex = descriptionMap.get(attribute.getKey()).size();
+                    //SHIFT user content
+                    for (int i = destination.size(attribute.getKey()) - 1; i >= 0 ; i--) {
+                        if(i >= startIndex){
+                            ComplexMetadataMap orig = destination.subMap(attribute.getKey(), i);
+                            ComplexMetadataMap shifted = destination.subMap(attribute.getKey(), i + sourceSize);
+                            mergeAttribute(shifted, orig, type.getAttributes(), config, null);
+                        }
+                    }
                 }
-                return indexes;
+                //insert template content
+                for (int i = 0; i < source.size(attribute.getKey()); i++) {
+                    ComplexMetadataMap sourceMap = source.subMap(attribute.getKey(), i);
+                    int index = startIndex  + i;
+                    ComplexMetadataMap destinationMap = destination.subMap(attribute.getKey(), index);
+                    indexes.add(index);
+                    mergeAttribute(destinationMap, sourceMap, type.getAttributes(), config, null);
+                }
         }
-        return new ArrayList<>();
+        //keep track of the values that are from the template
+        if (descriptionMap != null) {
+            descriptionMap.get(attribute.getKey()).addAll(indexes);
+        }
     }
 
 
