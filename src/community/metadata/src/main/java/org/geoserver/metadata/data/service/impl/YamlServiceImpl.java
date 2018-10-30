@@ -8,9 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
+import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
+import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
+import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -20,6 +24,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Service responsible for interaction with yaml files. It will search for all *.yaml files in a given directory and try
@@ -66,7 +72,8 @@ public class YamlServiceImpl implements YamlService {
         try {
             MetadataEditorConfiguration config = mapper.readValue(in,
                     MetadataEditorConfiguration.class);
-            // Merge configuration
+            // Merge attribute configuration and remove duplicates
+            Set<String> attributeKeys = new HashSet<>();
             for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
                 if (attribute.getKey() == null) {
                     throw new IOException(
@@ -76,10 +83,27 @@ public class YamlServiceImpl implements YamlService {
                     attribute.setLabel(attribute.getKey());
 
                 }
-                configuration.getAttributes().add(attribute);
+                if (!attributeKeys.contains(attribute.getKey())) {
+                    configuration.getAttributes().add(attribute);
+                    attributeKeys.add(attribute.getKey());
+                }
             }
-            configuration.getGeonetworks().addAll(config.getGeonetworks());
-            configuration.getTypes().addAll(config.getTypes());
+            // Merge geonetwork configuration and remove duplicates
+            Set<String> geonetworkKeys = new HashSet<>();
+            for (MetadataGeonetworkConfiguration geonetwork : config.getGeonetworks()) {
+                if (!geonetworkKeys.contains(geonetwork.getName())) {
+                    configuration.getGeonetworks().add(geonetwork);
+                    geonetworkKeys.add(geonetwork.getName());
+                }
+            }
+            // Merge Types configuration and remove duplicates
+            Set<String> typesKeys = new HashSet<>();
+            for (MetadataAttributeTypeConfiguration type : config.getTypes()) {
+                if (!typesKeys.contains(type.getTypename())) {
+                    configuration.getTypes().add(type);
+                    typesKeys.add(type.getTypename());
+                }
+            }
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
         }
@@ -95,9 +119,21 @@ public class YamlServiceImpl implements YamlService {
             for (Resource file : Resources.list(folder, new Resources.ExtensionFilter("YAML"))) {
                 try (InputStream in = file.in()) {
                     AttributeMappingConfiguration config = mapper.readValue(in, AttributeMappingConfiguration.class);
-                    //Merge configuration
-                    configuration.getGeonetworkmapping().addAll(config.getGeonetworkmapping());
-                    configuration.getObjectmapping().addAll(config.getObjectmapping());
+                    Set<String> attKeys = new HashSet<>();
+                    for (AttributeMapping mapping : config.getGeonetworkmapping()) {
+                        if (!attKeys.contains(mapping.getGeoserver())) {
+                            configuration.getGeonetworkmapping().add(mapping);
+                            attKeys.add(mapping.getGeoserver());
+                        }
+                    }
+
+                    Set<String> objectKay = new HashSet<>();
+                    for (AttributeComplexTypeMapping mapping : config.getObjectmapping()) {
+                        if (!objectKay.contains(mapping.getTypename())) {
+                            configuration.getObjectmapping().add(mapping);
+                            objectKay.add(mapping.getTypename());
+                        }
+                    }
                 } catch (IOException e) {
                     LOGGER.severe(e.getMessage());
                 }

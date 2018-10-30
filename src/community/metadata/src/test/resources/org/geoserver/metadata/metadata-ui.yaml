@@ -24,6 +24,12 @@ attributes:
     fieldType: COMPLEX
     typename: referencesystem
     occurrence: REPEAT
+    #duplicates should be ignored
+  - label: Referencesystem object list
+    key: referencesystem-object-list
+    fieldType: COMPLEX
+    typename: referencesystem
+    occurrence: REPEAT
 
 types:
   - typename: referencesystem
