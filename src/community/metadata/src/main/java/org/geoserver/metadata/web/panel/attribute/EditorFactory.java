@@ -27,9 +27,9 @@ public class EditorFactory {
                         new ComplexMetadataAttributeModel<String>(
                                 metadataModel.getObject().get(String.class, configuration.getKey())));
             case NUMBER:
-                return new TextFieldPanel(id, 
-                        new ComplexMetadataAttributeModel<String>(
-                                metadataModel.getObject().get(String.class, configuration.getKey())));
+                return new NumberFieldPanel(id,
+                        new ComplexMetadataAttributeModel<Integer>(
+                                metadataModel.getObject().get(Integer.class, configuration.getKey())));
             case DROPDOWN:
                 return new DropDownPanel(id, 
                         new ComplexMetadataAttributeModel<String>(

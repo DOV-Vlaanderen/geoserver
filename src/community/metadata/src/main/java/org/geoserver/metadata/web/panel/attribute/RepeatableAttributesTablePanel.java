@@ -107,8 +107,8 @@ public class RepeatableAttributesTablePanel extends Panel {
                                             new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
                                     break;
                                 case NUMBER:
-                                    component= new TextFieldPanel(id,
-                                            new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
+                                    ComplexMetadataAttribute object = itemModel.getObject();
+                                    component= new NumberFieldPanel(id, new ComplexMetadataAttributeModel<Integer>(object));
                                     break;
                                 case DROPDOWN:
                                     component =
