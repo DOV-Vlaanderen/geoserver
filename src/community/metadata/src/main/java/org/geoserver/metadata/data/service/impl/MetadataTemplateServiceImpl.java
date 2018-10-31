@@ -4,18 +4,16 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import com.thoughtworks.xstream.io.StreamException;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.GeoServerFactory;
-import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
@@ -23,21 +21,17 @@ import org.geoserver.metadata.web.layer.MetadataTabPanel;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -70,6 +64,9 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
         this.persister.getXStream().allowTypesByWildcard(new String[]{"org.geoserver.metadata.data.model.**"});
+        this.persister.getXStream().processAnnotations(MetadataTemplate.class);
+        this.persister.getXStream().processAnnotations(ComplexMetadataMapImpl.class);
+        this.persister.getXStream().processAnnotations(ComplexMetadataIndexReference.class);
 
     }
 
@@ -169,7 +166,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
                 List<MetadataTemplate> tempates = persister.load(file.in(), List.class);
                 return tempates;
-            } catch (EOFException exception) {
+            } catch (StreamException exception) {
                 LOGGER.warning("File is empty");
             }
         }
@@ -179,7 +176,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     private void updateTemplates(List<MetadataTemplate> tempates) throws IOException {
         Resource folder = getFolder();
-        Resource file = folder.get("templates.xml");
+        Resource file = folder.get(FILE_NAME);
 
         if (file == null) {
             File fileResource = Resources.createNewFile(Files.asResource(new File(folder.dir(), FILE_NAME)));

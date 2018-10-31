@@ -5,6 +5,8 @@
 package org.geoserver.metadata.data.model;
 
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.Set;
 /**
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
+@XStreamAlias("MetadataTemplate")
 public class MetadataTemplate implements Serializable {
 
     private Integer priority;

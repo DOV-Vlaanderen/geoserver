@@ -1,8 +1,7 @@
 <list>
-  <org.geoserver.metadata.data.model.MetadataTemplate>
+  <MetadataTemplate>
     <name>allData</name>
-    <priority>0</priority>
-    <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
+    <metadata class="ComplexMetadataMap">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
@@ -128,296 +127,296 @@
         <entry>
           <string>dropdown-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object-list</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_max-occurence</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_definition</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_name</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_min-occurence</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object-list_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain_definition</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object-list_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>refsystem-as-list</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>2</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_type</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain_value</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>number-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
       </indexes>
@@ -425,11 +424,11 @@
     <linkedLayers>
       <string>topp:mylayer</string>
     </linkedLayers>
-  </org.geoserver.metadata.data.model.MetadataTemplate>
-  <org.geoserver.metadata.data.model.MetadataTemplate>
+  </MetadataTemplate>
+  <MetadataTemplate>
     <name>simple fields</name>
     <priority>10</priority>
-    <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
+    <metadata class="ComplexMetadataMap">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
@@ -454,49 +453,49 @@
         <entry>
           <string>dropdown-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>number-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
       </indexes>
@@ -504,11 +503,10 @@
     <linkedLayers>
       <string>topp:mylayer</string>
     </linkedLayers>
-  </org.geoserver.metadata.data.model.MetadataTemplate>
-  <org.geoserver.metadata.data.model.MetadataTemplate>
+  </MetadataTemplate>
+  <MetadataTemplate>
     <name>template-list-simple</name>
-    <priority>3</priority>
-    <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
+    <metadata class="ComplexMetadataMap">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
@@ -528,73 +526,72 @@
         <entry>
           <string>dropdown-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>refsystem-as-list</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>number-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
       </indexes>
     </metadata>
-  </org.geoserver.metadata.data.model.MetadataTemplate>
-  <org.geoserver.metadata.data.model.MetadataTemplate>
+  </MetadataTemplate>
+  <MetadataTemplate>
     <name>template-object list</name>
-    <priority>3</priority>
-    <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
+    <metadata class="ComplexMetadataMap">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
@@ -621,103 +618,102 @@
         <entry>
           <string>dropdown-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object-list</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object-list_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object-list_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>number-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
       </indexes>
     </metadata>
-  </org.geoserver.metadata.data.model.MetadataTemplate>
-  <org.geoserver.metadata.data.model.MetadataTemplate>
+  </MetadataTemplate>
+  <MetadataTemplate>
     <name>object-field</name>
-    <priority>4</priority>
-    <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
+    <metadata class="ComplexMetadataMap">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
@@ -738,49 +734,49 @@
         <entry>
           <string>dropdown-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>number-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
       </indexes>
@@ -788,11 +784,10 @@
     <linkedLayers>
       <string>gs:layer</string>
     </linkedLayers>
-  </org.geoserver.metadata.data.model.MetadataTemplate>
-  <org.geoserver.metadata.data.model.MetadataTemplate>
+  </MetadataTemplate>
+  <MetadataTemplate>
     <name>template-nested-object</name>
-    <priority>3</priority>
-    <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
+    <metadata class="ComplexMetadataMap">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
@@ -841,177 +836,177 @@
         <entry>
           <string>dropdown-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_max-occurence</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code-space</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_definition</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object_code</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_name</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_min-occurence</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain_definition</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_type</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>object-catalog_domain_value</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>0</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index>
                 <int>0</int>
                 <int>1</int>
               </index>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>number-field</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
         <entry>
           <string>referencesystem-object</string>
           <list>
-            <org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            <ComplexMetadataIndexReference>
               <index/>
-            </org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference>
+            </ComplexMetadataIndexReference>
           </list>
         </entry>
       </indexes>
@@ -1020,5 +1015,5 @@
       <string>gs:layer</string>
       <string>gs:other</string>
     </linkedLayers>
-  </org.geoserver.metadata.data.model.MetadataTemplate>
+  </MetadataTemplate>
 </list>

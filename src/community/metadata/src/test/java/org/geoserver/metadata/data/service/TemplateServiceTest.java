@@ -63,6 +63,9 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("new-record", actual.getName());
         Assert.assertEquals("new-record-description", actual.getDescription());
         Assert.assertNotNull(actual.getMetadata());
+        //Should not result in nullpointers because we read it from the xml
+        //Empty sets en list are not stored in the xml file. this could result in nullpointers.
+        actual.getMetadata().size("indentifier-single");
 
     }
 

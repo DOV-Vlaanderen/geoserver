@@ -4,8 +4,11 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import java.io.Serializable;
 
+@XStreamAlias("ComplexMetadataIndexReference")
 public class ComplexMetadataIndexReference implements Serializable {
     
     private static final long serialVersionUID = -893882182247353028L;

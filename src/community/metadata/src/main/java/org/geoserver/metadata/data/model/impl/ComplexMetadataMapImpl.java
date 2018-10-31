@@ -12,10 +12,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 
+@XStreamAlias("ComplexMetadataMap")
 public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     private static final long serialVersionUID = 1857277796433431947L;
@@ -52,8 +55,8 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     protected ComplexMetadataMapImpl(ComplexMetadataMapImpl parent,
                                      String[] basePath, ComplexMetadataIndexReference baseIndexRef) {
-        this.delegate = parent.delegate;
-        this.indexes = parent.indexes;
+        this.delegate = parent.getDelegate();
+        this.indexes = parent.getIndexes();
         this.basePath = basePath;
         this.baseIndexRef = baseIndexRef;
     }
@@ -65,7 +68,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         String strPath = String.join(PATH_SEPARATOR,
                 concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
-        return new ComplexMetadataAttributeImpl<T>(delegate,
+        return new ComplexMetadataAttributeImpl<T>(getDelegate(),
                 strPath,
                 getOrCreateIndex(strPath, fullIndex),
                 clazz);
@@ -83,10 +86,10 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     protected ComplexMetadataIndexReference getOrCreateIndex(
             String strPath, int[] index) {
         ComplexMetadataIndexReference result = null;
-        ArrayList<ComplexMetadataIndexReference> list = indexes.get(strPath);
+        ArrayList<ComplexMetadataIndexReference> list = getIndexes().get(strPath);
         if (list == null) {
             list = new ArrayList<>();
-            indexes.put(strPath, list);
+            getIndexes().put(strPath, list);
         } else {
             for (ComplexMetadataIndexReference item : list) {
                 if (Arrays.equals(item.getIndex(), index)) {
@@ -107,12 +110,12 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         String strPath = String.join(PATH_SEPARATOR,
                 concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
-        if (delegate.containsKey(strPath)) {
+        if (getDelegate().containsKey(strPath)) {
             return sizeInternal(strPath, index);
         } else {
             //subtype
             int size = 0;
-            for (String key : delegate.keySet()) {
+            for (String key : getDelegate().keySet()) {
                 if (key.startsWith(strPath + PATH_SEPARATOR)) {
                     size = Math.max(size, sizeInternal(key, fullIndex));
                 }
@@ -123,7 +126,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     @SuppressWarnings("unchecked")
     private int sizeInternal(String path, int[] index) {
-        Object object = delegate.get(path);
+        Object object = getDelegate().get(path);
         for (int i = 0; i < index.length; i++) {
             if (object instanceof List<?>) {
                 if (index[i] < ((List<Object>) object).size()) {
@@ -147,14 +150,14 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
         if (fullIndex.length > 0) {
             deleteFromList(strPath, fullIndex);
-            for (String key : delegate.keySet()) {
+            for (String key : getDelegate().keySet()) {
                 if (key.startsWith(strPath + PATH_SEPARATOR)) {
                     deleteFromList(key, fullIndex);
                 }
             }
         } else {
-            delegate.remove(strPath);
-            Iterator<String> it = delegate.keySet().iterator();
+            getDelegate().remove(strPath);
+            Iterator<String> it = getDelegate().keySet().iterator();
             while (it.hasNext()) {
                 String key = it.next();
                 if (key.startsWith(strPath + PATH_SEPARATOR)) {
@@ -168,7 +171,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     public ComplexMetadataMap clone() {
         Map<String, Serializable> newDelegate = new HashMap<String, Serializable>();
         String strPath = String.join(PATH_SEPARATOR, basePath);
-        for (String key : delegate.keySet()) {
+        for (String key : getDelegate().keySet()) {
             if (key.startsWith(strPath + PATH_SEPARATOR)) {
                 String strippedKey = key.substring(strPath.length() + 1);
                 newDelegate.put(strippedKey, 
@@ -180,7 +183,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     @SuppressWarnings("unchecked")
     private void deleteFromList(String path, int[] index) {
-        Object object = delegate.get(path);
+        Object object = getDelegate().get(path);
         for (int i = 0; i < index.length - 1; i++) {
             if (object instanceof List<?>) {
                 if (index[i] < ((List<Object>) object).size()) {
@@ -200,7 +203,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             }
         }
         // update indexes
-        ArrayList<ComplexMetadataIndexReference> list = indexes.get(path);
+        ArrayList<ComplexMetadataIndexReference> list = getIndexes().get(path);
         if (list != null) {
             Iterator<ComplexMetadataIndexReference> it = list.iterator();
             while (it.hasNext()) {
@@ -227,6 +230,28 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     protected static int[] concat(int[] first, int... second) {
         return ArrayUtils.addAll(first, second);
+    }
+
+    /**
+     * When unmarshalling the xml these values can be null.
+     * @return
+     */
+    private Map<String, Serializable> getDelegate() {
+        if(delegate == null){
+            delegate = new HashMap<>();
+        }
+        return delegate;
+    }
+
+    /**
+     * When unmarshalling the xml these values can be null.
+     * @return
+     */
+    private HashMap<String, ArrayList<ComplexMetadataIndexReference>> getIndexes() {
+        if(indexes == null){
+            indexes = new HashMap<>();
+        }
+        return indexes;
     }
 
 }
