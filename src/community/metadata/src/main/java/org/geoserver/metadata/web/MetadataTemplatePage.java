@@ -10,6 +10,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.markup.html.form.TextField;
@@ -48,6 +49,7 @@ public class MetadataTemplatePage extends GeoServerBasePage {
     public MetadataTemplatePage() {
         this(new Model<MetadataTemplate>(new MetadataTemplate()));
         metadataTemplateModel.getObject().setMetadata(new ComplexMetadataMapImpl(new MetadataMap()));
+        metadataTemplateModel.getObject().setPriority(0);
     }
 
     public MetadataTemplatePage(Model<MetadataTemplate> metadataTemplateModel) {
@@ -76,10 +78,10 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                 new PropertyModel<String>(metadataTemplateModel, "description"));
         form.add(desicription);
 
-        TextField<Integer> priority = new TextField<Integer>("priority",
-                new PropertyModel<Integer>(metadataTemplateModel, "priority"));
-        priority.setType(Integer.class);
-        form.add(desicription);
+        NumberTextField<Integer> priority = new NumberTextField<Integer>("priority",
+                new PropertyModel<Integer>(metadataTemplateModel, "priority"), Integer.class);
+        priority.setRequired(true);
+        form.add(priority);
 
         MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel, null);
         form.add(metadataTemplatePanel);

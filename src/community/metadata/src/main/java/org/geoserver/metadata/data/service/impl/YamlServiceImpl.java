@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -36,8 +38,13 @@ import java.util.Set;
 @Component
 public class YamlServiceImpl implements YamlService {
 
+    private static final String PREFIX = "metadata.generated.form.";
+
     @Autowired
     private GeoServerDataDirectory dataDirectory;
+
+    // the configuration
+    protected Properties properties;
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
 
@@ -70,8 +77,12 @@ public class YamlServiceImpl implements YamlService {
     
     private void readConfiguration(InputStream in, MetadataEditorConfiguration configuration, ObjectMapper mapper) {
         try {
-            MetadataEditorConfiguration config = mapper.readValue(in,
-                    MetadataEditorConfiguration.class);
+            //read label from propertie file
+            if(properties == null){
+                loadProperties();
+            }
+
+            MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfiguration.class);
             // Merge attribute configuration and remove duplicates
             Set<String> attributeKeys = new HashSet<>();
             for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
@@ -79,15 +90,13 @@ public class YamlServiceImpl implements YamlService {
                     throw new IOException(
                             "The key of an attribute may not be null. " + attribute.getLabel());
                 }
-                if (attribute.getLabel() == null) {
-                    attribute.setLabel(attribute.getKey());
-
-                }
+                resolveLabelValue(attribute, null);
                 if (!attributeKeys.contains(attribute.getKey())) {
                     configuration.getAttributes().add(attribute);
                     attributeKeys.add(attribute.getKey());
                 }
             }
+
             // Merge geonetwork configuration and remove duplicates
             Set<String> geonetworkKeys = new HashSet<>();
             for (MetadataGeonetworkConfiguration geonetwork : config.getGeonetworks()) {
@@ -100,6 +109,9 @@ public class YamlServiceImpl implements YamlService {
             Set<String> typesKeys = new HashSet<>();
             for (MetadataAttributeTypeConfiguration type : config.getTypes()) {
                 if (!typesKeys.contains(type.getTypename())) {
+                    for (MetadataAttributeConfiguration attribute : type.getAttributes()) {
+                        resolveLabelValue(attribute, type.getTypename());
+                    }
                     configuration.getTypes().add(type);
                     typesKeys.add(type.getTypename());
                 }
@@ -143,6 +155,40 @@ public class YamlServiceImpl implements YamlService {
         }
 
         return configuration;
+    }
+
+    /**
+     * Set the label value. Values from property files get priority.
+     * @param attribute
+     * @param typename
+     */
+    private void resolveLabelValue(MetadataAttributeConfiguration attribute, String typename) {
+        if(typename == null){
+            typename = "";
+        } else{
+            typename +=".";
+        }
+
+        attribute.setLabel((String) properties.get(PREFIX + typename +attribute.getKey()));
+        if (attribute.getLabel() == null) {
+            attribute.setLabel(attribute.getKey());
+
+        }
+    }
+
+    private void loadProperties() {
+        properties = new Properties();
+        List<Resource> files = getFolder().list();
+        for (Resource resource : files) {
+            if (resource.name().contains(".properties")) {
+                try {
+                    this.properties.load(resource.in());
+                } catch (IOException e) {
+                    LOGGER.severe("Could not load metadata label properties, " + e.getMessage());
+                }
+            }
+        }
+
     }
 }
 

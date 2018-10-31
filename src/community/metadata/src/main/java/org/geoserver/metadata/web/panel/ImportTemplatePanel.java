@@ -19,6 +19,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.MetadataTemplateDataProvider;
@@ -32,6 +33,7 @@ import org.geotools.util.logging.Logging;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -257,7 +259,9 @@ public abstract class ImportTemplatePanel extends Panel {
                 GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
 
         ArrayList<ComplexMetadataMap> maps = new ArrayList<>();
-        for (MetadataTemplate template : linkedTemplatesDataProvider.getItems()) {
+        List<MetadataTemplate> templates = linkedTemplatesDataProvider.getItems();
+        Collections.sort(templates, new MetadataTemplateComparator());
+        for (MetadataTemplate template : templates) {
             maps.add(template.getMetadata());
         }
 

@@ -1,11 +1,9 @@
 attributes:
-  - label: Indentifier single
-    key: indentifier-single
+  - key: indentifier-single
     fieldType: TEXT
   - key: number-field
     fieldType: NUMBER
-  - label: dropdown field
-    key: dropdown-field
+  - key: dropdown-field
     fieldType: DROPDOWN
     values:
         - Select me

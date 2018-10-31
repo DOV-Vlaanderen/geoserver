@@ -18,11 +18,11 @@ public class MetadataTemplateComparator implements Comparator<MetadataTemplate> 
 
     public int compare(MetadataTemplate obj1, MetadataTemplate obj2) {
         int priority1 = 0;
-        if (obj1 != null) {
+        if (obj1 != null && obj1.getPriority() != null) {
             priority1 = obj1.getPriority();
         }
         int priority2 = 0;
-        if (obj2 != null) {
+        if (obj2 != null && obj2.getPriority() != null) {
             priority2 = obj2.getPriority();
         }
         return Integer.compare(priority2, priority1);

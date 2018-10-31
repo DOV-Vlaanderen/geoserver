@@ -109,23 +109,25 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         //update layers
         Collections.sort(tempates, new MetadataTemplateComparator());
         ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
-        for (MetadataTemplate tempate : tempates) {
-            sources.add(tempate.getMetadata());
+        for (MetadataTemplate template : tempates) {
+            sources.add(template.getMetadata());
         }
-        for (String key : metadataTemplate.getLinkedLayers()) {
-            //TODO where did the workspace go?
-            //TODO move the static variable to an Enum
-            LayerInfo layer = geoServer.getCatalog().getLayerByName(key.split(":")[1]);
+        if (metadataTemplate.getLinkedLayers() != null) {
+            for (String key : metadataTemplate.getLinkedLayers()) {
+                //TODO where did the workspace go?
+                //TODO move the static variable to an Enum
+                LayerInfo layer = geoServer.getCatalog().getLayerByName(key.split(":")[1]);
 
-            HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
-                    layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_DESCRIPTION_KEY);
+                HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
+                        layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_DESCRIPTION_KEY);
 
-            Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
-            ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+                Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
+                ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
 
-            metadataService.merge(model, sources, descriptionMap);
+                metadataService.merge(model, sources, descriptionMap);
 
-            geoServer.getCatalog().save(layer);
+                geoServer.getCatalog().save(layer);
+            }
         }
 
     }

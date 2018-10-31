@@ -60,6 +60,11 @@ public abstract class AbstractMetadataTest {
                     new File(metadata, "metadata-mapping.yaml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui.yaml"), 
                     new File(metadata, "metadata-ui.yaml"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui.properties"),
+                    new File(metadata, "metadata-ui.properties"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui-extra.properties"),
+                    new File(metadata, "metadata-ui-extra.properties"));
+
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("templates.xml"),
                     new File(metadata, "templates.xml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"),

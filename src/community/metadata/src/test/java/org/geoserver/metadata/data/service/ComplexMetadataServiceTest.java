@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,20 +238,6 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("template-domain-code02", submapdomain02.get(String.class, "code").getValue());
         Assert.assertEquals("template-domain-code02", submapdomain02.get(String.class, "value").getValue());
     }
-
-
-    @Test
-    public void testMergeOrder() throws IOException {
-        //TODO
-        /*ComplexMetadataMap child = templateService.load("template-list-simple").getMetadata();
-        ComplexMetadataMap parent = templateService.load("allData").getMetadata();
-
-        ArrayList<ComplexMetadataMap> children = new ArrayList<>();
-        children.add(child);
-        service.merge(parent, children);
-        Assert.assertEquals(3, 4);*/
-    }
-
 
     @Test
     public void testUnlink() throws IOException {

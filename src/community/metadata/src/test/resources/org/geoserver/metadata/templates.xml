@@ -1,6 +1,7 @@
 <list>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>allData</name>
+    <priority>0</priority>
     <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
@@ -506,6 +507,7 @@
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>template-list-simple</name>
+    <priority>3</priority>
     <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
@@ -591,6 +593,7 @@
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>template-object list</name>
+    <priority>3</priority>
     <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
@@ -713,6 +716,7 @@
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>object-field</name>
+    <priority>4</priority>
     <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
@@ -787,6 +791,7 @@
   </org.geoserver.metadata.data.model.MetadataTemplate>
   <org.geoserver.metadata.data.model.MetadataTemplate>
     <name>template-nested-object</name>
+    <priority>3</priority>
     <metadata class="org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl">
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>

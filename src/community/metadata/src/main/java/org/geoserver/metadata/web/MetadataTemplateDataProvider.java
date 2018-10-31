@@ -5,6 +5,7 @@
 package org.geoserver.metadata.web;
 
 import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -26,12 +27,14 @@ public class MetadataTemplateDataProvider extends GeoServerDataProvider<Metadata
 
     public static final Property<MetadataTemplate> DESCRIPTION = new BeanProperty<MetadataTemplate>("description", "description");
 
+    public static final Property<MetadataTemplate> PRIORITY = new BeanProperty<MetadataTemplate>("priority", "priority");
+
     public MetadataTemplateDataProvider() {
     }
 
     @Override
     protected List<Property<MetadataTemplate>> getProperties() {
-        return Arrays.asList(NAME, DESCRIPTION);
+        return Arrays.asList(NAME, DESCRIPTION, PRIORITY);
     }
 
     @Override
@@ -39,7 +42,9 @@ public class MetadataTemplateDataProvider extends GeoServerDataProvider<Metadata
         try {
             MetadataTemplateService service =
                     GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-            return service.list();
+            List<MetadataTemplate> list = service.list();
+            Collections.sort(list, new MetadataTemplateComparator());
+            return list;
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
         }
