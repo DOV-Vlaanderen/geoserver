@@ -35,6 +35,10 @@ public class EditorFactory {
                         new ComplexMetadataAttributeModel<String>(
                                 metadataModel.getObject().get(String.class, configuration.getKey())),
                         configuration.getValues());
+            case UUID:
+                return new UUIDFieldPanel(id,
+                        new ComplexMetadataAttributeModel<String>(
+                                metadataModel.getObject().get(String.class, configuration.getKey())));
             case COMPLEX:
                 return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
                         new Model<ComplexMetadataMap>(metadataModel.getObject().subMap(configuration.getKey())), null);

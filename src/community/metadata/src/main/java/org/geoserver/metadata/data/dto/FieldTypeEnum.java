@@ -12,7 +12,7 @@ package org.geoserver.metadata.data.dto;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public enum FieldTypeEnum {
-    TEXT, NUMBER, DROPDOWN, COMPLEX;
+    TEXT, NUMBER, UUID, DROPDOWN, COMPLEX;
 
 
     public static FieldTypeEnum fromCode(String code) {

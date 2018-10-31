@@ -1,4 +1,6 @@
 attributes:
+  - key: uuid-single
+    fieldType: UUID
   - key: indentifier-single
     fieldType: TEXT
   - key: number-field
