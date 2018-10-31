@@ -99,24 +99,9 @@ public class RepeatableAttributesTablePanel extends Panel {
                             }
                         }
                         if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
-                            //TODO use the factory?
-                            Component component = null;
-                            switch (attributeConfiguration.getFieldType()) {
-                                case TEXT:
-                                    component= new TextFieldPanel(id,
-                                            new ComplexMetadataAttributeModel<String>(itemModel.getObject()));
-                                    break;
-                                case NUMBER:
-                                    ComplexMetadataAttribute object = itemModel.getObject();
-                                    component= new NumberFieldPanel(id, new ComplexMetadataAttributeModel<Integer>(object));
-                                    break;
-                                case DROPDOWN:
-                                    component =
-                                            new DropDownPanel(id,
-                                                    new ComplexMetadataAttributeModel<String>(itemModel.getObject()),
-                                                    attributeConfiguration.getValues());
-                                    break;
-                            }
+
+                            Component component = EditorFactory.getInstance().create(
+                                            attributeConfiguration, id, itemModel.getObject());
 
                             if (component != null) {
                                 component.setEnabled(enableInput);
@@ -124,7 +109,8 @@ public class RepeatableAttributesTablePanel extends Panel {
                             return component;
 
                         } else if (property.getName().equals(RepeatableAttributeDataProvider.KEY_REMOVE_ROW)) {
-                            //last column updates the row counter. TODO Is there a counter in the dataprovider or table?
+                            //last column updates the row counter.
+                            // TODO Is there a counter in the dataprovider or table?
                             count++;
                             if (itemModel.equals(disabledValue)) {
                                 //If the object is for a row that is not editable don't show the remove button

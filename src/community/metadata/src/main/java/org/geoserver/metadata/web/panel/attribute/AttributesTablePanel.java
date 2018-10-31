@@ -9,6 +9,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.AttributeInput;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
@@ -67,7 +69,10 @@ public class AttributesTablePanel extends Panel {
                 if (property.equals(AttributeDataProvider.VALUE)) {
                     MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject().getAttributeConfiguration();
                     if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
-                        Component component = EditorFactory.create(attributeConfiguration, id, getMetadataModel());
+                        Component component = EditorFactory.getInstance().create(
+                                attributeConfiguration,
+                                id,
+                                getMetadataModel().getObject());
                         //disable components with values from the templates
                         if (component != null &&
                                 descriptionMap != null &&
@@ -80,6 +85,7 @@ public class AttributesTablePanel extends Panel {
                         RepeatableComplexAttributeDataProvider repeatableDataProvider = 
                                 new RepeatableComplexAttributeDataProvider(attributeConfiguration, 
                                 getMetadataModel());
+
                         return new RepeatableComplexAttributesTablePanel(id,
                                 repeatableDataProvider,
                                 getMetadataModel(),

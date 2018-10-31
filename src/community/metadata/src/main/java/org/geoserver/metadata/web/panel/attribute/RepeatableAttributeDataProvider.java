@@ -13,6 +13,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class RepeatableAttributeDataProvider<T extends Serializable> 
@@ -35,19 +36,19 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     private IModel<ComplexMetadataMap> metadataModel;
 
     private List<ComplexMetadataAttribute<T>> items = new ArrayList<>();
-    
-    private Class<T> clazz;
+
 
     public RepeatableAttributeDataProvider(Class<T> clazz, MetadataAttributeConfiguration attributeConfiguration, 
             IModel<ComplexMetadataMap> metadataModel) {
-        this.clazz = clazz;
+
         this.metadataModel = metadataModel;
 
         this.attributeConfiguration = attributeConfiguration;
         
         items = new ArrayList<ComplexMetadataAttribute<T>>();
         for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
-            items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getKey(), i));
+            Class itemClass = EditorFactory.getInstance().getItemClass(attributeConfiguration);
+            items.add(metadataModel.getObject().get(itemClass, attributeConfiguration.getKey(), i));
         }
         
     }
@@ -63,8 +64,10 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     }
 
     public void addField() {
-        items.add(metadataModel.getObject().get(clazz, attributeConfiguration.getKey(), items.size()));
+        Class itemClass = EditorFactory.getInstance().getItemClass(attributeConfiguration);
+        items.add(metadataModel.getObject().get(itemClass, attributeConfiguration.getKey(), items.size()));
     }
+
 
     public void removeField(ComplexMetadataAttribute<T> attribute) {
         int index = items.indexOf(attribute);
