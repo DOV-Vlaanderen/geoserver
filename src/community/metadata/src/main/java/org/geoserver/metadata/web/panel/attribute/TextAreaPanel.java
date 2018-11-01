@@ -17,9 +17,5 @@ public class TextAreaPanel extends Panel {
         
         add(new TextArea<>("textarea", model));
     }
-    
-    @SuppressWarnings("unchecked")
-    public TextArea<String> getTextArea() {
-        return (TextArea<String>) get("textarea");
-    }
+
 }

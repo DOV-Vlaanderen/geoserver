@@ -17,9 +17,4 @@ public class TextFieldPanel extends Panel {
         
         add(new TextField<String>("textfield", model));
     }
-    
-    @SuppressWarnings("unchecked")
-    public TextField<String> getTextField() {
-        return (TextField<String>) get("textfield");
-    }
 }

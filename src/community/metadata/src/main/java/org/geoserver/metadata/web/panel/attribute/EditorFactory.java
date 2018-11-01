@@ -64,10 +64,10 @@ public class EditorFactory {
             case TEXT_AREA:
                 return new TextAreaPanel(id, model);
             case DATE:
-                return new TextFieldPanel(id, model);
+                return new DateFieldPanel(id, model);
             case UUID:
                 return new UUIDFieldPanel(id, model);
-            case SUGGESTBOX:
+            case SUGGESTBOX: //TODO
                 return new DropDownPanel(id, model, configuration.getValues());
             case COMPLEX:
                 return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),

@@ -5,10 +5,8 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.markup.html.form.NumberTextField;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 
 public class NumberFieldPanel extends Panel {
 
@@ -19,8 +17,4 @@ public class NumberFieldPanel extends Panel {
         add(new NumberTextField<Integer>("textfield", model, Integer.class));
     }
 
-    @SuppressWarnings("unchecked")
-    public TextField<String> getTextField() {
-        return (TextField<String>) get("textfield");
-    }
 }

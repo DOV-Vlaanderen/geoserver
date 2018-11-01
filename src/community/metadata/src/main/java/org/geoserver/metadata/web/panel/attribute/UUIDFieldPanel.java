@@ -9,7 +9,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.geoserver.metadata.web.MetadataTemplatePage;
 
 import java.util.UUID;
 
@@ -36,9 +35,5 @@ public class UUIDFieldPanel extends Panel {
         });
 
     }
-    
-    @SuppressWarnings("unchecked")
-    public TextField<String> getTextField() {
-        return (TextField<String>) get("textfield");
-    }
+
 }
