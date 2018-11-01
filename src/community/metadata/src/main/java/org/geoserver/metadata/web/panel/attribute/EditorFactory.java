@@ -67,8 +67,8 @@ public class EditorFactory {
                 return new DateFieldPanel(id, model);
             case UUID:
                 return new UUIDFieldPanel(id, model);
-            case SUGGESTBOX: //TODO
-                return new DropDownPanel(id, model, configuration.getValues());
+            case SUGGESTBOX:
+                return new AutoCompletePanel(id, model, configuration.getValues());
             case COMPLEX:
                 return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
                         new Model<ComplexMetadataMap>(submap), null);
