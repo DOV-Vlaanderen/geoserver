@@ -21,6 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,8 @@ public abstract class AbstractMetadataTest {
     
     protected static MockData DATA_DIRECTORY;
 
+    private static File metadata;
+
     @Autowired
     protected GeoServer geoServer;
 
@@ -50,7 +53,7 @@ public abstract class AbstractMetadataTest {
                     DATA_DIRECTORY.getDataDirectoryRoot().toString());
             
             //copy test files to data directory
-            File metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata");
+            metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata");
             metadata.mkdirs();
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml"),
                     new File(metadata, "fouteinhoud.yaml"));
@@ -109,5 +112,10 @@ public abstract class AbstractMetadataTest {
 
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(username,password,l));
+    }
+
+    protected void restoreTemplates() throws IOException {
+        IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("templates.xml"),
+                new File(metadata, "templates.xml"));
     }
 }
