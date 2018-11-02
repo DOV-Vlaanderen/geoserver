@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -34,6 +35,10 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
     private static final Logger LOGGER = Logging.getLogger(RepeatableComplexAttributesTablePanel.class);
 
+    private GeoServerTablePanel<ComplexMetadataMap> tablePanel;
+
+    private Label noData;
+
 
     public RepeatableComplexAttributesTablePanel(String id,
                                                  RepeatableComplexAttributeDataProvider dataProvider,
@@ -41,8 +46,9 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                                                  HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
 
-        GeoServerTablePanel<ComplexMetadataMap> tablePanel =
-                createAttributesTablePanel(dataProvider, descriptionMap);
+        setOutputMarkupId(true);
+
+        tablePanel = createAttributesTablePanel(dataProvider, descriptionMap);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -53,6 +59,11 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
 
+        // the no data links label
+        noData = new Label("noData", new ResourceModel("noData"));
+        add(noData);
+        updateTable(dataProvider);
+
         add(new AjaxSubmitLink("addNew") {
 
             private static final long serialVersionUID = 6840006565079316081L;
@@ -60,8 +71,9 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 dataProvider.addField();
-
+                updateTable(dataProvider);
                 target.add(tablePanel);
+                target.add(RepeatableComplexAttributesTablePanel.this);
             }
         });
     }
@@ -120,6 +132,8 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                             @Override
                             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                                 removeFields(target, itemModel);
+                                updateTable(dataProvider);
+                                target.add(RepeatableComplexAttributesTablePanel.this);
                             }
                         };
                         deleteAction.add(new AttributeAppender("class", "remove-link"));
@@ -138,4 +152,10 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         };
     }
 
+
+    private void updateTable(RepeatableComplexAttributeDataProvider dataProvider) {
+        boolean isEmpty = dataProvider.getItems().isEmpty();
+        tablePanel.setVisible(!isEmpty);
+        noData.setVisible(isEmpty);
+    }
 }

@@ -6,8 +6,7 @@ package org.geoserver.metadata.web.panel;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.MetadataTemplate;
-import org.geoserver.metadata.data.service.MetadataTemplateService;
-import org.geoserver.web.GeoServerApplication;
+import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.util.logging.Logging;
 
@@ -90,6 +89,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public List<MetadataTemplate> getUnlinkedItems() {
         List<MetadataTemplate> result = new ArrayList<>(allTemplates);
         result.removeAll(linkedTemplates);
+        Collections.sort(linkedTemplates, new MetadataTemplateComparator());
         return result;
     }
 

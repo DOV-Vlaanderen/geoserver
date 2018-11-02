@@ -8,6 +8,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -16,8 +17,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
@@ -59,6 +60,11 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private final HashMap<String, List<Integer>> descriptionMap;
 
+    private Label noData;
+
+    private AjaxLink<Object> remove;
+
+
     public ImportTemplatePanel(String id,
                                String workspace,
                                String layerName,
@@ -87,6 +93,8 @@ public abstract class ImportTemplatePanel extends Panel {
     public void onInitialize() {
         super.onInitialize();
 
+        setOutputMarkupId(true);
+
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
         Form<Object> form = new Form<>("form");
@@ -98,7 +106,7 @@ public abstract class ImportTemplatePanel extends Panel {
         AjaxSubmitLink importAction = createImportAction(dropDown);
         form.add(importAction);
         //unlink button
-        AjaxLink<Object> remove = createUnlinkAction(dropDown);
+        remove = createUnlinkAction(dropDown);
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
         form.add(remove);
@@ -115,6 +123,10 @@ public abstract class ImportTemplatePanel extends Panel {
 
         form.add(templatesPanel);
 
+        // the no data links label
+        noData = new Label("noData", new ResourceModel("noData"));
+        form.add(noData);
+        updateTable(linkedTemplatesDataProvider);
 
         add(form);
 
@@ -156,9 +168,11 @@ public abstract class ImportTemplatePanel extends Panel {
                                 ImportTemplatePanel.this).getString());
                     }
                 }
+                updateTable(linkedTemplatesDataProvider);
                 target.add(getFeedbackPanel());
                 target.add(templatesPanel);
                 target.add(dropDown);
+                target.add(ImportTemplatePanel.this);
                 handleUpdate(target);
             }
 
@@ -179,9 +193,11 @@ public abstract class ImportTemplatePanel extends Panel {
                     error(new ParamResourceModel("errorSelectGeonetwork",
                             ImportTemplatePanel.this).getString());
                 }
+                updateTable(linkedTemplatesDataProvider);
                 target.add(getFeedbackPanel());
                 target.add(templatesPanel);
                 target.add(dropDown);
+                target.add(ImportTemplatePanel.this);
                 handleUpdate(target);
             }
         };
@@ -284,5 +300,13 @@ public abstract class ImportTemplatePanel extends Panel {
             } catch (IOException e) {
                 LOGGER.severe(e.getMessage());
             }
+    }
+
+
+    private void updateTable(ImportTemplateDataProvider dataProvider) {
+        boolean isEmpty = dataProvider.getItems().isEmpty();
+        templatesPanel.setVisible(!isEmpty);
+        remove.setVisible(!isEmpty);
+        noData.setVisible(isEmpty);
     }
 }
