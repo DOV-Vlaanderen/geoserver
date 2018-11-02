@@ -1,0 +1,28 @@
+/*todo create component for first level labels*/
+.even td, .odd td  {
+    vertical-align: top;
+}
+
+.attribute-panel > table > tbody > tr.even td,
+.attribute-panel  tr.even th,
+.attribute-panel  tr.odd th {
+    background: rgba(255, 255, 255, 0);
+}
+
+
+.attribute-panel > table > thead ,
+.repeat-panel > table > thead {
+    display: none;
+}
+
+.repeat-panel > table
+{
+    border: 1px solid #0076a1;
+    border-width: 0px;
+    border-top-width: 1px;
+}
+
+.repeat-panel > table > tbody > tr.even td {
+    background: #e2efcd;
+}
+

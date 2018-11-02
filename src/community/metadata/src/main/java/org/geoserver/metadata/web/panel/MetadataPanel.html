@@ -3,9 +3,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:wicket="http://wicket.apache.org/">
 <body>
+<wicket:head>
+    <wicket:link>
+        <link rel="stylesheet" href="../styleMetadataModule.css" type="text/css">
+    </wicket:link>
+</wicket:head>
 <wicket:panel>
-    <h1>Attributen</h1>
-    <div wicket:id="attributesPanel"></div>
+    <ul>
+        <li>
+            <fieldset>
+                <legend>
+                    <span><wicket:message key="header"></wicket:message></span>
+                </legend>
+                <ul>
+                    <li>
+                        <div wicket:id="attributesPanel"></div>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
 </wicket:panel>
 </body>
 </html>

@@ -4,12 +4,10 @@
   xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
    <wicket:link>
-        <!--<link rel="stylesheet" href="styleTaskManager.css" type="text/css">-->
+
    </wicket:link>
 </wicket:head>
 <body>
-<!--TODO import uit metadata moet hier niet bij-->
-
 	<wicket:extend>
         <form wicket:id="form">
             <fieldset>
@@ -25,7 +23,9 @@
                         <input id="priority" wicket:id="priority" type="number" class="number" />
                     </li>
                     <li>
-                        <div wicket:id="metadataTemplatePanel"></div>
+                        <div wicket:id="metadataTemplatePanel" style="margin-top:2em"></div>
+                    </li>
+                    <li>
                         <div class="button-group selfclear">
                             <a href="#" wicket:id="save"><wicket:message key="save"/></a>
                             <a href="#" wicket:id="cancel"><wicket:message key="cancel"/></a>

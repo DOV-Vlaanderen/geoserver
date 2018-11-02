@@ -2,14 +2,38 @@
 <head></head>
 <body>
 <form>
-  <wicket:panel>
-    <div wicket:id="dialog"></div>
-    <div wicket:id="geonetworkPanel"></div>
-    <div wicket:id="importTemplatePanel"></div>
-    <a href="#" wicket:id="generateFeatureCatalog" ><wicket:message key="actionFeatureCatalog"/></a>
-    <div wicket:id="metadataPanel"></div>
-  </wicket:panel>
+    <wicket:panel>
+        <ul>
+            <li>
+                <h3>
+                    <wicket:message key="importHeader"/>
+                </h3>
+            </li>
+            <li>
+                <div wicket:id="dialog"></div>
+            </li>
+            <li>
+                <div wicket:id="geonetworkPanel"></div>
+            </li>
+            <li>
+                <div wicket:id="importTemplatePanel"></div>
+            </li>
+            <li>
+                <h3>
+                    <wicket:message key="metadataHeader"/>
+                </h3>
+            </li>
+            <li>
+                <a href="#" wicket:id="generateFeatureCatalog">
+                    <wicket:message key="actionFeatureCatalog"/>
+                </a>
+            </li>
+            <li>
+                <div wicket:id="metadataPanel"></div>
 
+            </li>
+        </ul>
+    </wicket:panel>
 </form>
 </body>
 </html>

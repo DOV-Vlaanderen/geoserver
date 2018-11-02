@@ -4,12 +4,27 @@
       xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-    <h1>Importeer metadata</h1>
-    <span wicket:id="feedback"></span>
-    <form wicket:id="form">
-        <select wicket:id="geonetworkName"/>
-        <input wicket:id="textfield"  style="width: 600px;"/>
-    </form>
+    <ul>
+        <li>
+            <fieldset>
+                <legend>
+                    <span><wicket:message key="header"></wicket:message></span>
+                </legend>
+                <ul>
+                    <li>
+                        <form wicket:id="form">
+                            <select wicket:id="geonetworkName"/>
+                            <input wicket:id="textfield" style="width: 600px;"/>
+                            <a href="#" wicket:id="link">
+                                <wicket:message key="actionImport"></wicket:message>
+                            </a>
+                        </form>
+                        <span wicket:id="feedback"></span>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
 </wicket:panel>
 </body>
 </html>
