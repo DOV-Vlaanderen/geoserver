@@ -115,15 +115,19 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                 //TODO move the static variable to an Enum
                 LayerInfo layer = geoServer.getCatalog().getLayerByName(key.split(":")[1]);
 
-                HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
-                        layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_DESCRIPTION_KEY);
+                if (layer != null) {
+                    HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
+                            layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_DESCRIPTION_KEY);
 
-                Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
-                ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+                    Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
+                    ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
 
-                metadataService.merge(model, sources, descriptionMap);
+                    metadataService.merge(model, sources, descriptionMap);
 
-                geoServer.getCatalog().save(layer);
+                    geoServer.getCatalog().save(layer);
+                } else {
+                    LOGGER.severe("Update metadata for linked layer failed: " + key);
+                }
             }
         }
 
