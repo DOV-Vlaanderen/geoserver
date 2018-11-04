@@ -4,7 +4,7 @@
  */
 package org.geoserver.metadata.wicket;
 
-import junit.framework.Assert;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
@@ -12,13 +12,13 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * Test template page.
@@ -69,7 +69,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
         tester.clickLink("form:save");
 
         MetadataTemplate template = service.load("allData");
-        Assert.assertEquals( "description update" , template.getDescription());
+        Assert.assertEquals("description update", template.getDescription());
         Assert.assertEquals(new Integer(5), template.getPriority());
 
         tester.assertRenderedPage(MetadataTemplatesPage.class);
@@ -94,6 +94,25 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
         Assert.assertEquals(new Integer(0), template.getPriority());
 
         tester.assertRenderedPage(MetadataTemplatesPage.class);
+    }
+
+    @Test
+    public void tesPageValidation() throws IOException {
+        //Load the page
+        MetadataTemplatePage page = new MetadataTemplatePage();
+        tester.startPage(page);
+        tester.assertRenderedPage(MetadataTemplatePage.class);
+
+        tester.assertModelValue("form:name", null);
+
+        tester.clickLink("form:save");
+
+        Assert.assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        Assert.assertEquals("Field 'Name' is required.", tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
+        tester.assertLabel("feedback:feedbackul:messages:0:message", "Field &#039;Name&#039; is required.");
+
+        tester.assertRenderedPage(MetadataTemplatePage.class);
+
     }
 
 
