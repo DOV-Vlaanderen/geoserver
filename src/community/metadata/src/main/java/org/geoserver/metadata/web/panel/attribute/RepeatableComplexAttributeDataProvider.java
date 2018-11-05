@@ -41,6 +41,10 @@ public class RepeatableComplexAttributeDataProvider
         this.metadataModel = metadataModel;
         this.attributeConfiguration = attributeConfiguration;
 
+        reset();
+    }
+    
+    public void reset() {
         items = new ArrayList<ComplexMetadataMap>();
         for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
             items.add(metadataModel.getObject().subMap(attributeConfiguration.getKey(), i));

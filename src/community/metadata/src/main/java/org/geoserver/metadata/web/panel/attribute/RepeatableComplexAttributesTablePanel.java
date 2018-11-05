@@ -15,9 +15,14 @@ import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.service.ComplexAttributeGenerator;
+import org.geoserver.metadata.web.layer.MetadataTabPanel;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
 import java.util.HashMap;
@@ -43,6 +48,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
     public RepeatableComplexAttributesTablePanel(String id,
                                                  RepeatableComplexAttributeDataProvider dataProvider,
                                                  IModel<ComplexMetadataMap> metadataModel,
+                                                 ComplexAttributeGenerator generator,
                                                  HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
 
@@ -76,6 +82,44 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                 target.add(RepeatableComplexAttributesTablePanel.this);
             }
         });
+        
+        GeoServerDialog dialog =  new GeoServerDialog("dialog");
+        dialog.setInitialHeight(100);
+        add(dialog);
+        
+        add(new AjaxSubmitLink("generate") {
+
+            private static final long serialVersionUID = 6840006565079316081L;
+
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                dialog.showOkCancel(target, 
+                        new GeoServerDialog.DialogDelegate() {
+                            private static final long serialVersionUID = -8716380894588651422L;
+
+                            @Override
+                            protected Component getContents(String id) {
+                                return new Label(id, new ParamResourceModel(
+                                        "confirmGenerate", 
+                                        RepeatableComplexAttributesTablePanel.this));
+                            }
+
+                            @Override
+                            protected boolean onSubmit(AjaxRequestTarget target,
+                                    Component contents) {
+                                generator.generate(metadataModel.getObject(),
+                                        (LayerInfo) findParent(MetadataTabPanel.class).getDefaultModelObject());
+                                dataProvider.reset();
+                                target.add(RepeatableComplexAttributesTablePanel.this.get("attributesTablePanel")
+                                        .replaceWith(createAttributesTablePanel(dataProvider, descriptionMap)));
+                                target.add(RepeatableComplexAttributesTablePanel.this);
+                                return true;
+                            }
+                            
+                        });  
+            }
+        }.setVisible(generator != null && generator.supports(metadataModel.getObject(),
+               (LayerInfo) findParent(MetadataTabPanel.class).getDefaultModelObject())));
     }
 
     private GeoServerTablePanel<ComplexMetadataMap> createAttributesTablePanel(

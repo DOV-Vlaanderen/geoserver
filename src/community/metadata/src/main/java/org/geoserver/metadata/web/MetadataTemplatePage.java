@@ -69,7 +69,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         form.add(saveButton);
         form.add(createCancelButton());
 
-
         TextField<String> nameField = createNameField(form, saveButton);
         nameField.setEnabled(isNew);
         form.add(nameField);

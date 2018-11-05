@@ -9,9 +9,11 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.service.GeneratorService;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.util.logging.Logging;
@@ -87,7 +89,9 @@ public class AttributesTablePanel extends Panel {
 
                         return new RepeatableComplexAttributesTablePanel(id,
                                 repeatableDataProvider,
-                                getMetadataModel(), null,
+                                getMetadataModel(), 
+                                    GeoServerApplication.get().getBeanOfType(GeneratorService.class)
+                                    .findGeneratorByType(attributeConfiguration.getTypename()),
                                 descriptionMap);
                     } else {
                         RepeatableAttributeDataProvider<String> repeatableDataProvider = 

@@ -13,7 +13,6 @@ import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 

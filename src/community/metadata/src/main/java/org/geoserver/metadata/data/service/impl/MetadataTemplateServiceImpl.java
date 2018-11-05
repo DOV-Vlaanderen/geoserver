@@ -17,7 +17,6 @@ import org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
-import org.geoserver.metadata.web.layer.MetadataTabPanel;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -114,9 +113,9 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
                 if (layer != null) {
                     HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
-                            layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_DESCRIPTION_KEY);
+                            layer.getResource().getMetadata().get(MetadataConstants.DESCRIPTION_KEY);
 
-                    Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
+                    Serializable custom = layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                     ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
 
                     ArrayList<ComplexMetadataMap> sources = new ArrayList<>();

@@ -5,7 +5,6 @@
 package org.geoserver.metadata.web.layer;
 
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.data.model.MetadataTemplate;

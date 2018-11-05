@@ -7,6 +7,10 @@ import com.vividsolutions.jts.geom.Geometry;
 public final class MetadataConstants {
     
     public final static String DIRECTORY = "metadata";
+
+    public final static String CUSTOM_METADATA_KEY = "custom";
+
+    public final static String DESCRIPTION_KEY = "descriptionMap";
     
     public final static String FEATURE_CATALOG_CONFIG_FILE = "featureCatalog.yaml";
     
