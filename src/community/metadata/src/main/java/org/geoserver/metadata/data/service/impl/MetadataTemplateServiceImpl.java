@@ -107,9 +107,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
         if (metadataTemplate.getLinkedLayers() != null) {
             for (String key : metadataTemplate.getLinkedLayers()) {
-                //TODO where did the workspace go?
-                //TODO move the static variable to an Enum
-                LayerInfo layer = geoServer.getCatalog().getLayerByName(key.split(":")[1]);
+                LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
 
                 if (layer != null) {
                     HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
