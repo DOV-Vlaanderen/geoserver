@@ -26,40 +26,6 @@
     <entry key="cachingEnabled">false</entry>
     <entry key="customDescription">
       <HashMap>
-        <entry>
-          <string>dropdown-field</string>
-          <list>
-            <int>0</int>
-          </list>
-        </entry>
-        <entry>
-          <string>referencesystem-object-list</string>
-          <list/>
-        </entry>
-        <entry>
-          <string>object-catalog</string>
-          <list/>
-        </entry>
-        <entry>
-          <string>indentifier-single</string>
-          <list>
-            <int>0</int>
-          </list>
-        </entry>
-        <entry>
-          <string>refsystem-as-list</string>
-          <list/>
-        </entry>
-        <entry>
-          <string>number-field</string>
-          <list>
-            <int>0</int>
-          </list>
-        </entry>
-        <entry>
-          <string>referencesystem-object</string>
-          <list/>
-        </entry>
       </HashMap>
     </entry>
     <entry key="custom">
@@ -69,45 +35,93 @@
           <string>Don&apos;t select this one</string>
         </entry>
         <entry>
+          <string>object-catalog_max-occurence</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>referencesystem-object_code-space</string>
+          <string>refsystem-codeSpace</string>
+        </entry>
+        <entry>
+          <string>object-catalog_domain_code</string>
+          <list>
+            <list>
+              <string>nestedobject</string>
+            </list>
+          </list>
+        </entry>
+        <entry>
+          <string>object-catalog_definition</string>
+          <list>
+            <string>a date</string>
+          </list>
+        </entry>
+        <entry>
+          <string>referencesystem-object_code</string>
+          <string>refsystem-code</string>
+        </entry>
+        <entry>
+          <string>object-catalog_name</string>
+          <list>
+            <string>theObject catalog</string>
+          </list>
+        </entry>
+        <entry>
+          <string>date-field</string>
+          <date>2018-11-05 23:00:00.0 UTC</date>
+        </entry>
+        <entry>
+          <string>object-catalog_min-occurence</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>date-field-repeat</string>
+          <list/>
+        </entry>
+        <entry>
           <string>referencesystem-object-list_code</string>
           <list>
-            <string>mijn eerste ingevuld veld</string>
+            <string>First object :code</string>
           </list>
+        </entry>
+        <entry>
+          <string>object-catalog_domain_definition</string>
+          <list/>
         </entry>
         <entry>
           <string>indentifier-single</string>
           <string>template-identifier</string>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
-          <string>templateValue-codeSpace</string>
+          <string>uuid-single</string>
+          <string>f7de06ca-f93c-457b-b0ae-9c52f5b1ca5e</string>
         </entry>
         <entry>
           <string>referencesystem-object-list_code-space</string>
           <list>
-            <string>en nog deze doen van de lijst</string>
+            <string>First object :codeSpace</string>
           </list>
         </entry>
         <entry>
           <string>refsystem-as-list</string>
           <list>
-            <string>mijn eerste</string>
-            <string>en 2de</string>
+            <string>reflist-first</string>
+            <string>reflist-second</string>
           </list>
+        </entry>
+        <entry>
+          <string>object-catalog_type</string>
+          <list>
+            <string>Date</string>
+          </list>
+        </entry>
+        <entry>
+          <string>object-catalog_domain_value</string>
+          <list/>
         </entry>
         <entry>
           <string>number-field</string>
-          <string>template-88</string>
-        </entry>
-        <entry>
-          <string>referencesystem-object_code</string>
-          <string>templateValue-code</string>
-        </entry>
-        <entry>
-          <string>object-catalog_name</string>
-          <list>
-            <string>zou dat hier werken</string>
-          </list>
+          <string>88</string>
         </entry>
       </HashMap>
     </entry>

@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,5 +118,21 @@ public abstract class AbstractMetadataTest {
     protected void restoreTemplates() throws IOException {
         IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("templates.xml"),
                 new File(metadata, "templates.xml"));
+    }
+
+    protected void restoreLayers() throws IOException {
+        File target = new File(DATA_DIRECTORY.getDataDirectoryRoot());
+        URL sourceUrl = AbstractMetadataTest.class.getClassLoader().getResource("datadir_layers");
+        File sourceDir = null;
+        try {
+            sourceDir = new File(sourceUrl.toURI());
+            IOUtils.deepCopy(sourceDir, target);
+            geoServer.reload();
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+
     }
 }

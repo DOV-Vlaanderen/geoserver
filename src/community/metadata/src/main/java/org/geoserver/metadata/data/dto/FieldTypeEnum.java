@@ -12,15 +12,5 @@ package org.geoserver.metadata.data.dto;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public enum FieldTypeEnum {
-    TEXT, NUMBER, TEXT_AREA, DATE, UUID, DROPDOWN, SUGGESTBOX, COMPLEX;
-
-
-    public static FieldTypeEnum fromCode(String code) {
-        for (FieldTypeEnum c : FieldTypeEnum.values()) {
-            if (c.name().equals(code)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException("Can not create a status enum from code 'null'.");
-    }
+    TEXT, NUMBER, TEXT_AREA, DATE, UUID, DROPDOWN, SUGGESTBOX, COMPLEX
 }

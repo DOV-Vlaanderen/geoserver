@@ -12,14 +12,5 @@ package org.geoserver.metadata.data.dto;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public enum OccurenceEnum {
-    SINGLE, REPEAT;
-
-    public static OccurenceEnum fromCode(String code) {
-        for (OccurenceEnum c : OccurenceEnum.values()) {
-            if (c.name().equals(code)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException("Can not create a status enum from code 'null'.");
-    }
+    SINGLE, REPEAT
 }

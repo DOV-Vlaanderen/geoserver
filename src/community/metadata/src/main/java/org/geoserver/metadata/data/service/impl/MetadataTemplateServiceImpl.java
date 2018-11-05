@@ -100,15 +100,12 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     public void update(MetadataTemplate metadataTemplate) throws IOException {
         delete(metadataTemplate);
 
-        List<MetadataTemplate> tempates = list();
-        tempates.add(metadataTemplate);
-        updateTemplates(tempates);
+        List<MetadataTemplate> templates = list();
+        templates.add(metadataTemplate);
+        updateTemplates(templates);
         //update layers
-        Collections.sort(tempates, new MetadataTemplateComparator());
-        ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
-        for (MetadataTemplate template : tempates) {
-            sources.add(template.getMetadata());
-        }
+        Collections.sort(templates, new MetadataTemplateComparator());
+
         if (metadataTemplate.getLinkedLayers() != null) {
             for (String key : metadataTemplate.getLinkedLayers()) {
                 //TODO where did the workspace go?
@@ -121,6 +118,13 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
                     Serializable custom = layer.getResource().getMetadata().get(MetadataTabPanel.CUSTOM_METADATA_KEY);
                     ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+
+                    ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
+                    for (MetadataTemplate template : templates) {
+                        if (template.getLinkedLayers() != null && template.getLinkedLayers().contains(key)) {
+                            sources.add(template.getMetadata());
+                        }
+                    }
 
                     metadataService.merge(model, sources, descriptionMap);
 

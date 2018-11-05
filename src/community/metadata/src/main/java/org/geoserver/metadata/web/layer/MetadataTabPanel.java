@@ -23,7 +23,9 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.MetadataLocationEnum;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
@@ -63,17 +65,18 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         super(id, model);
 
 
+        MetadataMap metadataMap = model.getObject().getResource().getMetadata();
         descriptionMap = (HashMap<String, List<Integer>>)
-                        model.getObject().getResource().getMetadata().get(CUSTOM_DESCRIPTION_KEY);
+                metadataMap.get(MetadataLocationEnum.CUSTOM_DESCRIPTION_KEY.getKey());
 
-        Serializable custom = model.getObject().getResource().getMetadata().get(CUSTOM_METADATA_KEY);
+        Serializable custom = metadataMap.get(MetadataLocationEnum.CUSTOM_METADATA_KEY.getKey());
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
-            model.getObject().getResource().getMetadata().put(CUSTOM_METADATA_KEY, custom);
+            metadataMap.put(MetadataLocationEnum.CUSTOM_METADATA_KEY.getKey(), custom);
         }
         if (!(descriptionMap instanceof HashMap<?, ?>)) {
             descriptionMap = new HashMap<String, List<Integer>>();
-            model.getObject().getResource().getMetadata().put(CUSTOM_DESCRIPTION_KEY, descriptionMap);
+            metadataMap.put(MetadataLocationEnum.CUSTOM_DESCRIPTION_KEY.getKey(), descriptionMap);
         }
 
 
