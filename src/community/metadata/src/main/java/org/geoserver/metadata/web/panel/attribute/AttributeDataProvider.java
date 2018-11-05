@@ -4,7 +4,6 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.geoserver.metadata.data.model.AttributeInput;
 import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
@@ -15,20 +14,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput> {
+public class AttributeDataProvider extends GeoServerDataProvider<MetadataAttributeConfiguration> {
 
     private static final long serialVersionUID = -4454769618643460913L;
 
-    public static Property<AttributeInput> NAME = new BeanProperty<AttributeInput>("Name", "attributeConfiguration.label");
+    public static Property<MetadataAttributeConfiguration> NAME = new BeanProperty<MetadataAttributeConfiguration>("name", "name");
 
-    public static Property<AttributeInput> VALUE = new BeanProperty<AttributeInput>("Value", "inputValue");
+    public static Property<MetadataAttributeConfiguration> VALUE = new BeanProperty<MetadataAttributeConfiguration>("value", "value");
 
-    private List<AttributeInput> items = new ArrayList<>();
+    private List<MetadataAttributeConfiguration> items = new ArrayList<>();
 
     public AttributeDataProvider() {
         MetadataEditorConfigurationService metadataConfigurationService = GeoServerApplication.get().getApplicationContext().getBean(MetadataEditorConfigurationService.class);
         for (MetadataAttributeConfiguration config : metadataConfigurationService.readConfiguration().getAttributes()) {
-            items.add(new AttributeInput(config));
+            items.add(config);
         }
     }
 
@@ -44,20 +43,19 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeInput>
             = metadataConfigurationService.readConfiguration().findType(typename);
         if (typeConfiguration != null) {
             for (MetadataAttributeConfiguration config : typeConfiguration.getAttributes()) {
-                AttributeInput attributeInput = new AttributeInput(config);
-                items.add(attributeInput);
+                items.add(config);
             }
         }
     }
 
 
     @Override
-    protected List<Property<AttributeInput>> getProperties() {
+    protected List<Property<MetadataAttributeConfiguration>> getProperties() {
         return Arrays.asList(NAME, VALUE);
     }
 
     @Override
-    protected List<AttributeInput> getItems() {
+    protected List<MetadataAttributeConfiguration> getItems() {
         return items;
     }
 }

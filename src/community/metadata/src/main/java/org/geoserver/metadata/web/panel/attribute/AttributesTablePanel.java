@@ -8,9 +8,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
-import org.geoserver.metadata.data.model.AttributeInput;
-import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
-import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
@@ -37,13 +34,14 @@ public class AttributesTablePanel extends Panel {
 
 
     public AttributesTablePanel(String id,
-                                GeoServerDataProvider<AttributeInput> dataProvider,
+                                GeoServerDataProvider<MetadataAttributeConfiguration> dataProvider,
                                 IModel<ComplexMetadataMap> metadataModel,
                                 HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
 
 
-        GeoServerTablePanel<AttributeInput> tablePanel = createAttributesTablePanel(dataProvider, descriptionMap);
+        GeoServerTablePanel<MetadataAttributeConfiguration> tablePanel = 
+                createAttributesTablePanel(dataProvider, descriptionMap);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -57,17 +55,18 @@ public class AttributesTablePanel extends Panel {
 
     }
 
-    private GeoServerTablePanel<AttributeInput> createAttributesTablePanel(GeoServerDataProvider<AttributeInput> dataProvider,
+    private GeoServerTablePanel<MetadataAttributeConfiguration> createAttributesTablePanel(GeoServerDataProvider<MetadataAttributeConfiguration> dataProvider,
                                                                            HashMap<String, List<Integer>> descriptionMap) {
 
-        return new GeoServerTablePanel<AttributeInput>("attributesTablePanel", dataProvider) {
+        return new GeoServerTablePanel<MetadataAttributeConfiguration>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override
-            protected Component getComponentForProperty(String id, IModel<AttributeInput> itemModel,
-                                                        GeoServerDataProvider.Property<AttributeInput> property) {
+            protected Component getComponentForProperty(String id, 
+                    IModel<MetadataAttributeConfiguration> itemModel,
+                    GeoServerDataProvider.Property<MetadataAttributeConfiguration> property) {
                 if (property.equals(AttributeDataProvider.VALUE)) {
-                    MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject().getAttributeConfiguration();
+                    MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject();
                     if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
                         Component component = EditorFactory.getInstance().create(
                                 attributeConfiguration,
@@ -88,7 +87,7 @@ public class AttributesTablePanel extends Panel {
 
                         return new RepeatableComplexAttributesTablePanel(id,
                                 repeatableDataProvider,
-                                getMetadataModel(),
+                                getMetadataModel(), null,
                                 descriptionMap);
                     } else {
                         RepeatableAttributeDataProvider<String> repeatableDataProvider = 
