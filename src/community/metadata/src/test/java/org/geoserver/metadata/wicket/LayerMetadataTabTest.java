@@ -107,7 +107,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:1:component:textfield", 77);
         Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:1:component").isEnabled());
 
-        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:4:itemProperties:1:component:dropdown", "Select me");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:4:itemProperties:1:component:dropdown", "Or select this row");
         Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:4:itemProperties:1:component").isEnabled());
 
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:1:itemProperties:1:component").isEnabled());

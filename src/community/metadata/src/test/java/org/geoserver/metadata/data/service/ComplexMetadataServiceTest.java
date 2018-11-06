@@ -49,7 +49,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         //Should be updated simple fields
         Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
         Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Don't select this one", parent.get(String.class, "dropdown-field").getValue());
+        Assert.assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
 
         Assert.assertEquals(0, descriptionMap.get("indentifier-single").get(0).intValue());
         Assert.assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
@@ -255,7 +255,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
         Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        Assert.assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
         Assert.assertEquals(0, descriptionMap.get("indentifier-single").get(0).intValue());
         Assert.assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
         Assert.assertEquals(0, descriptionMap.get("dropdown-field").get(0).intValue());
@@ -274,7 +274,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
         Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        Assert.assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
         Assert.assertNull(descriptionMap.get("indentifier-single"));
         Assert.assertNull(descriptionMap.get("number-field"));
         Assert.assertNull(descriptionMap.get("dropdown-field"));
