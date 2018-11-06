@@ -44,15 +44,27 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
     private Label noData;
 
+    private RepeatableComplexAttributeDataProvider dataProvider;
+    
+    private HashMap<String, List<Integer>> descriptionMap;
 
+    private ComplexAttributeGenerator generator;
+    
     public RepeatableComplexAttributesTablePanel(String id,
                                                  RepeatableComplexAttributeDataProvider dataProvider,
                                                  IModel<ComplexMetadataMap> metadataModel,
                                                  ComplexAttributeGenerator generator,
                                                  HashMap<String, List<Integer>> descriptionMap) {
         super(id, metadataModel);
-
-        setOutputMarkupId(true);
+        
+        this.dataProvider = dataProvider;
+        this.descriptionMap = descriptionMap;
+        this.generator = generator;
+    }
+    
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         tablePanel = createAttributesTablePanel(dataProvider, descriptionMap);
         tablePanel.setFilterVisible(false);
@@ -63,12 +75,15 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         tablePanel.setSelectable(true);
         tablePanel.setSortable(false);
         tablePanel.setOutputMarkupId(true);
+        tablePanel.setOutputMarkupPlaceholderTag(true);
         add(tablePanel);
 
         // the no data links label
         noData = new Label("noData", new ResourceModel("noData"));
         add(noData);
-        updateTable(dataProvider);
+        noData.setOutputMarkupId(true);
+        noData.setOutputMarkupPlaceholderTag(true);
+        updateTable();
 
         add(new AjaxSubmitLink("addNew") {
 
@@ -77,9 +92,9 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 dataProvider.addField();
-                updateTable(dataProvider);
+                updateTable();
                 target.add(tablePanel);
-                target.add(RepeatableComplexAttributesTablePanel.this);
+                target.add(noData);
             }
         });
         
@@ -107,18 +122,19 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                             @Override
                             protected boolean onSubmit(AjaxRequestTarget target,
                                     Component contents) {
-                                generator.generate(metadataModel.getObject(),
+                                generator.generate(getMetadataModel().getObject(),
                                         (LayerInfo) findParent(MetadataTabPanel.class).getDefaultModelObject());
                                 dataProvider.reset();
                                 target.add(RepeatableComplexAttributesTablePanel.this.get("attributesTablePanel")
                                         .replaceWith(createAttributesTablePanel(dataProvider, descriptionMap)));
-                                target.add(RepeatableComplexAttributesTablePanel.this);
+                                updateTable();
+                                target.add(noData);
                                 return true;
                             }
                             
                         });  
             }
-        }.setVisible(generator != null && generator.supports(metadataModel.getObject(),
+        }.setVisible(generator != null && generator.supports(getMetadataModel().getObject(),
                (LayerInfo) findParent(MetadataTabPanel.class).getDefaultModelObject())));
     }
 
@@ -176,8 +192,9 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                             @Override
                             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                                 removeFields(target, itemModel);
-                                updateTable(dataProvider);
-                                target.add(RepeatableComplexAttributesTablePanel.this);
+                                updateTable();
+                                target.add(tablePanel);
+                                target.add(noData);
                             }
                         };
                         deleteAction.add(new AttributeAppender("class", "remove-link"));
@@ -196,8 +213,13 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         };
     }
 
+    @SuppressWarnings("unchecked")
+    public IModel<ComplexMetadataMap> getMetadataModel() {
+        return (IModel<ComplexMetadataMap>) getDefaultModel();
+    }
 
-    private void updateTable(RepeatableComplexAttributeDataProvider dataProvider) {
+
+    private void updateTable() {
         boolean isEmpty = dataProvider.getItems().isEmpty();
         tablePanel.setVisible(!isEmpty);
         noData.setVisible(isEmpty);
