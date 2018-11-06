@@ -102,6 +102,8 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
         dialog.setInitialHeight(100);
         add(dialog);
         
+        MetadataTabPanel tabPanel = findParent(MetadataTabPanel.class);
+        
         add(new AjaxSubmitLink("generate") {
 
             private static final long serialVersionUID = 6840006565079316081L;
@@ -123,7 +125,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                             protected boolean onSubmit(AjaxRequestTarget target,
                                     Component contents) {
                                 generator.generate(getMetadataModel().getObject(),
-                                        (LayerInfo) findParent(MetadataTabPanel.class).getDefaultModelObject());
+                                        (LayerInfo) tabPanel.getDefaultModelObject());
                                 dataProvider.reset();
                                 target.add(RepeatableComplexAttributesTablePanel.this.get("attributesTablePanel")
                                         .replaceWith(createAttributesTablePanel(dataProvider, descriptionMap)));
@@ -134,8 +136,9 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                             
                         });  
             }
-        }.setVisible(generator != null && generator.supports(getMetadataModel().getObject(),
-               (LayerInfo) findParent(MetadataTabPanel.class).getDefaultModelObject())));
+        }.setVisible(generator != null && tabPanel != null 
+                && generator.supports(getMetadataModel().getObject(),
+                        (LayerInfo) tabPanel.getDefaultModelObject())));
     }
 
     private GeoServerTablePanel<ComplexMetadataMap> createAttributesTablePanel(
