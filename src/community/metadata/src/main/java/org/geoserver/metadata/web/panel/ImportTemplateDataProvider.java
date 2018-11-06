@@ -63,6 +63,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     @Override
     protected List<MetadataTemplate> getItems() {
+        Collections.sort(linkedTemplates, new MetadataTemplateComparator());
         return linkedTemplates;
     }
 
@@ -89,7 +90,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public List<MetadataTemplate> getUnlinkedItems() {
         List<MetadataTemplate> result = new ArrayList<>(allTemplates);
         result.removeAll(linkedTemplates);
-        Collections.sort(linkedTemplates, new MetadataTemplateComparator());
+        Collections.sort(result, new MetadataTemplateComparator());
         return result;
     }
 

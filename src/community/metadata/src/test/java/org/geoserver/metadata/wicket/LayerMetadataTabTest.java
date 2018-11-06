@@ -92,10 +92,12 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     }
 
     @Test
-    public void testLinkWithSimpleTemplate() {
-        //link
+    public void testLinkWithSimpleAndListTemplate() {
+        //link simple
         DropDownChoice selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:metadataTemplate");
+        Assert.assertEquals(6, selectTemplate.getChoices().size());
         MetadataTemplate template = (MetadataTemplate) selectTemplate.getChoices().get(0);
+        Assert.assertEquals("simple fields", template.getName());
         ((IModel<MetadataTemplate>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:form:link");
         //test list of linked templates
@@ -114,11 +116,91 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component").isEnabled());
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:6:itemProperties:1:component").isEnabled());
 
+        //link simple
+        selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:metadataTemplate");
+        Assert.assertEquals(5, selectTemplate.getChoices().size());
+        template = (MetadataTemplate) selectTemplate.getChoices().get(0);
+        Assert.assertEquals("template-list-simple", template.getName());
+        ((IModel<MetadataTemplate>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:form:link");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:form:templatesPanel:listContainer:items:1:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:form:templatesPanel:listContainer:items:2:itemProperties:0:component", "template-list-simple");
+
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:textfield", "template-value01");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:textfield", "template--value02");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component:textfield", "reflist-first");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component:textfield", "reflist-second");
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component").isEnabled());
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component").isEnabled());
+        Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component").isEnabled());
+        Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component").isEnabled());
     }
 
+    @Test
+    public void testUnlinkFromSimpleAndListTemplate() {
+        //link 2 templates
+        DropDownChoice selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:metadataTemplate");
+        MetadataTemplate template = (MetadataTemplate) selectTemplate.getChoices().get(0);
+        ((IModel<MetadataTemplate>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:form:link");
+        template = (MetadataTemplate) selectTemplate.getChoices().get(0);
+        ((IModel<MetadataTemplate>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:form:link");
+        //check the link
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:form:templatesPanel:listContainer:items:1:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:form:templatesPanel:listContainer:items:2:itemProperties:0:component", "template-list-simple");
+
+        //first check the checkboxes
+        Component checkbox01 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:templatesPanel:listContainer:items:1:selectItemContainer:selectItem");
+        ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
+        Component checkbox02 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:templatesPanel:listContainer:items:2:selectItemContainer:selectItem");
+        ((IModel<Boolean>) checkbox02.getDefaultModel()).setObject(true);
+        //click remove links
+        tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:removeSelected").setEnabled(true);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:form:removeSelected");
+        //linked list should be empty
+        tester.assertComponent("publishedinfo:tabs:panel:importTemplatePanel:form:noData", Label.class);
+
+        //list data remove
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:textfield", "reflist-first");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:textfield", "reflist-second");
+
+        Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component").isEnabled());
+        Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component").isEnabled());
+    }
 
     @Test
     public void testImportFromGeonetwork() {
+        //link simple
+        DropDownChoice selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:form:metadataTemplate");
+        MetadataTemplate template = (MetadataTemplate) selectTemplate.getChoices().get(0);
+        ((IModel<MetadataTemplate>) selectTemplate.getDefaultModel()).setObject(template);
+
+        //Import from geonetwork
+        DropDownChoice geonetwork= (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:form:geonetworkName");
+        String geonetworkName = (String) geonetwork.getChoices().get(0);
+        ((IModel<String>) geonetwork.getDefaultModel()).setObject(geonetworkName);
+        TextField<String> uuid = (TextField<String>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:form:textfield");
+        ((IModel<String>) uuid.getDefaultModel()).setObject("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1");
+
+        tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:form:link");
+
+        //Check content
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:5:itemProperties:0:component:textfield", "http://www.opengis.net/def/crs/EPSG/0/3043");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component:textfield", "Belge_Lambert_1972 (31370)");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component:textfield", "TAW");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "http://www.opengis.net/def/crs/EPSG/0/3043");
+
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:6:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "Belge_Lambert_1972 (31370)");
+
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "Belge_Lambert_1972 (31370)");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "TAW");
+        tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "http://www.opengis.net/def/crs/EPSG/0/3043");
+        //should remove all links
+        tester.assertComponent("publishedinfo:tabs:panel:importTemplatePanel:form:noData", Label.class);
+
+        Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component").isEnabled());
+        Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component").isEnabled());
 
     }
 }
