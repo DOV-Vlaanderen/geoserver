@@ -5,6 +5,7 @@
 package org.geoserver.metadata.wicket;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
@@ -231,6 +232,19 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
         //should remove all links
         tester.assertComponent("publishedinfo:tabs:panel:importTemplatePanel:form:noData", Label.class);
+
+    }
+
+    @Test
+    public void testImportFromGeonetworkValidation() {
+        tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:form:link");
+        print(tester.getLastRenderedPage(), true, true);
+
+        Assert.assertEquals(3, tester.getMessages(FeedbackMessage.ERROR).size());
+        Assert.assertEquals("Select a geonetwork", tester.getMessages(FeedbackMessage.ERROR).get(1).toString());
+        Assert.assertEquals("A metadata UUID is required", tester.getMessages(FeedbackMessage.ERROR).get(2).toString());
+        tester.assertLabel("publishedinfo:tabs:panel:geonetworkPanel:feedback:feedbackul:messages:1:message", "Select a geonetwork");
+        tester.assertLabel("publishedinfo:tabs:panel:geonetworkPanel:feedback:feedbackul:messages:2:message", "A metadata UUID is required");
 
     }
 }

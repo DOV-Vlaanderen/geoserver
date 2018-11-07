@@ -61,6 +61,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
 
         ((IModel<String>) tester.getComponentFromLastRenderedPage("form:description").getDefaultModel()).setObject("description update");
         ((IModel<Integer>) tester.getComponentFromLastRenderedPage("form:priority").getDefaultModel()).setObject(5);
+        ((IModel<String>) tester.getComponentFromLastRenderedPage("form:metadataTemplatePanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield").getDefaultModel()).setObject("new identifier value");
 
         tester.assertModelValue("form:description", "description update");
         tester.assertModelValue("form:priority", 5);
@@ -70,8 +71,10 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
         MetadataTemplate template = service.load("allData");
         Assert.assertEquals("description update", template.getDescription());
         Assert.assertEquals(new Integer(5), template.getPriority());
+        Assert.assertEquals("new identifier value", template.getMetadata().get(String.class, "indentifier-single").getValue());
 
         tester.assertRenderedPage(MetadataTemplatesPage.class);
+
 
     }
 
