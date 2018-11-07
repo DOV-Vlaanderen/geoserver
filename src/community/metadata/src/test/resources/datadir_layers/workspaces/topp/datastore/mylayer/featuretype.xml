@@ -1,7 +1,7 @@
 <featureType>
   <id>FeatureTypeInfoImpl-2bc80f29:12cef718474:-7fba</id>
   <name>mylayer</name>
-  <nativeName>shape</nativeName>
+  <nativeName>mylayer</nativeName>
   <namespace>
     <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ffe</id>
   </namespace>
@@ -32,7 +32,7 @@
       <HashMap>
         <entry>
           <string>dropdown-field</string>
-          <string>Don&apos;t select this one</string>
+          <string>Or select this row</string>
         </entry>
         <entry>
           <string>object-catalog_max-occurence</string>
@@ -121,13 +121,49 @@
         </entry>
         <entry>
           <string>number-field</string>
-          <string>88</string>
+          <string>77</string>
         </entry>
       </HashMap>
     </entry>
     <entry key="descriptionMap">
-      <HashMap/>
+      <HashMap>
+        <entry>
+          <string>dropdown-field</string>
+          <list>
+            <int>0</int>
+          </list>
+        </entry>
+        <entry>
+          <string>referencesystem-object-list</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>object-catalog</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>indentifier-single</string>
+          <list>
+            <int>0</int>
+          </list>
+        </entry>
+        <entry>
+          <string>refsystem-as-list</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>number-field</string>
+          <list>
+            <int>0</int>
+          </list>
+        </entry>
+        <entry>
+          <string>referencesystem-object</string>
+          <list/>
+        </entry>
+      </HashMap>
     </entry>
+    <entry key="cachingEnabled">false</entry>
   </metadata>
   <store class="dataStore">
     <id>DataStoreInfoImpl--2c671c92:13f101e60a5:-7fff</id>

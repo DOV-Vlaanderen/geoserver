@@ -24,6 +24,7 @@ import org.geoserver.metadata.data.service.GeonetworkXmlParser;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
+import org.geoserver.metadata.web.panel.ImportTemplateDataProvider;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.GeoServerApplication;
@@ -105,10 +106,13 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
             @Override
             public void handleImport(String url, AjaxRequestTarget target) {
-                RemoteDocumentReader geonetworkReader = GeoServerApplication.get().getApplicationContext().getBean(RemoteDocumentReader.class);
-                GeonetworkXmlParser xmlParser = GeoServerApplication.get().getApplicationContext().getBean(GeonetworkXmlParser.class);
-                //import metadata
                 try {
+                    //First unlink all templates
+                    linkTemplatePanel.unlinkTemplate(target, linkTemplatePanel.getLinkedTemplates());
+                    //Read the file
+                    RemoteDocumentReader geonetworkReader = GeoServerApplication.get().getApplicationContext().getBean(RemoteDocumentReader.class);
+                    GeonetworkXmlParser xmlParser = GeoServerApplication.get().getApplicationContext().getBean(GeonetworkXmlParser.class);
+                    //import metadata
                     Document doc = geonetworkReader.readDocument(new URL(url));
                     xmlParser.parseMetadata(doc, metadataModel.getObject());
                 } catch (IOException e) {

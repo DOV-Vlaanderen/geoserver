@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -75,12 +76,17 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         linkedTemplates.add(modelObject);
     }
 
-    public void removeLink(MetadataTemplate modelObject) throws IOException {
-        if (modelObject.getLinkedLayers() == null) {
-            modelObject.setLinkedLayers(new HashSet<>());
+    public void removeLinks(List<MetadataTemplate> templates) throws IOException {
+        Iterator<MetadataTemplate> iterator = new ArrayList<>(templates).iterator();
+        while (iterator.hasNext()) {
+            MetadataTemplate modelObject =  iterator.next();
+
+            if (modelObject.getLinkedLayers() == null) {
+                modelObject.setLinkedLayers(new HashSet<>());
+            }
+            modelObject.getLinkedLayers().remove(getKey(workspace, layerName));
+            linkedTemplates.remove(modelObject);
         }
-        modelObject.getLinkedLayers().remove(getKey(workspace, layerName));
-        linkedTemplates.remove(modelObject);
     }
 
     /**

@@ -106,7 +106,7 @@ public abstract class ImportTemplatePanel extends Panel {
         AjaxSubmitLink importAction = createImportAction(dropDown);
         form.add(importAction);
         //unlink button
-        remove = createUnlinkAction(dropDown);
+        remove = createUnlinkAction();
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
         form.add(remove);
@@ -126,7 +126,7 @@ public abstract class ImportTemplatePanel extends Panel {
         // the no data links label
         noData = new Label("noData", new ResourceModel("noData"));
         form.add(noData);
-        updateTable(linkedTemplatesDataProvider);
+        updateTableState(linkedTemplatesDataProvider);
 
         add(form);
 
@@ -144,6 +144,10 @@ public abstract class ImportTemplatePanel extends Panel {
         return new DropDownChoice<MetadataTemplate>("metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
     }
 
+
+    protected DropDownChoice<MetadataTemplate> getDropDown() {
+        return (DropDownChoice<MetadataTemplate>) get("form:metadataTemplate");
+    }
 
     private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown) {
         return new AjaxSubmitLink("link") {
@@ -168,7 +172,7 @@ public abstract class ImportTemplatePanel extends Panel {
                                 ImportTemplatePanel.this).getString());
                     }
                 }
-                updateTable(linkedTemplatesDataProvider);
+                updateTableState(linkedTemplatesDataProvider);
                 target.add(getFeedbackPanel());
                 target.add(templatesPanel);
                 target.add(dropDown);
@@ -180,25 +184,18 @@ public abstract class ImportTemplatePanel extends Panel {
     }
 
 
-    private AjaxLink<Object> createUnlinkAction(DropDownChoice<MetadataTemplate> dropDown) {
+    private AjaxLink<Object> createUnlinkAction() {
         return new AjaxLink<Object>("removeSelected") {
             private static final long serialVersionUID = 3581476968062788921L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 try {
-                    unlinkTemplate();
-                    dropDown.setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
+                    unlinkTemplate(target, templatesPanel.getSelection());
                 } catch (IOException e) {
                     error(new ParamResourceModel("errorSelectGeonetwork",
                             ImportTemplatePanel.this).getString());
                 }
-                updateTable(linkedTemplatesDataProvider);
-                target.add(getFeedbackPanel());
-                target.add(templatesPanel);
-                target.add(dropDown);
-                target.add(ImportTemplatePanel.this);
-                handleUpdate(target);
             }
         };
     }
@@ -249,20 +246,32 @@ public abstract class ImportTemplatePanel extends Panel {
     private void linkTemplate(MetadataTemplate selected) throws IOException {
         //add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);
-        //
         updateModel();
     }
 
     /**
      * Link the template and the selected metadata
      */
-    private void unlinkTemplate() throws IOException {
-        //remove link from metadata
-        for (MetadataTemplate metadataTemplate : templatesPanel.getSelection()) {
-            linkedTemplatesDataProvider.removeLink(metadataTemplate);
-        }
-        templatesPanel.clearSelection();
+    public void unlinkTemplate(AjaxRequestTarget target,
+                               List<MetadataTemplate> templates) throws IOException {
+
+
+        linkedTemplatesDataProvider.removeLinks(templates);
         updateModel();
+
+        templatesPanel.clearSelection();
+        getDropDown().setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
+        updateTableState(linkedTemplatesDataProvider);
+
+        target.add(getFeedbackPanel());
+        target.add(templatesPanel);
+        target.add(getDropDown());
+        target.add(ImportTemplatePanel.this);
+        handleUpdate(target);
+    }
+
+    public List<MetadataTemplate> getLinkedTemplates() {
+        return linkedTemplatesDataProvider.getItems();
     }
 
     /**
@@ -303,7 +312,7 @@ public abstract class ImportTemplatePanel extends Panel {
     }
 
 
-    private void updateTable(ImportTemplateDataProvider dataProvider) {
+    private void updateTableState(ImportTemplateDataProvider dataProvider) {
         boolean isEmpty = dataProvider.getItems().isEmpty();
         templatesPanel.setVisible(!isEmpty);
         remove.setVisible(!isEmpty);
