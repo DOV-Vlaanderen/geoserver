@@ -18,9 +18,18 @@ public class AttributeDataProvider extends GeoServerDataProvider<MetadataAttribu
 
     private static final long serialVersionUID = -4454769618643460913L;
 
-    public static Property<MetadataAttributeConfiguration> NAME = new BeanProperty<MetadataAttributeConfiguration>("name", "label");
+    public static Property<MetadataAttributeConfiguration> NAME = 
+            new BeanProperty<MetadataAttributeConfiguration>("name", "label");
 
-    public static Property<MetadataAttributeConfiguration> VALUE = new BeanProperty<MetadataAttributeConfiguration>("value", "value");
+    public static Property<MetadataAttributeConfiguration> VALUE = 
+            new AbstractProperty<MetadataAttributeConfiguration>("value") {
+                private static final long serialVersionUID = -1889227419206718295L;
+
+                @Override
+                public Object getPropertyValue(MetadataAttributeConfiguration item) {
+                    return null;
+                }        
+    };
 
     private List<MetadataAttributeConfiguration> items = new ArrayList<>();
 

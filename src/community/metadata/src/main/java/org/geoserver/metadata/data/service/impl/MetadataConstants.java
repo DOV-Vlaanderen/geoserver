@@ -26,11 +26,18 @@ public final class MetadataConstants {
     
     public final static String FEATURE_CATALOG_ATT_MAX_OCCURENCE = "max-occurence";
     
+    public static final String FEATURE_CATALOG_ATT_DOMAIN = "domain";
+
+    public final static String DOMAIN_TYPENAME = "domain";
+
+    public static final String DOMAIN_ATT_VALUE = "value";
+    
+    
     public final static Class<?>[] FEATURE_CATALOG_KNOWN_TYPES = new Class<?>[] {
             String.class, Number.class, Geometry.class, Date.class
     };
 
     public static final String FEATURECATALOG_TYPE_UNKNOWN = "unknown";
-    
+
     private MetadataConstants() {}
 }

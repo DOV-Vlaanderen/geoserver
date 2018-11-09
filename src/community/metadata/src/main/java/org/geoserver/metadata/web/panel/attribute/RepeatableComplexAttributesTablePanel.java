@@ -66,21 +66,10 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
     protected void onInitialize() {
         super.onInitialize();
 
-        tablePanel = createAttributesTablePanel(dataProvider, descriptionMap);
-        tablePanel.setFilterVisible(false);
-        tablePanel.setFilterable(false);
-        tablePanel.getTopPager().setVisible(false);
-        tablePanel.getBottomPager().setVisible(false);
-        tablePanel.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
-        tablePanel.setSelectable(true);
-        tablePanel.setSortable(false);
-        tablePanel.setOutputMarkupId(true);
-        tablePanel.setOutputMarkupPlaceholderTag(true);
-        add(tablePanel);
+        add(tablePanel = createAttributesTablePanel(dataProvider, descriptionMap));
 
         // the no data links label
-        noData = new Label("noData", new ResourceModel("noData"));
-        add(noData);
+        add(noData = new Label("noData", new ResourceModel("noData")));
         noData.setOutputMarkupId(true);
         noData.setOutputMarkupPlaceholderTag(true);
         updateTable();
@@ -145,7 +134,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
             RepeatableComplexAttributeDataProvider dataProvider,
             HashMap<String, List<Integer>> descriptionMap) {
 
-        return new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
+        tablePanel = new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 4333335931795175790L;
 
             private int count = 0;
@@ -214,6 +203,18 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                 target.add(this);
             }
         };
+        
+        tablePanel.setFilterVisible(false);
+        tablePanel.setFilterable(false);
+        tablePanel.getTopPager().setVisible(false);
+        tablePanel.getBottomPager().setVisible(false);
+        tablePanel.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
+        tablePanel.setSelectable(true);
+        tablePanel.setSortable(false);
+        tablePanel.setOutputMarkupId(true);
+        tablePanel.setOutputMarkupPlaceholderTag(true);
+        
+        return tablePanel;
     }
 
     @SuppressWarnings("unchecked")
