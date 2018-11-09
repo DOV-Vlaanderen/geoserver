@@ -97,19 +97,17 @@ public abstract class ImportTemplatePanel extends Panel {
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
-        Form<Object> form = new Form<>("form");
-
         //link action and dropdown
         DropDownChoice<MetadataTemplate> dropDown = createTemplatesDropDown();
         dropDown.setOutputMarkupId(true);
-        form.add(dropDown);
+        add(dropDown);
         AjaxSubmitLink importAction = createImportAction(dropDown);
-        form.add(importAction);
+        add(importAction);
         //unlink button
         remove = createUnlinkAction();
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
-        form.add(remove);
+        add(remove);
 
         //the panel
         templatesPanel = createTemplateTable(remove);
@@ -121,14 +119,12 @@ public abstract class ImportTemplatePanel extends Panel {
         templatesPanel.setSortable(false);
         templatesPanel.setOutputMarkupId(true);
 
-        form.add(templatesPanel);
+        add(templatesPanel);
 
         // the no data links label
         noData = new Label("noData", new ResourceModel("noData"));
-        form.add(noData);
+        add(noData);
         updateTableState(linkedTemplatesDataProvider);
-
-        add(form);
 
     }
 
@@ -146,7 +142,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
 
     protected DropDownChoice<MetadataTemplate> getDropDown() {
-        return (DropDownChoice<MetadataTemplate>) get("form:metadataTemplate");
+        return (DropDownChoice<MetadataTemplate>) get("metadataTemplate");
     }
 
     private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown) {

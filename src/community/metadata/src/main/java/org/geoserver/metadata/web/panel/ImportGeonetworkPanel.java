@@ -53,21 +53,18 @@ public class ImportGeonetworkPanel extends Panel {
         super.onInitialize();
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
-        Form<Object> form = new Form<Object>("form");
-
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
         for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
             optionsGeonetwork.add(geonetwork.getName());
         }
 
         DropDownChoice<String> dropDown = createDropDown(optionsGeonetwork);
-        form.add(dropDown);
+        add(dropDown);
 
         TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
-        form.add(inputUUID);
+        add(inputUUID);
 
-        form.add(createImportAction(dropDown, inputUUID));
-        add(form);
+        add(createImportAction(dropDown, inputUUID));
     }
 
     private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID) {

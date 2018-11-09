@@ -12,24 +12,19 @@
                 </legend>
                 <span wicket:id="feedback"></span>
 
-                <form wicket:id="form">
+					<ul class="links-above-table">
+						<li><select wicket:id="metadataTemplate" /> <a href="#"
+							wicket:id="link"> <wicket:message key="actionImport" />
+						</a></li>
+						<li><a class="remove-link" href="#"
+							wicket:id="removeSelected"> <wicket:message
+									key="removeSelected" />
+						</a></li>
+					</ul>
 
-                    <ul class="links-above-table">
-                        <li>
-                            <select wicket:id="metadataTemplate"/>
-                            <a href="#" wicket:id="link">
-                                <wicket:message key="actionImport"/>
-                            </a>
-                        </li>
-                        <li><a class="remove-link" href="#" wicket:id="removeSelected">
-                            <wicket:message key="removeSelected"/>
-                        </a></li>
-                    </ul>
-
-                    <div wicket:id="templatesPanel"></div>
-                    <div wicket:id="noData"></div>
-                </form>
-            </fieldset>
+					<div wicket:id="templatesPanel"></div>
+					<div wicket:id="noData"></div>
+				</fieldset>
         </li>
     </ul>
 
