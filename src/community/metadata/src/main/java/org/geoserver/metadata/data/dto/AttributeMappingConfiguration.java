@@ -5,6 +5,8 @@
 package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.geoserver.metadata.data.dto.impl.AttributeMappingConfigurationImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,26 +21,15 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
+@JsonDeserialize(as = AttributeMappingConfigurationImpl.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AttributeMappingConfiguration {
+public interface AttributeMappingConfiguration {
 
-    List<AttributeMapping> geonetworkmapping = new ArrayList<>();
+    public List<AttributeMapping> getGeonetworkmapping();
 
-    List<AttributeComplexTypeMapping> objectmapping = new ArrayList<>();
+    public void setGeonetworkmapping(List<AttributeMapping> geonetworkmapping);
 
-    public List<AttributeMapping> getGeonetworkmapping() {
-        return geonetworkmapping;
-    }
+    public List<AttributeComplexTypeMapping> getObjectmapping();
 
-    public void setGeonetworkmapping(List<AttributeMapping> geonetworkmapping) {
-        this.geonetworkmapping = geonetworkmapping;
-    }
-
-    public List<AttributeComplexTypeMapping> getObjectmapping() {
-        return objectmapping;
-    }
-
-    public void setObjectmapping(List<AttributeComplexTypeMapping> objectmapping) {
-        this.objectmapping = objectmapping;
-    }
+    public void setObjectmapping(List<AttributeComplexTypeMapping> objectmapping);
 }

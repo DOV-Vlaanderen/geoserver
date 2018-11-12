@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -197,12 +198,14 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         Resource file = folder.get(FILE_NAME);
 
         if (file != null) {
+            InputStream in = file.in();
             try {
-
-                List<MetadataTemplate> templates = persister.load(file.in(), List.class);
+                List<MetadataTemplate> templates = persister.load(in, List.class);
                 return templates;
             } catch (StreamException exception) {
                 LOGGER.warning("File is empty");
+            } finally {
+                in.close();
             }
         }
         return new ArrayList<>();

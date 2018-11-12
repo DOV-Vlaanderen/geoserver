@@ -33,22 +33,6 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
     private Set<String> linkedLayers = new HashSet<>();
 
     /* (non-Javadoc)
-     * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#getPriority()
-     */
-    @Override
-    public Integer getPriority() {
-        return priority;
-    }
-
-    /* (non-Javadoc)
-     * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#setPriority(java.lang.Integer)
-     */
-    @Override
-    public void setPriority(Integer priority) {
-        this.priority = priority;
-    }
-
-    /* (non-Javadoc)
      * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#getName()
      */
     @Override
@@ -62,6 +46,22 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#getDescription()
+     */
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    /* (non-Javadoc)
+     * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#setDescription(java.lang.String)
+     */
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /* (non-Javadoc)

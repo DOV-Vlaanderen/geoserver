@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.data.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.geoserver.metadata.data.dto.impl.MetadataAttributeTypeConfigurationImpl;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,27 +18,14 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class MetadataAttributeTypeConfiguration implements Serializable{
+@JsonDeserialize(as = MetadataAttributeTypeConfigurationImpl.class)
+public interface MetadataAttributeTypeConfiguration extends Serializable {
 
-    private static final long serialVersionUID = 7617959011871570119L;
+    public List<MetadataAttributeConfiguration> getAttributes();
 
-    String typename;
+    public void setAttributes(List<MetadataAttributeConfiguration> attributes);
 
-    List<MetadataAttributeConfiguration> attributes = new ArrayList<>();
+    public String getTypename();
 
-    public List<MetadataAttributeConfiguration> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<MetadataAttributeConfiguration> attributes) {
-        this.attributes = attributes;
-    }
-
-    public String getTypename() {
-        return typename;
-    }
-
-    public void setTypename(String typename) {
-        this.typename = typename;
-    }
+    public void setTypename(String typename);
 }

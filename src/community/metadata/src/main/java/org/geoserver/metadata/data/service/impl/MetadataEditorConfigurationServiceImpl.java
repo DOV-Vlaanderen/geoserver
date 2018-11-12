@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.service.impl;
 
 
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
+import org.geoserver.metadata.data.dto.impl.MetadataEditorConfigurationImpl;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geotools.util.logging.Logging;
@@ -28,7 +29,7 @@ public class MetadataEditorConfigurationServiceImpl implements MetadataEditorCon
     public MetadataEditorConfiguration readConfiguration() {
 
         //process all the configurations
-        MetadataEditorConfiguration configuration = new MetadataEditorConfiguration();
+        MetadataEditorConfiguration configuration = new MetadataEditorConfigurationImpl();
         try {
             configuration = yamlService.readConfiguration();
         } catch (IOException e) {

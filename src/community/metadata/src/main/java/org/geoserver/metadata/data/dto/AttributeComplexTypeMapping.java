@@ -5,6 +5,9 @@
 package org.geoserver.metadata.data.dto;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.geoserver.metadata.data.dto.impl.AttributeComplexTypeMappingImpl;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,27 +20,14 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class AttributeComplexTypeMapping implements Serializable{
+@JsonDeserialize(as = AttributeComplexTypeMappingImpl.class)
+public interface AttributeComplexTypeMapping extends Serializable{
 
-    private static final long serialVersionUID = 8056316409852056776L;
+    public String getTypename();
 
-    String typename;
+    public void setTypename(String typename);
 
-    List<AttributeMapping> mapping = new ArrayList<>();
+    public List<AttributeMapping> getMapping();
 
-    public String getTypename() {
-        return typename;
-    }
-
-    public void setTypename(String typename) {
-        this.typename = typename;
-    }
-
-    public List<AttributeMapping> getMapping() {
-        return mapping;
-    }
-
-    public void setMapping(List<AttributeMapping> mapping) {
-        this.mapping = mapping;
-    }
+    public void setMapping(List<AttributeMapping> mapping);
 }

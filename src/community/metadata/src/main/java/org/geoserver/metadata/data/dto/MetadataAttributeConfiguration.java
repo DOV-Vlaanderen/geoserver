@@ -4,6 +4,10 @@
  */
 package org.geoserver.metadata.data.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.geoserver.metadata.data.dto.impl.MetadataAttributeConfigurationImpl;
+import org.geoserver.metadata.data.dto.impl.MetadataEditorConfigurationImpl;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,89 +19,30 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class MetadataAttributeConfiguration implements Serializable{
+@JsonDeserialize(as = MetadataAttributeConfigurationImpl.class)
+public interface MetadataAttributeConfiguration extends Serializable{
 
-    private static final long serialVersionUID = 3130368513874060531L;
+    public String getKey();
 
-    String key;
+    public void setKey(String key);
 
-    String label;
+    public String getLabel();
 
-    FieldTypeEnum fieldType;
+    public void setLabel(String label);
 
-    OccurenceEnum occurrence = OccurenceEnum.SINGLE;
+    public FieldTypeEnum getFieldType();
 
-    List<String> values = new ArrayList<>();
+    public void setFieldType(FieldTypeEnum fieldType);
 
-    String typename;
+    public List<String> getValues();
 
-    public MetadataAttributeConfiguration() {
-    }
+    public void setValues(List<String> values);
 
-    public MetadataAttributeConfiguration(String key, FieldTypeEnum fieldType) {
-        this.key = key;
-        this.label = key;
-        this.fieldType = fieldType;
-    }
+    public String getTypename();
 
-    public MetadataAttributeConfiguration(MetadataAttributeConfiguration other) {
-        if (other != null) {
-            key = other.getKey();
-            label = other.getLabel();
-            fieldType = other.getFieldType();
-            occurrence = other.getOccurrence();
-            typename = other.getTypename();
-            for (String values : other.getValues()) {
-                this.values.add(values);
-            }
-        }
-    }
+    public void setTypename(String typename);
 
-    public String getKey() {
-        return key;
-    }
+    public OccurenceEnum getOccurrence();
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public FieldTypeEnum getFieldType() {
-        return fieldType;
-    }
-
-    public void setFieldType(FieldTypeEnum fieldType) {
-        this.fieldType = fieldType;
-    }
-
-    public List<String> getValues() {
-        return values;
-    }
-
-    public void setValues(List<String> values) {
-        this.values = values;
-    }
-
-    public String getTypename() {
-        return typename;
-    }
-
-    public void setTypename(String typename) {
-        this.typename = typename;
-    }
-
-    public OccurenceEnum getOccurrence() {
-        return occurrence;
-    }
-
-    public void setOccurrence(OccurenceEnum occurrence) {
-        this.occurrence = occurrence;
-    }
+    public void setOccurrence(OccurenceEnum occurrence);
 }

@@ -15,6 +15,8 @@ import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
+import org.geoserver.metadata.data.dto.impl.AttributeMappingConfigurationImpl;
+import org.geoserver.metadata.data.dto.impl.MetadataEditorConfigurationImpl;
 import org.geoserver.metadata.data.service.YamlService;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -57,9 +61,12 @@ public class YamlServiceImpl implements YamlService {
         Resource folder = getFolder();
         LOGGER.info("Searching for yamls in: " + folder.path());
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        MetadataEditorConfiguration configuration = new MetadataEditorConfiguration();
+        MetadataEditorConfiguration configuration = new MetadataEditorConfigurationImpl();
         try {
-            for (Resource file : Resources.list(folder, new Resources.ExtensionFilter("YAML"))) {
+            List<Resource> files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));
+            Collections.sort(files, (o1, o2) -> o1.name().compareTo(o2.name()));
+
+            for (Resource file : files) {
                 try (InputStream in = file.in()) {
                     readConfiguration(in, configuration, mapper);
                 } 
@@ -82,7 +89,7 @@ public class YamlServiceImpl implements YamlService {
                 loadProperties();
             }
 
-            MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfiguration.class);
+            MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfigurationImpl.class);
             // Merge attribute configuration and remove duplicates
             Set<String> attributeKeys = new HashSet<>();
             for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
@@ -126,11 +133,11 @@ public class YamlServiceImpl implements YamlService {
         Resource folder = getFolder();
         LOGGER.info("Searching for yamls in: " + folder.path());
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        AttributeMappingConfiguration configuration = new AttributeMappingConfiguration();
+        AttributeMappingConfiguration configuration = new AttributeMappingConfigurationImpl();
         try {
             for (Resource file : Resources.list(folder, new Resources.ExtensionFilter("YAML"))) {
                 try (InputStream in = file.in()) {
-                    AttributeMappingConfiguration config = mapper.readValue(in, AttributeMappingConfiguration.class);
+                    AttributeMappingConfiguration config = mapper.readValue(in, AttributeMappingConfigurationImpl.class);
                     Set<String> attKeys = new HashSet<>();
                     for (AttributeMapping mapping : config.getGeonetworkmapping()) {
                         if (!attKeys.contains(mapping.getGeoserver())) {
@@ -181,10 +188,17 @@ public class YamlServiceImpl implements YamlService {
         List<Resource> files = getFolder().list();
         for (Resource resource : files) {
             if (resource.name().contains(".properties")) {
+                InputStream in = resource.in();
                 try {
-                    this.properties.load(resource.in());
+                    this.properties.load(in);
                 } catch (IOException e) {
                     LOGGER.severe("Could not load metadata label properties, " + e.getMessage());
+                } finally {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        LOGGER.severe("Could not close stream, " + e.getMessage());
+                    }
                 }
             }
         }

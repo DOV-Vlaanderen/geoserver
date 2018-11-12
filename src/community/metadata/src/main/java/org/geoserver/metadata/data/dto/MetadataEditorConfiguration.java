@@ -5,6 +5,10 @@
 package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.geoserver.metadata.data.dto.impl.MetadataAttributeConfigurationImpl;
+import org.geoserver.metadata.data.dto.impl.MetadataEditorConfigurationImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,45 +21,21 @@ import java.util.List;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
+@JsonDeserialize(as = MetadataEditorConfigurationImpl.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MetadataEditorConfiguration {
+public interface MetadataEditorConfiguration {
 
-    List<MetadataAttributeConfiguration> attributes = new ArrayList<>();
+    public List<MetadataAttributeConfiguration> getAttributes();
 
-    List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
+    public void setAttributes(List<MetadataAttributeConfiguration> attributes);
 
-    List<MetadataAttributeTypeConfiguration> types = new ArrayList<>();
+    public List<MetadataGeonetworkConfiguration> getGeonetworks();
 
-    public List<MetadataAttributeConfiguration> getAttributes() {
-        return attributes;
-    }
+    public void setGeonetworks(List<MetadataGeonetworkConfiguration> geonetworks);
 
-    public void setAttributes(List<MetadataAttributeConfiguration> attributes) {
-        this.attributes = attributes;
-    }
+    public List<MetadataAttributeTypeConfiguration> getTypes();
 
-    public List<MetadataGeonetworkConfiguration> getGeonetworks() {
-        return geonetworks;
-    }
+    public void setComplextypes(List<MetadataAttributeTypeConfiguration> types);
 
-    public void setGeonetworks(List<MetadataGeonetworkConfiguration> geonetworks) {
-        this.geonetworks = geonetworks;
-    }
-
-    public List<MetadataAttributeTypeConfiguration> getTypes() {
-        return types;
-    }
-
-    public void setComplextypes(List<MetadataAttributeTypeConfiguration> types) {
-        this.types = types;
-    }
-    
-    public MetadataAttributeTypeConfiguration findType(String typename) {
-        for (MetadataAttributeTypeConfiguration type : types) {
-            if (typename.equals(type.getTypename())) {
-                return type;
-            }
-        }
-        return null;
-    }
+    public MetadataAttributeTypeConfiguration findType(String typename);
 }

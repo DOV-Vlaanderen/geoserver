@@ -4,6 +4,9 @@
  */
 package org.geoserver.metadata.data.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.geoserver.metadata.data.dto.impl.MetadataGeonetworkConfigurationImpl;
+
 import java.io.Serializable;
 
 /**
@@ -13,34 +16,14 @@ import java.io.Serializable;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class MetadataGeonetworkConfiguration implements Serializable{
+@JsonDeserialize(as = MetadataGeonetworkConfigurationImpl.class)
+public interface MetadataGeonetworkConfiguration extends Serializable {
 
-    private static final long serialVersionUID = -652210940618705299L;
+    public String getName();
 
-    String name;
+    public void setName(String name);
 
-    String url;
+    public String getUrl();
 
-    public MetadataGeonetworkConfiguration() {
-    }
-
-    public MetadataGeonetworkConfiguration(String url) {
-        this.url = url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    public void setUrl(String url);
 }

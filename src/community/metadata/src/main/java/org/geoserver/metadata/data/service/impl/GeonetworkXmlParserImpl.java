@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service.impl;
 
 
+import org.geoserver.metadata.data.dto.impl.AttributeMappingImpl;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
@@ -74,7 +75,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
                 if (attributeMapping.getTypename().equals(complexTypeMapping.getTypename())) {
                     ComplexMetadataMap submap = metadataMap.subMap(attributeMapping.getGeoserver());
                     for (AttributeMapping aMapping : complexTypeMapping.getMapping()) {
-                        AttributeMapping am = new AttributeMapping(aMapping);
+                        AttributeMapping am = new AttributeMappingImpl(aMapping);
                         am.setOccurrence(attributeMapping.getOccurrence());
                         addAttribute(submap, am, doc, node, mapping);
                     }

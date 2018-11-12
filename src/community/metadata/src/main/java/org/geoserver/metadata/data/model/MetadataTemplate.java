@@ -5,13 +5,13 @@ import java.util.Set;
 
 public interface MetadataTemplate extends Serializable {
 
-    Integer getPriority();
-
-    void setPriority(Integer priority);
-
     String getName();
 
     void setName(String name);
+
+    String getDescription();
+
+    void setDescription(String description);
 
     ComplexMetadataMap getMetadata();
 
