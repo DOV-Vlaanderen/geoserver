@@ -42,7 +42,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -90,7 +90,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -149,7 +149,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -212,7 +212,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -238,14 +238,14 @@
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
-            <string>referencesystem-object-list_code</string>
+            <string>referencesystem-object-list/code</string>
             <list>
               <string>template-code01</string>
               <string>template-code02</string>
             </list>
           </entry>
           <entry>
-            <string>referencesystem-object-list_code-space</string>
+            <string>referencesystem-object-list/code-space</string>
             <list>
               <string>template-codespace01</string>
               <string>template-codespace02</string>
@@ -282,7 +282,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -298,7 +298,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -314,7 +314,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object-list_code</string>
+          <string>referencesystem-object-list/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -345,7 +345,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object-list_code-space</string>
+          <string>referencesystem-object-list/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -394,11 +394,11 @@
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
-            <string>referencesystem-object_code-space</string>
+            <string>referencesystem-object/code-space</string>
             <string>templateValue-codeSpace</string>
           </entry>
           <entry>
-            <string>referencesystem-object_code</string>
+            <string>referencesystem-object/code</string>
             <string>templateValue-code</string>
           </entry>
         </map>
@@ -425,7 +425,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -473,7 +473,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -502,13 +502,13 @@
       <delegate class="org.geoserver.catalog.MetadataMap">
         <map>
           <entry>
-            <string>object-catalog_type</string>
+            <string>object-catalog/type</string>
             <list>
               <string>Geometry</string>
             </list>
           </entry>
           <entry>
-            <string>object-catalog_domain_code</string>
+            <string>object-catalog/domain/code</string>
             <list>
               <list>
                 <string>template-domain-code01</string>
@@ -517,13 +517,13 @@
             </list>
           </entry>
           <entry>
-            <string>object-catalog_definition</string>
+            <string>object-catalog/definition</string>
             <list>
               <string>template-definition</string>
             </list>
           </entry>
           <entry>
-            <string>object-catalog_domain_value</string>
+            <string>object-catalog/domain/value</string>
             <list>
               <list>
                 <string>template-domain-code01</string>
@@ -532,7 +532,7 @@
             </list>
           </entry>
           <entry>
-            <string>object-catalog_name</string>
+            <string>object-catalog/name</string>
             <list>
               <string>template-identifier</string>
             </list>
@@ -553,7 +553,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_max-occurence</string>
+          <string>object-catalog/max-occurence</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -563,7 +563,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -571,7 +571,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain</string>
+          <string>object-catalog/domain</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -588,7 +588,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_code</string>
+          <string>object-catalog/domain/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -605,7 +605,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_definition</string>
+          <string>object-catalog/definition</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -623,7 +623,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -631,7 +631,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_name</string>
+          <string>object-catalog/name</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -649,7 +649,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_min-occurence</string>
+          <string>object-catalog/min-occurence</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -669,7 +669,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_definition</string>
+          <string>object-catalog/domain/definition</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -710,7 +710,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_type</string>
+          <string>object-catalog/type</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -720,7 +720,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_value</string>
+          <string>object-catalog/domain/value</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -771,18 +771,18 @@
             <string>Select me</string>
           </entry>
           <entry>
-            <string>object-catalog_max-occurence</string>
+            <string>object-catalog/max-occurence</string>
             <list>
               <string>01 2</string>
               <string>02 20</string>
             </list>
           </entry>
           <entry>
-            <string>referencesystem-object_code-space</string>
+            <string>referencesystem-object/code-space</string>
             <string>object-codeSpace</string>
           </entry>
           <entry>
-            <string>object-catalog_domain_code</string>
+            <string>object-catalog/domain/code</string>
             <list>
               <list>
                 <string>a domain for first catalog object</string>
@@ -794,39 +794,39 @@
             </list>
           </entry>
           <entry>
-            <string>object-catalog_definition</string>
+            <string>object-catalog/definition</string>
             <list>
               <string>01 the definition</string>
               <string>02 the definition</string>
             </list>
           </entry>
           <entry>
-            <string>referencesystem-object_code</string>
+            <string>referencesystem-object/code</string>
             <string>object-code</string>
           </entry>
           <entry>
-            <string>object-catalog_name</string>
+            <string>object-catalog/name</string>
             <list>
               <string>First object catalog object</string>
               <string>Other object catalog object</string>
             </list>
           </entry>
           <entry>
-            <string>object-catalog_min-occurence</string>
+            <string>object-catalog/min-occurence</string>
             <list>
               <string>01 0</string>
               <string>02 10</string>
             </list>
           </entry>
           <entry>
-            <string>referencesystem-object-list_code</string>
+            <string>referencesystem-object-list/code</string>
             <list>
               <string>list-objectcode01</string>
               <string>list-objectcode02</string>
             </list>
           </entry>
           <entry>
-            <string>object-catalog_domain_definition</string>
+            <string>object-catalog/domain/definition</string>
             <list>
               <list>
                 <string>01- the other one</string>
@@ -842,7 +842,7 @@
             <string>the-indentifier-single</string>
           </entry>
           <entry>
-            <string>referencesystem-object-list_code-space</string>
+            <string>referencesystem-object-list/code-space</string>
             <list>
               <string>list-objectcodeSpace01</string>
               <string>list-objectcodeSpace02</string>
@@ -857,14 +857,14 @@
             </list>
           </entry>
           <entry>
-            <string>object-catalog_type</string>
+            <string>object-catalog/type</string>
             <list>
               <string>String</string>
               <string>Date</string>
             </list>
           </entry>
           <entry>
-            <string>object-catalog_domain_value</string>
+            <string>object-catalog/domain/value</string>
             <list>
               <list>
                 <string>15</string>
@@ -910,7 +910,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_max-occurence</string>
+          <string>object-catalog/max-occurence</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -925,7 +925,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -933,7 +933,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain</string>
+          <string>object-catalog/domain</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -956,7 +956,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_code</string>
+          <string>object-catalog/domain/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -979,7 +979,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_definition</string>
+          <string>object-catalog/definition</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1002,7 +1002,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index/>
@@ -1010,7 +1010,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_name</string>
+          <string>object-catalog/name</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1033,7 +1033,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_min-occurence</string>
+          <string>object-catalog/min-occurence</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1048,7 +1048,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object-list_code</string>
+          <string>referencesystem-object-list/code</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1078,7 +1078,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_definition</string>
+          <string>object-catalog/domain/definition</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1117,7 +1117,7 @@
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object-list_code-space</string>
+          <string>referencesystem-object-list/code-space</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1160,7 +1160,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_type</string>
+          <string>object-catalog/type</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
@@ -1175,7 +1175,7 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_value</string>
+          <string>object-catalog/domain/value</string>
           <list>
             <ComplexMetadataIndexReference>
               <index>
