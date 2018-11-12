@@ -22,7 +22,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     private static final long serialVersionUID = 1857277796433431947L;
 
-    private static final String PATH_SEPARATOR = "_";
+    private static final String PATH_SEPARATOR = "/";
 
     /**
      * the underlying flat map
