@@ -20,17 +20,17 @@ public interface ComplexMetadataService {
      * The values in the template are applied in reverse order, i.e. the first child has the highest priority.
      * @param parent
      * @param children
-     * @param descriptionMap
+     * @param derivedAtts
      */
-    void merge(ComplexMetadataMap destination, List<ComplexMetadataMap> sources, HashMap<String, List<Integer>> descriptionMap);
+    void merge(ComplexMetadataMap destination, List<ComplexMetadataMap> sources, HashMap<String, List<Integer>> derivedAtts);
     
     /**
      * Apply the values from the source to the target.
      * @param destination
      * @param source
-     * @param descriptionMap
+     * @param derivedAtts
      */
     void merge(ComplexMetadataMap destination, ComplexMetadataMap source,
-               String typeName, HashMap<String, List<Integer>> descriptionMap);
+               String typeName, HashMap<String, List<Integer>> derivedAtts);
 
 }

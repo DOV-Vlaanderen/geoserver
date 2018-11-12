@@ -112,8 +112,8 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
                 if (layer != null) {
                     @SuppressWarnings("unchecked")
-                    HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
-                            layer.getResource().getMetadata().get(MetadataConstants.DESCRIPTION_KEY);
+                    HashMap<String, List<Integer>>  derivedAtts = (HashMap<String, List<Integer>>)
+                            layer.getResource().getMetadata().get(MetadataConstants.DERIVED_KEY);
 
                     Serializable custom = layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                     @SuppressWarnings("unchecked")
@@ -126,7 +126,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                         }
                     }
 
-                    metadataService.merge(model, sources, descriptionMap);
+                    metadataService.merge(model, sources, derivedAtts);
 
                     geoServer.getCatalog().save(layer);
                 } else {

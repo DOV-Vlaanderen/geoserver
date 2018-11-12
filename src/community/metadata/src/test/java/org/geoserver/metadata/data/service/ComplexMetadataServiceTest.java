@@ -43,7 +43,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("99", parent.get(String.class, "number-field").getValue());
         Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
 
-        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        HashMap<String, List<Integer>> descriptionMap = createDerivedAtts();
         service.merge(parent, children, descriptionMap);
 
         //Should be updated simple fields
@@ -92,7 +92,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        HashMap<String, List<Integer>> descriptionMap = createDerivedAtts();
         service.merge(parent, children, descriptionMap);
 
         //simple fields
@@ -131,7 +131,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        HashMap<String, List<Integer>> descriptionMap = createDerivedAtts();
         service.merge(parent, children, descriptionMap);
 
         //simple fields
@@ -170,7 +170,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        HashMap<String, List<Integer>> descriptionMap = createDerivedAtts();
         service.merge(parent, children, descriptionMap);
 
         //simple fields
@@ -214,7 +214,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
-        service.merge(parent, children, createDescriptionMap());
+        service.merge(parent, children, createDerivedAtts());
 
         //list of objects
         Assert.assertEquals(2, parent.size("referencesystem-object-list"));
@@ -248,17 +248,17 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         ArrayList<ComplexMetadataMap> children = new ArrayList<>();
         children.add(child);
         children.add(child01);
-        HashMap<String, List<Integer>> descriptionMap = createDescriptionMap();
+        HashMap<String, List<Integer>> derivedAtts = createDerivedAtts();
 
         //LINK
-        service.merge(parent, children, descriptionMap);
+        service.merge(parent, children, derivedAtts);
 
         Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
         Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
         Assert.assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
-        Assert.assertEquals(0, descriptionMap.get("indentifier-single").get(0).intValue());
-        Assert.assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
-        Assert.assertEquals(0, descriptionMap.get("dropdown-field").get(0).intValue());
+        Assert.assertEquals(0, derivedAtts.get("indentifier-single").get(0).intValue());
+        Assert.assertEquals(0, derivedAtts.get("number-field").get(0).intValue());
+        Assert.assertEquals(0, derivedAtts.get("dropdown-field").get(0).intValue());
 
         Assert.assertEquals(5, parent.size("refsystem-as-list"));
         Assert.assertEquals("template-value01", parent.get(String.class, "refsystem-as-list", 0).getValue());
@@ -266,30 +266,30 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("list-refsystem-01", parent.get(String.class, "refsystem-as-list", 2).getValue());
         Assert.assertEquals("list-refsystem-02", parent.get(String.class, "refsystem-as-list", 3).getValue());
         Assert.assertEquals("list-refsystem-03", parent.get(String.class, "refsystem-as-list", 4).getValue());
-        Assert.assertEquals(0, descriptionMap.get("refsystem-as-list").get(0).intValue());
-        Assert.assertEquals(1, descriptionMap.get("refsystem-as-list").get(1).intValue());
+        Assert.assertEquals(0, derivedAtts.get("refsystem-as-list").get(0).intValue());
+        Assert.assertEquals(1, derivedAtts.get("refsystem-as-list").get(1).intValue());
 
         //UNLINK
-        service.merge(parent, new ArrayList<ComplexMetadataMap>(), descriptionMap);
+        service.merge(parent, new ArrayList<ComplexMetadataMap>(), derivedAtts);
 
         Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
         Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
         Assert.assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
-        Assert.assertNull(descriptionMap.get("indentifier-single"));
-        Assert.assertNull(descriptionMap.get("number-field"));
-        Assert.assertNull(descriptionMap.get("dropdown-field"));
+        Assert.assertNull(derivedAtts.get("indentifier-single"));
+        Assert.assertNull(derivedAtts.get("number-field"));
+        Assert.assertNull(derivedAtts.get("dropdown-field"));
 
         Assert.assertEquals(3, parent.size("refsystem-as-list"));
         Assert.assertEquals("list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
         Assert.assertEquals("list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
         Assert.assertEquals("list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
 
-        Assert.assertNull(descriptionMap.get("refsystem-as-list"));
+        Assert.assertNull(derivedAtts.get("refsystem-as-list"));
 
     }
 
 
-    private HashMap<String, List<Integer>> createDescriptionMap() {
+    private HashMap<String, List<Integer>> createDerivedAtts() {
         return new HashMap<>();
     }
 }

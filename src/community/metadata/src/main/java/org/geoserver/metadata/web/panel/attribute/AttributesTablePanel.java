@@ -32,12 +32,12 @@ public class AttributesTablePanel extends Panel {
     public AttributesTablePanel(String id,
                                 GeoServerDataProvider<MetadataAttributeConfiguration> dataProvider,
                                 IModel<ComplexMetadataMap> metadataModel,
-                                HashMap<String, List<Integer>> descriptionMap) {
+                                HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
 
 
         GeoServerTablePanel<MetadataAttributeConfiguration> tablePanel = 
-                createAttributesTablePanel(dataProvider, descriptionMap);
+                createAttributesTablePanel(dataProvider, derivedAtts);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -52,7 +52,7 @@ public class AttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<MetadataAttributeConfiguration> createAttributesTablePanel(GeoServerDataProvider<MetadataAttributeConfiguration> dataProvider,
-                                                                           HashMap<String, List<Integer>> descriptionMap) {
+                                                                           HashMap<String, List<Integer>> derivedAtts) {
 
         return new GeoServerTablePanel<MetadataAttributeConfiguration>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 5267842353156378075L;
@@ -70,9 +70,9 @@ public class AttributesTablePanel extends Panel {
                                 getMetadataModel().getObject());
                         //disable components with values from the templates
                         if (component != null &&
-                                descriptionMap != null &&
-                                descriptionMap.containsKey(attributeConfiguration.getKey())) {
-                            boolean disableInput = descriptionMap.get(attributeConfiguration.getKey()).size() > 0;
+                                derivedAtts != null &&
+                                derivedAtts.containsKey(attributeConfiguration.getKey())) {
+                            boolean disableInput = derivedAtts.get(attributeConfiguration.getKey()).size() > 0;
                             component.setEnabled(!disableInput);
                         }
                         return component;
@@ -86,7 +86,7 @@ public class AttributesTablePanel extends Panel {
                                 getMetadataModel(), 
                                     GeoServerApplication.get().getBeanOfType(GeneratorService.class)
                                     .findGeneratorByType(attributeConfiguration.getTypename()),
-                                descriptionMap);
+                                derivedAtts);
                     } else {
                         RepeatableAttributeDataProvider<String> repeatableDataProvider = 
                                 new RepeatableAttributeDataProvider<String>(String.class, attributeConfiguration, 
@@ -94,7 +94,7 @@ public class AttributesTablePanel extends Panel {
                         return new RepeatableAttributesTablePanel(id,
                                   repeatableDataProvider,
                                 getMetadataModel(),
-                                descriptionMap);
+                                derivedAtts);
                     }
                 }
                 return null;

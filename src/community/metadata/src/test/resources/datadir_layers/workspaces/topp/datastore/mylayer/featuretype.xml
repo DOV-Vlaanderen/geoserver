@@ -125,7 +125,7 @@
         </entry>
       </HashMap>
     </entry>
-    <entry key="descriptionMap">
+    <entry key="custom-derived-attributes">
       <HashMap>
         <entry>
           <string>dropdown-field</string>

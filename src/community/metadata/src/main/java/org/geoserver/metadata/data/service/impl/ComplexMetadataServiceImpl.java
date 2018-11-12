@@ -38,7 +38,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     @Override
     public void merge(ComplexMetadataMap destination,
                       List<ComplexMetadataMap> sources,
-                      HashMap<String, List<Integer>> descriptionMap) {
+                      HashMap<String, List<Integer>> derivedAtts) {
 
         MetadataEditorConfiguration config;
         try {
@@ -49,12 +49,12 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                     "The corresponding gui configuration cannot be read.");
         }
 
-        clearTemplateData(destination, descriptionMap);
+        clearTemplateData(destination, derivedAtts);
 
         ArrayList<ComplexMetadataMap> reversed = new ArrayList<ComplexMetadataMap>(sources);
         Collections.reverse(reversed);
         for (ComplexMetadataMap source : reversed) {
-            mergeAttribute(destination, source, config.getAttributes(), config, descriptionMap);
+            mergeAttribute(destination, source, config.getAttributes(), config, derivedAtts);
         }
 
     }
@@ -64,7 +64,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     public void merge(ComplexMetadataMap destination,
                       ComplexMetadataMap source,
                       String typeName,
-                      HashMap<String, List<Integer>> descriptionMap) {
+                      HashMap<String, List<Integer>> derivedAtts) {
 
         MetadataEditorConfiguration config;
         try {
@@ -75,7 +75,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                     + "The corresponding gui configuration cannot be read.");
         }
 
-        clearTemplateData(destination, descriptionMap);
+        clearTemplateData(destination, derivedAtts);
 
         mergeAttribute(destination, source,
                 typeName == null ? config.getAttributes()
@@ -85,26 +85,26 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
 
     private void mergeAttribute(ComplexMetadataMap destination, ComplexMetadataMap source,
                                 List<MetadataAttributeConfiguration> attributes,
-                                MetadataEditorConfiguration config, HashMap<String, List<Integer>> descriptionMap) {
+                                MetadataEditorConfiguration config, HashMap<String, List<Integer>> derivedAtts) {
         for (MetadataAttributeConfiguration attribute : attributes) {
             if (attribute.getFieldType() == FieldTypeEnum.COMPLEX) {
                 mergeComplexField(attribute, config.findType(attribute.getTypename()),
                         config,
                         destination,
                         source,
-                        descriptionMap);                
+                        derivedAtts);                
             } else {
-                mergeSimpleField(attribute, destination, source, descriptionMap);
+                mergeSimpleField(attribute, destination, source, derivedAtts);
             }
         }
     }
 
     private  void mergeSimpleField(MetadataAttributeConfiguration attribute,
                                             ComplexMetadataMap destination,
-                                            ComplexMetadataMap source, HashMap<String, List<Integer>> descriptionMap) {
+                                            ComplexMetadataMap source, HashMap<String, List<Integer>> derivedAtts) {
 
-        if (descriptionMap != null && !descriptionMap.containsKey(attribute.getKey())) {
-            descriptionMap.put(attribute.getKey(), new ArrayList<>());
+        if (derivedAtts != null && !derivedAtts.containsKey(attribute.getKey())) {
+            derivedAtts.put(attribute.getKey(), new ArrayList<>());
         }
         ArrayList<Integer> indexes = new ArrayList<>();
 
@@ -119,8 +119,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
             case REPEAT:
                 int startIndex = 0;
                 int sourceSize = source.size(attribute.getKey());
-                if (descriptionMap != null) {
-                    startIndex = descriptionMap.get(attribute.getKey()).size();
+                if (derivedAtts != null) {
+                    startIndex = derivedAtts.get(attribute.getKey()).size();
                     //SHIFT user content
                     for (int i = destination.size(attribute.getKey()) - 1; i >= 0 ; i--) {
                         if(i >= startIndex){
@@ -139,8 +139,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                 }
         }
         //keep track of the values that are from the template
-        if (descriptionMap != null) {
-            descriptionMap.get(attribute.getKey()).addAll(indexes);
+        if (derivedAtts != null) {
+            derivedAtts.get(attribute.getKey()).addAll(indexes);
         }
 
     }
@@ -149,12 +149,12 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                                              MetadataAttributeTypeConfiguration type,
                                              MetadataEditorConfiguration config,
                                              ComplexMetadataMap destination, ComplexMetadataMap source,
-                                             HashMap<String, List<Integer>> descriptionMap) {
+                                             HashMap<String, List<Integer>> derivedAtts) {
 
         ArrayList<Integer> indexes = new ArrayList<>();
-        if (descriptionMap != null) {
-            if (!descriptionMap.containsKey(attribute.getKey())) {
-                descriptionMap.put(attribute.getKey(), new ArrayList<>());
+        if (derivedAtts != null) {
+            if (!derivedAtts.containsKey(attribute.getKey())) {
+                derivedAtts.put(attribute.getKey(), new ArrayList<>());
             }
         }
 
@@ -170,8 +170,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
             case REPEAT:
                 int startIndex = 0;
                 int sourceSize = source.size(attribute.getKey());
-                if (descriptionMap != null) {
-                    startIndex = descriptionMap.get(attribute.getKey()).size();
+                if (derivedAtts != null) {
+                    startIndex = derivedAtts.get(attribute.getKey()).size();
                     //SHIFT user content
                     for (int i = destination.size(attribute.getKey()) - 1; i >= 0 ; i--) {
                         if(i >= startIndex){
@@ -191,21 +191,21 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                 }
         }
         //keep track of the values that are from the template
-        if (descriptionMap != null) {
-            descriptionMap.get(attribute.getKey()).addAll(indexes);
+        if (derivedAtts != null) {
+            derivedAtts.get(attribute.getKey()).addAll(indexes);
         }
     }
 
 
-    private void clearTemplateData(ComplexMetadataMap destination, HashMap<String, List<Integer>> descriptionMap) {
-        for (String key : descriptionMap.keySet()) {
-            List<Integer> indexes = descriptionMap.get(key);
+    private void clearTemplateData(ComplexMetadataMap destination, HashMap<String, List<Integer>> derivedAtts) {
+        for (String key : derivedAtts.keySet()) {
+            List<Integer> indexes = derivedAtts.get(key);
             ArrayList<Integer> reversed = new ArrayList<Integer>(indexes);
             Collections.reverse(reversed);
             for (Integer index : reversed) {
                 destination.delete(key, index);
             }
         }
-        descriptionMap.clear();
+        derivedAtts.clear();
     }
 }

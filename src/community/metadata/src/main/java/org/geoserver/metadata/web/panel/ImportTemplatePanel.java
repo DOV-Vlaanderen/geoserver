@@ -16,7 +16,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
@@ -56,7 +55,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private IModel<List<MetadataTemplate>> templatesModel;
 
-    private final HashMap<String, List<Integer>> descriptionMap;
+    private final HashMap<String, List<Integer>> derivedAtts;
 
     private Label noData;
 
@@ -68,7 +67,7 @@ public abstract class ImportTemplatePanel extends Panel {
                                String layerName,
                                IModel<ComplexMetadataMap> metadataModel,
                                IModel<List<MetadataTemplate>> templatesModel,
-                               HashMap<String,List<Integer>> customDescription) {
+                               HashMap<String,List<Integer>> derivedAtts) {
         super(id, metadataModel);
         this.templatesModel = templatesModel;
         try {
@@ -81,7 +80,7 @@ public abstract class ImportTemplatePanel extends Panel {
             error(new ParamResourceModel("errorSelectGeonetwork",
                     ImportTemplatePanel.this).getString());
         }
-        this.descriptionMap = customDescription;
+        this.derivedAtts = derivedAtts;
         linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName, templatesModel);
 
     }
@@ -281,7 +280,7 @@ public abstract class ImportTemplatePanel extends Panel {
             maps.add(template.getMetadata());
         }
 
-        service.merge(model.getObject(), maps, descriptionMap);
+        service.merge(model.getObject(), maps, derivedAtts);
     }
 
 

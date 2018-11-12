@@ -42,7 +42,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
     private RepeatableComplexAttributeDataProvider dataProvider;
     
-    private HashMap<String, List<Integer>> descriptionMap;
+    private HashMap<String, List<Integer>> derivedAtts;
 
     private ComplexAttributeGenerator generator;
     
@@ -50,11 +50,11 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                                                  RepeatableComplexAttributeDataProvider dataProvider,
                                                  IModel<ComplexMetadataMap> metadataModel,
                                                  ComplexAttributeGenerator generator,
-                                                 HashMap<String, List<Integer>> descriptionMap) {
+                                                 HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
         
         this.dataProvider = dataProvider;
-        this.descriptionMap = descriptionMap;
+        this.derivedAtts = derivedAtts;
         this.generator = generator;
     }
     
@@ -62,7 +62,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
     protected void onInitialize() {
         super.onInitialize();
 
-        add(tablePanel = createAttributesTablePanel(dataProvider, descriptionMap));
+        add(tablePanel = createAttributesTablePanel(dataProvider, derivedAtts));
 
         // the no data links label
         add(noData = new Label("noData", new ResourceModel("noData")));
@@ -113,7 +113,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                                         (LayerInfo) tabPanel.getDefaultModelObject());
                                 dataProvider.reset();
                                 target.add(RepeatableComplexAttributesTablePanel.this.get("attributesTablePanel")
-                                        .replaceWith(createAttributesTablePanel(dataProvider, descriptionMap)));
+                                        .replaceWith(createAttributesTablePanel(dataProvider, derivedAtts)));
                                 updateTable();
                                 target.add(noData);
                                 return true;
@@ -128,7 +128,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
 
     private GeoServerTablePanel<ComplexMetadataMap> createAttributesTablePanel(
             RepeatableComplexAttributeDataProvider dataProvider,
-            HashMap<String, List<Integer>> descriptionMap) {
+            HashMap<String, List<Integer>> derivedAtts) {
 
         tablePanel = new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 4333335931795175790L;
@@ -147,8 +147,8 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                 //disable input values from template
                 boolean enableInput = true;
 
-                if (descriptionMap != null && descriptionMap.containsKey(attributeConfiguration.getKey())) {
-                    List<Integer> indexes= descriptionMap.get(attributeConfiguration.getKey());
+                if (derivedAtts != null && derivedAtts.containsKey(attributeConfiguration.getKey())) {
+                    List<Integer> indexes= derivedAtts.get(attributeConfiguration.getKey());
                     for (Integer index : indexes) {
                         if(index.equals(count)){
                             enableInput = false;

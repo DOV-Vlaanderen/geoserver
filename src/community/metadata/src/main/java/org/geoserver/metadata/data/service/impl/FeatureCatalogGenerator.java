@@ -42,8 +42,8 @@ public class FeatureCatalogGenerator implements ComplexAttributeGenerator {
         FeatureTypeInfo fti = (FeatureTypeInfo) layerInfo.getResource();
         
         @SuppressWarnings("unchecked")
-        HashMap<String, List<Integer>> descriptionMap = 
-                (HashMap<String, List<Integer>>) fti.getMetadata().get(MetadataConstants.DESCRIPTION_KEY);
+        HashMap<String, List<Integer>> derivedAtts = 
+                (HashMap<String, List<Integer>>) fti.getMetadata().get(MetadataConstants.DERIVED_KEY);
         
         //we will save the old details for attributes that still exist
         Map<String, ComplexMetadataMap> old = new HashMap<>();
@@ -64,7 +64,7 @@ public class FeatureCatalogGenerator implements ComplexAttributeGenerator {
                 
                 ComplexMetadataMap oldMap = old.get(att.getName());
                 if (oldMap != null) {
-                    service.merge(attMap, oldMap, MetadataConstants.FEATURE_CATALOG_TYPENAME, descriptionMap);
+                    service.merge(attMap, oldMap, MetadataConstants.FEATURE_CATALOG_TYPENAME, derivedAtts);
                 }
                 
                 attMap.get(String.class, MetadataConstants.FEATURE_CATALOG_ATT_NAME).setValue(

@@ -39,12 +39,12 @@ public class RepeatableAttributesTablePanel extends Panel {
     public RepeatableAttributesTablePanel(String id,
                                           RepeatableAttributeDataProvider<String> dataProvider,
                                           IModel<ComplexMetadataMap> metadataModel,
-                                          HashMap<String, List<Integer>> descriptionMap) {
+                                          HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
 
         setOutputMarkupId(true);
 
-        tablePanel = createAttributesTablePanel(dataProvider, descriptionMap);
+        tablePanel = createAttributesTablePanel(dataProvider, derivedAtts);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
         tablePanel.getTopPager().setVisible(false);
@@ -76,7 +76,7 @@ public class RepeatableAttributesTablePanel extends Panel {
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> createAttributesTablePanel(
             RepeatableAttributeDataProvider<String> dataProvider,
-            HashMap<String, List<Integer>> descriptionMap) {
+            HashMap<String, List<Integer>> derivedAtts) {
 
         GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
                 new GeoServerTablePanel<ComplexMetadataAttribute<String>>("attributesTablePanel", dataProvider) {
@@ -94,9 +94,9 @@ public class RepeatableAttributesTablePanel extends Panel {
                         MetadataAttributeConfiguration attributeConfiguration = dataProvider.getConfiguration();
                         boolean enableInput = true;
                         //disable input values from template
-                        if (descriptionMap != null &&
-                                descriptionMap.containsKey(attributeConfiguration.getKey())) {
-                            List<Integer> indexes= descriptionMap.get(attributeConfiguration.getKey());
+                        if (derivedAtts != null &&
+                                derivedAtts.containsKey(attributeConfiguration.getKey())) {
+                            List<Integer> indexes= derivedAtts.get(attributeConfiguration.getKey());
                             for (Integer index : indexes) {
                                 if(index.equals(count)){
                                     enableInput = false;

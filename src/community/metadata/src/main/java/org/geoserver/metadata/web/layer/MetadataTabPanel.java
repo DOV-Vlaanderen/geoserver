@@ -43,23 +43,23 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     private ImportTemplatePanel linkTemplatePanel;
 
-    private HashMap<String, List<Integer>> descriptionMap ;
+    private HashMap<String, List<Integer>> derivedAtts ;
 
     @SuppressWarnings("unchecked")
     public MetadataTabPanel(String id, IModel<LayerInfo> model, IModel<?> linkedTemplatesModel) {
         super(id, model);
 
-        descriptionMap = (HashMap<String, List<Integer>>)
-                        model.getObject().getResource().getMetadata().get(MetadataConstants.DESCRIPTION_KEY);
+        derivedAtts = (HashMap<String, List<Integer>>)
+                        model.getObject().getResource().getMetadata().get(MetadataConstants.DERIVED_KEY);
 
         Serializable custom = model.getObject().getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
             model.getObject().getResource().getMetadata().put(MetadataConstants.CUSTOM_METADATA_KEY, custom);
         }
-        if (!(descriptionMap instanceof HashMap<?, ?>)) {
-            descriptionMap = new HashMap<String, List<Integer>>();
-            model.getObject().getResource().getMetadata().put(MetadataConstants.DESCRIPTION_KEY, descriptionMap);
+        if (!(derivedAtts instanceof HashMap<?, ?>)) {
+            derivedAtts = new HashMap<String, List<Integer>>();
+            model.getObject().getResource().getMetadata().put(MetadataConstants.DERIVED_KEY, derivedAtts);
         }
 
 
@@ -76,13 +76,13 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                 name,
                 metadataModel,
                 (IModel<List<MetadataTemplate>>) linkedTemplatesModel,
-                descriptionMap) {
+                derivedAtts) {
             private static final long serialVersionUID = -8056914656580115202L;
 
             @Override
             protected void handleUpdate(AjaxRequestTarget target) {
                 target.add(metadataPanel().replaceWith(
-                        new MetadataPanel("metadataPanel", metadataModel, descriptionMap)));
+                        new MetadataPanel("metadataPanel", metadataModel, derivedAtts)));
             }
 
         };
@@ -90,7 +90,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
         this.add(linkTemplatePanel);
 
-        add(new MetadataPanel("metadataPanel", metadataModel, descriptionMap).setOutputMarkupId(true));
+        add(new MetadataPanel("metadataPanel", metadataModel, derivedAtts).setOutputMarkupId(true));
         
         GeoServerDialog dialog =  new GeoServerDialog("dialog");
         dialog.setInitialHeight(100);
@@ -116,7 +116,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                     getPage().error(e.getMessage());
                 }
                 target.add(metadataPanel().replaceWith(
-                        new MetadataPanel("metadataPanel", metadataModel, descriptionMap)));
+                        new MetadataPanel("metadataPanel", metadataModel, derivedAtts)));
             }
         };
         add(geonetworkPanel);

@@ -22,13 +22,13 @@ import java.util.List;
 public class MetadataPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
-    private final HashMap<String, List<Integer>> descriptionMap;
+    private final HashMap<String, List<Integer>> derivedAtts;
 
 
     public MetadataPanel(String id, IModel<ComplexMetadataMap> metadataModel,
-                         HashMap<String, List<Integer>> descriptionMap) {
+                         HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
-        this.descriptionMap = descriptionMap;
+        this.derivedAtts = derivedAtts;
     }
 
 
@@ -40,7 +40,7 @@ public class MetadataPanel extends Panel {
                 new AttributesTablePanel("attributesPanel",
                         new AttributeDataProvider(),
                         getMetadataModel(),
-                        descriptionMap);
+                        derivedAtts);
 
         attributesPanel.setOutputMarkupId(true);
         add(attributesPanel);

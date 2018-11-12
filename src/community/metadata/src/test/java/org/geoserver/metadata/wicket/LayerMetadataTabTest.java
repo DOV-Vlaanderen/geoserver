@@ -150,6 +150,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component", "template-list-simple");
         tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component", "template-object list");
 
+        //print(tester.getLastRenderedPage(), true, true);
+        
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "template-code01");
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield", "template-codespace01");
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "template-code02");
@@ -158,9 +160,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield", "First object :codeSpace");
 
         //TODO figure out why this test fails.. the gui looks ok
-        /*print(tester.getLastRenderedPage(), true, true);
 
-        Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield").isEnabled());
+        /*Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield").isEnabled());
         Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield").isEnabled());
         Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield").isEnabled());
         Assert.assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield").isEnabled());
