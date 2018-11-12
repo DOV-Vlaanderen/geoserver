@@ -23,11 +23,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.util.logging.Logging;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Generate the gui as a list of Complex Objects(an object contains multiple simple fields or objects).
@@ -37,8 +35,6 @@ import java.util.logging.Logger;
  */
 public class RepeatableComplexAttributesTablePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
-
-    private static final Logger LOGGER = Logging.getLogger(RepeatableComplexAttributesTablePanel.class);
 
     private GeoServerTablePanel<ComplexMetadataMap> tablePanel;
 

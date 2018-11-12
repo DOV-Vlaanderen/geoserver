@@ -99,6 +99,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertComponent("form:metadataTemplatePanel", MetadataPanel.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDelete() throws Exception {
         //select first template

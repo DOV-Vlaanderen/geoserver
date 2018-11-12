@@ -10,11 +10,9 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
-import org.geotools.util.logging.Logging;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * The dynamically generated metadata input panel. All fields are added on the fly based on the yaml configuration.
@@ -23,8 +21,6 @@ import java.util.logging.Logger;
  */
 public class MetadataPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
-
-    private static final Logger LOGGER = Logging.getLogger(MetadataPanel.class);
 
     private final HashMap<String, List<Integer>> descriptionMap;
 

@@ -46,7 +46,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
         
         items = new ArrayList<ComplexMetadataAttribute<T>>();
         for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
-            Class itemClass = EditorFactory.getInstance().getItemClass(attributeConfiguration);
+            Class<T> itemClass = EditorFactory.getInstance().getItemClass(attributeConfiguration);
             items.add(metadataModel.getObject().get(itemClass, attributeConfiguration.getKey(), i));
         }
         
@@ -63,7 +63,7 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
     }
 
     public void addField() {
-        Class itemClass = EditorFactory.getInstance().getItemClass(attributeConfiguration);
+        Class<T> itemClass = EditorFactory.getInstance().getItemClass(attributeConfiguration);
         items.add(metadataModel.getObject().get(itemClass, attributeConfiguration.getKey(), items.size()));
     }
 

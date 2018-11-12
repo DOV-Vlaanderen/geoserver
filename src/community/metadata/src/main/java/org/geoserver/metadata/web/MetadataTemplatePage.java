@@ -106,6 +106,8 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     private AjaxSubmitLink createSaveButton() {
         return new AjaxSubmitLink("save") {
+            private static final long serialVersionUID = 8749672113664556346L;
+
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 MetadataTemplateService service =

@@ -16,11 +16,9 @@ import org.geoserver.metadata.data.dto.OccurenceEnum;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geotools.util.logging.Logging;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 /**
  * Entry point for the gui generation.
  * This parses the configuration and adds simple fields, complex fields (composition of multiple simple fields)
@@ -30,10 +28,6 @@ import java.util.logging.Logger;
  */
 public class AttributesTablePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
-
-    private static final Logger LOGGER = Logging.getLogger(AttributesTablePanel.class);
-
-
 
     public AttributesTablePanel(String id,
                                 GeoServerDataProvider<MetadataAttributeConfiguration> dataProvider,

@@ -6,12 +6,12 @@ package org.geoserver.metadata.data.service.impl;
 
 
 import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
+import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.YamlService;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Implementation.
@@ -32,9 +31,6 @@ import java.util.logging.Logger;
  */
 @Repository
 public class ComplexMetadataServiceImpl implements ComplexMetadataService {
-
-
-    private static final Logger LOGGER = Logging.getLogger(ComplexMetadataServiceImpl.class);
 
     @Autowired
     YamlService yamlService;
@@ -91,23 +87,14 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                                 List<MetadataAttributeConfiguration> attributes,
                                 MetadataEditorConfiguration config, HashMap<String, List<Integer>> descriptionMap) {
         for (MetadataAttributeConfiguration attribute : attributes) {
-            switch (attribute.getFieldType()) {
-                case TEXT:
-                    mergeSimpleField(attribute, destination, source, descriptionMap);
-                    break;
-                case NUMBER:
-                    mergeSimpleField(attribute, destination, source, descriptionMap);
-                    break;
-                case DROPDOWN:
-                    mergeSimpleField(attribute, destination, source, descriptionMap);
-                    break;
-                case COMPLEX:
-                    mergeComplexField(attribute, config.findType(attribute.getTypename()),
-                            config,
-                            destination,
-                            source,
-                            descriptionMap);
-                    break;
+            if (attribute.getFieldType() == FieldTypeEnum.COMPLEX) {
+                mergeComplexField(attribute, config.findType(attribute.getTypename()),
+                        config,
+                        destination,
+                        source,
+                        descriptionMap);                
+            } else {
+                mergeSimpleField(attribute, destination, source, descriptionMap);
             }
         }
     }

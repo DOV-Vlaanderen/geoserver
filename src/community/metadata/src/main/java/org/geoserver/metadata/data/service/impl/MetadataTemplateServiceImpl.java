@@ -110,10 +110,12 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                 LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
 
                 if (layer != null) {
+                    @SuppressWarnings("unchecked")
                     HashMap<String, List<Integer>>  descriptionMap = (HashMap<String, List<Integer>>)
                             layer.getResource().getMetadata().get(MetadataConstants.DESCRIPTION_KEY);
 
                     Serializable custom = layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                    @SuppressWarnings("unchecked")
                     ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
 
                     ArrayList<ComplexMetadataMap> sources = new ArrayList<>();

@@ -15,16 +15,13 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.model.MetadataLocationEnum;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.GeonetworkXmlParser;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
-import org.geoserver.metadata.web.panel.ImportTemplateDataProvider;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.GeoServerApplication;
@@ -52,7 +49,6 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
     public MetadataTabPanel(String id, IModel<LayerInfo> model, IModel<?> linkedTemplatesModel) {
         super(id, model);
 
-        MetadataMap metadataMap = model.getObject().getResource().getMetadata();
         descriptionMap = (HashMap<String, List<Integer>>)
                         model.getObject().getResource().getMetadata().get(MetadataConstants.DESCRIPTION_KEY);
 

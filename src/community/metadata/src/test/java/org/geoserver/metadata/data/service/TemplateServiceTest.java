@@ -101,6 +101,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         //check if the linked metadata is updated.
         LayerInfo initialMyLayer = geoServer.getCatalog().getLayerByName("mylayer");
         Serializable initialCustom = initialMyLayer.getResource().getMetadata().get("custom");
+        @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> initialMetadataModel = new Model<ComplexMetadataMap>(
                 new ComplexMetadataMapImpl((HashMap<String, Serializable>) initialCustom));
         Assert.assertEquals(1, initialMetadataModel.getObject().size("object-catalog/type"));
@@ -113,6 +114,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         //check if the linked metadata is updated.
         LayerInfo myLayer = geoServer.getCatalog().getLayerByName("mylayer");
         Serializable custom = myLayer.getResource().getMetadata().get("custom");
+        @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(
                 new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
 

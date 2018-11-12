@@ -22,6 +22,8 @@ public class AutoCompletePanel extends Panel {
 
         add(new AutoCompleteTextField<String>("autoComplete", model) {
 
+            private static final long serialVersionUID = 7742400754591550452L;
+
             @Override
             protected Iterator<String> getChoices(String input) {
                 List<String> result = new ArrayList<String>();

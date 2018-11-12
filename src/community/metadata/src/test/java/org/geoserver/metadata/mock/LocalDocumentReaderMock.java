@@ -8,7 +8,6 @@ package org.geoserver.metadata.mock;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -26,8 +25,6 @@ import java.net.URL;
 @Primary
 @Repository
 public class LocalDocumentReaderMock implements RemoteDocumentReader {
-
-    private static final java.util.logging.Logger LOGGER = Logging.getLogger(LocalDocumentReaderMock.class);
 
     @Autowired
     private GeoServerDataDirectory dataDirectory;

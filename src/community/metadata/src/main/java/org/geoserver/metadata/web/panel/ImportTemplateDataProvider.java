@@ -8,7 +8,6 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geotools.util.logging.Logging;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +24,6 @@ import java.util.List;
  */
 public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTemplate> {
 
-    private static final java.util.logging.Logger LOGGER = Logging.getLogger(ImportTemplateDataProvider.class);
-
     private static final long serialVersionUID = -8246320435114536132L;
 
     public static final Property<MetadataTemplate> NAME = new BeanProperty<MetadataTemplate>("name", "name");
@@ -41,6 +38,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     private List<MetadataTemplate> linkedTemplates = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public ImportTemplateDataProvider(String workspace, String layerName, IModel<?> templatesModel) {
         this.workspace = workspace;
         this.layerName = layerName;

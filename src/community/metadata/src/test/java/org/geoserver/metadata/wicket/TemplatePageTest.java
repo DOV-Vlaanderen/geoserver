@@ -54,6 +54,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Test
     public void tesPageSave() throws IOException {
         tester.assertModelValue("form:description", "All fields");
@@ -78,6 +79,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void tesPageCancel() throws IOException {
         tester.assertModelValue("form:description", "All fields");

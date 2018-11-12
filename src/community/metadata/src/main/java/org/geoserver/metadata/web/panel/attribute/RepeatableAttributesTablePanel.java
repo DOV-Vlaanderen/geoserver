@@ -19,11 +19,9 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geotools.util.logging.Logging;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Generate the gui as a list of simple inputs (text, double, dropdown, ..).
@@ -33,8 +31,6 @@ import java.util.logging.Logger;
  */
 public class RepeatableAttributesTablePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
-
-    private static final Logger LOGGER = Logging.getLogger(RepeatableAttributesTablePanel.class);
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel;
 

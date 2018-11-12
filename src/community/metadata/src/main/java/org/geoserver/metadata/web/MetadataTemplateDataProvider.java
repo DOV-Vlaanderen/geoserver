@@ -18,10 +18,9 @@ import java.util.List;
 
 public class MetadataTemplateDataProvider extends GeoServerDataProvider<MetadataTemplate> {
 
-
-    private static final java.util.logging.Logger LOGGER = Logging.getLogger(MetadataTemplateDataProvider.class);
-
     private static final long serialVersionUID = -8246320435114536132L;
+    
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(MetadataTemplateDataProvider.class);
 
     public static final Property<MetadataTemplate> NAME = new BeanProperty<MetadataTemplate>("name", "name");
 

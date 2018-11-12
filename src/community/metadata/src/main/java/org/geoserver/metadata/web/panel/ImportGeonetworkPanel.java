@@ -17,11 +17,9 @@ import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.util.logging.Logging;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * A panel that lets the user select a geonetwork endpoint and input a uuid of the metadata record in geonetwork.
@@ -32,8 +30,6 @@ import java.util.logging.Logger;
  */
 public class ImportGeonetworkPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
-
-    private static final Logger LOGGER = Logging.getLogger(ImportGeonetworkPanel.class);
 
     private List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
 
@@ -69,9 +65,6 @@ public class ImportGeonetworkPanel extends Panel {
 
     private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID) {
         return new AjaxSubmitLink("link") {
-            /**
-             *
-             */
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override

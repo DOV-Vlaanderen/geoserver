@@ -6,7 +6,6 @@ package org.geoserver.metadata.data.service.impl;
 
 
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
-import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -21,8 +20,6 @@ import java.net.URL;
 
 @Repository
 public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
-
-    private static final java.util.logging.Logger LOGGER = Logging.getLogger(RemoteDocumentReaderImpl.class);
 
     @Override
     public Document readDocument(URL url) throws IOException {

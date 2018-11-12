@@ -17,6 +17,8 @@ import java.util.Set;
 @XStreamAlias("MetadataTemplate")
 public class MetadataTemplate implements Serializable {
 
+    private static final long serialVersionUID = -1907518678061997394L;
+
     private Integer priority;
 
     private String name;

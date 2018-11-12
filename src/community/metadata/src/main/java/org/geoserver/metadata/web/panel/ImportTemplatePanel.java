@@ -54,8 +54,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private ImportTemplateDataProvider linkedTemplatesDataProvider;
 
-    private MetadataTemplate selected;
-
     private IModel<List<MetadataTemplate>> templatesModel;
 
     private final HashMap<String, List<Integer>> descriptionMap;
@@ -88,7 +86,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onInitialize() {
         super.onInitialize();
@@ -141,6 +138,7 @@ public abstract class ImportTemplatePanel extends Panel {
     }
 
 
+    @SuppressWarnings("unchecked")
     protected DropDownChoice<MetadataTemplate> getDropDown() {
         return (DropDownChoice<MetadataTemplate>) get("metadataTemplate");
     }

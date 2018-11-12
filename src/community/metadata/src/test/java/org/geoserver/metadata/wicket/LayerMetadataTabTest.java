@@ -114,10 +114,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     /**
      * Test if we can add links with a template.
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testLinkWithSimpleAndListTemplates() {
         //link template-list-simple
-        DropDownChoice selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         Assert.assertEquals(5, selectTemplate.getChoices().size());
         MetadataTemplate template = (MetadataTemplate) selectTemplate.getChoices().get(0);
         Assert.assertEquals("template-list-simple", template.getName());
@@ -138,7 +139,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component").isEnabled());
 
         //link template-object list
-        selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         Assert.assertEquals(4, selectTemplate.getChoices().size());
         template = (MetadataTemplate) selectTemplate.getChoices().get(0);
         Assert.assertEquals("template-object list", template.getName());
@@ -168,10 +169,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUnlinkFromSimpleAndListTemplates() {
         //link 2 more templates
-        DropDownChoice selectTemplate = (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         MetadataTemplate template = (MetadataTemplate) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplate>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
@@ -204,13 +206,14 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component").isEnabled());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testImportFromGeonetwork() {
         //check the layer is linked
         Assert.assertNull(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:noData"));
 
         //Import from geonetwork
-        DropDownChoice geonetwork= (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:geonetworkName");
+        DropDownChoice<?> geonetwork= (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:geonetworkName");
         String geonetworkName = (String) geonetwork.getChoices().get(0);
         ((IModel<String>) geonetwork.getDefaultModel()).setObject(geonetworkName);
         TextField<String> uuid = (TextField<String>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:textfield");

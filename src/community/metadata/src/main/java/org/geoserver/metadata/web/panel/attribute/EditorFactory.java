@@ -33,41 +33,46 @@ public class EditorFactory {
         return instance;
     }
 
-    public Component create(MetadataAttributeConfiguration configuration, String id, ComplexMetadataMap metadataMap) {
+    public <T extends Serializable> Component create(
+            MetadataAttributeConfiguration configuration, String id, ComplexMetadataMap metadataMap) {
 
-        ComplexMetadataAttribute metadataModel = metadataMap.get(getItemClass(configuration), configuration.getKey());
-        IModel model = new ComplexMetadataAttributeModel(metadataModel);
+        ComplexMetadataAttribute<T> metadataModel = metadataMap.get(
+                getItemClass(configuration), 
+                configuration.getKey());
+        IModel<T> model = new ComplexMetadataAttributeModel<T>(metadataModel);
 
         return create(configuration, id, model, metadataMap.subMap(configuration.getKey()));
     }
 
-    public Component create(MetadataAttributeConfiguration configuration, String id,
-                            ComplexMetadataAttribute metadataAttribute) {
+    public <T extends Serializable> Component create(
+                            MetadataAttributeConfiguration configuration, String id,
+                            ComplexMetadataAttribute<T> metadataAttribute) {
 
-        IModel model = new ComplexMetadataAttributeModel<String>(metadataAttribute);
+        IModel<T> model = new ComplexMetadataAttributeModel<T>(metadataAttribute);
         return create(configuration, id, model, new ComplexMetadataMapImpl(new HashMap<String, Serializable>()));
     }
 
+    @SuppressWarnings("unchecked")
     private Component create(MetadataAttributeConfiguration configuration,
                              String id,
-                             IModel model,
+                             IModel<?> model,
                              ComplexMetadataMap submap) {
 
         switch (configuration.getFieldType()) {
             case TEXT:
-                return new TextFieldPanel(id, model);
+                return new TextFieldPanel(id, (IModel<String>) model);
             case NUMBER:
-                return new NumberFieldPanel(id, model);
+                return new NumberFieldPanel(id, (IModel<Integer>) model);
             case DROPDOWN:
-                return new DropDownPanel(id, model, configuration.getValues());
+                return new DropDownPanel(id, (IModel<String>) model, configuration.getValues());
             case TEXT_AREA:
-                return new TextAreaPanel(id, model);
+                return new TextAreaPanel(id, (IModel<String>) model);
             case DATE:
-                return new DateFieldPanel(id, model);
+                return new DateFieldPanel(id, (IModel<Date>) model);
             case UUID:
-                return new UUIDFieldPanel(id, model);
+                return new UUIDFieldPanel(id, (IModel<String>) model);
             case SUGGESTBOX:
-                return new AutoCompletePanel(id, model, configuration.getValues());
+                return new AutoCompletePanel(id, (IModel<String>) model, configuration.getValues());
             case COMPLEX:
                 return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
                         new Model<ComplexMetadataMap>(submap), null);
@@ -76,16 +81,17 @@ public class EditorFactory {
     }
 
 
-    public Class getItemClass(MetadataAttributeConfiguration attributeConfiguration) {
+    @SuppressWarnings("unchecked")
+    public <T extends Serializable> Class<T> getItemClass(MetadataAttributeConfiguration attributeConfiguration) {
         switch (attributeConfiguration.getFieldType()){
             case TEXT:
                 break;
             case NUMBER:
-                return Integer.class;
+                return (Class<T>) Integer.class;
             case TEXT_AREA:
                 break;
             case DATE:
-                return Date.class;
+                return (Class<T>) Date.class;
             case UUID:
                 break;
             case DROPDOWN:
@@ -95,7 +101,7 @@ public class EditorFactory {
             case COMPLEX:
                 break;
         }
-        return String.class;
+        return (Class<T>) String.class;
     }
 
 
