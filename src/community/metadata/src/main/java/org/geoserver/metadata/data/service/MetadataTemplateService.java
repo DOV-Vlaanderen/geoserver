@@ -4,10 +4,10 @@
  */
 package org.geoserver.metadata.data.service;
 
-import org.geoserver.metadata.data.model.MetadataTemplate;
-
 import java.io.IOException;
 import java.util.List;
+
+import org.geoserver.metadata.data.model.MetadataTemplate;
 
 /**
  * @author Timothy De Bock

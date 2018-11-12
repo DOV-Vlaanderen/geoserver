@@ -12,6 +12,7 @@ import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Test
     public void testSave() throws IOException {
 
-        MetadataTemplate metadataTemplate = new MetadataTemplate();
+        MetadataTemplate metadataTemplate = new MetadataTemplateImpl();
         metadataTemplate.setName("new-record");
         metadataTemplate.setDescription("new-record-description");
         metadataTemplate.setMetadata(new ComplexMetadataMapImpl(new HashMap<>()));
@@ -72,7 +73,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Test
     public void testSaveErrorFlow() throws IOException {
 
-        MetadataTemplate metadataTemplate = new MetadataTemplate();
+        MetadataTemplate metadataTemplate = new MetadataTemplateImpl();
         //name required
         try {
             service.save(metadataTemplate);

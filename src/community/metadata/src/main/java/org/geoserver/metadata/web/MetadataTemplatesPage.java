@@ -115,7 +115,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
-                            Model<MetadataTemplate> model = new Model<>(itemModel.getObject());
+                            IModel<MetadataTemplate> model = new Model<>(itemModel.getObject());
                             setResponsePage(new MetadataTemplatePage(model));
                         }
                     };

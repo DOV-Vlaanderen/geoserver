@@ -15,6 +15,7 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.platform.resource.Files;
@@ -63,7 +64,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
         this.persister.getXStream().allowTypesByWildcard(new String[]{"org.geoserver.metadata.data.model.**"});
-        this.persister.getXStream().processAnnotations(MetadataTemplate.class);
+        this.persister.getXStream().processAnnotations(MetadataTemplateImpl.class);
         this.persister.getXStream().processAnnotations(ComplexMetadataMapImpl.class);
         this.persister.getXStream().processAnnotations(ComplexMetadataIndexReference.class);
 
@@ -84,14 +85,14 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             throw new IOException("Template with name required.");
         }
 
-        List<MetadataTemplate> tempates = list();
-        for (MetadataTemplate tempate : tempates) {
+        List<MetadataTemplate> templates = list();
+        for (MetadataTemplate tempate : templates) {
             if (tempate.getName().equals(metadataTemplate.getName())) {
                 throw new IOException("Template with name " + metadataTemplate.getName() + "allready exists");
             }
         }
-        tempates.add(metadataTemplate);
-        updateTemplates(tempates);
+        templates.add(metadataTemplate);
+        updateTemplates(templates);
     }
 
 
@@ -150,16 +151,16 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Override
     public void delete(MetadataTemplate metadataTemplate) throws IOException {
-        List<MetadataTemplate> tempates = list();
+        List<MetadataTemplate> templates = list();
         MetadataTemplate toDelete = null;
-        for (MetadataTemplate tempate : tempates) {
+        for (MetadataTemplate tempate : templates) {
             if (tempate.getName().equals(metadataTemplate.getName())) {
                 toDelete = tempate;
                 break;
             }
         }
-        tempates.remove(toDelete);
-        updateTemplates(tempates);
+        templates.remove(toDelete);
+        updateTemplates(templates);
     }
 
 
@@ -171,8 +172,8 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         if (file != null) {
             try {
 
-                List<MetadataTemplate> tempates = persister.load(file.in(), List.class);
-                return tempates;
+                List<MetadataTemplate> templates = persister.load(file.in(), List.class);
+                return templates;
             } catch (StreamException exception) {
                 LOGGER.warning("File is empty");
             }

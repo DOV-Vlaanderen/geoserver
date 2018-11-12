@@ -132,7 +132,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
 
     private DropDownChoice<MetadataTemplate> createTemplatesDropDown() {
-        PropertyModel<MetadataTemplate> model = new PropertyModel<>(this, "selected");
+        IModel<MetadataTemplate> model = new Model<MetadataTemplate>();
         List<MetadataTemplate> unlinked = linkedTemplatesDataProvider.getUnlinkedItems();
         return new DropDownChoice<MetadataTemplate>("metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
     }
@@ -145,9 +145,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown) {
         return new AjaxSubmitLink("link") {
-            /**
-             *
-             */
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
@@ -221,7 +218,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
-                            Model<MetadataTemplate> model = new Model<>(itemModel.getObject());
+                            IModel<MetadataTemplate> model = new Model<>(itemModel.getObject());
                             setResponsePage(new MetadataTemplatePage(model));
                         }
                     };

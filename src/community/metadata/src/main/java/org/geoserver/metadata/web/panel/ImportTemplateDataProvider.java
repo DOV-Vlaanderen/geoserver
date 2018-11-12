@@ -38,12 +38,12 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     private List<MetadataTemplate> linkedTemplates = new ArrayList<>();
 
-    @SuppressWarnings("unchecked")
-    public ImportTemplateDataProvider(String workspace, String layerName, IModel<?> templatesModel) {
+    public ImportTemplateDataProvider(String workspace, String layerName, 
+            IModel<List<MetadataTemplate>> templatesModel) {
         this.workspace = workspace;
         this.layerName = layerName;
 
-        allTemplates = (List<MetadataTemplate>) templatesModel.getObject();
+        allTemplates = templatesModel.getObject();
 
         for (MetadataTemplate template : allTemplates) {
             if (template.getLinkedLayers() != null &&

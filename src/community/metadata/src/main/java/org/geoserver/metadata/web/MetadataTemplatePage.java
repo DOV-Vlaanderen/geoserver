@@ -17,8 +17,9 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
+import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.ComponentAuthorizer;
@@ -41,25 +42,26 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     private static final long serialVersionUID = 2273966783474224452L;
 
-    private final Model<MetadataTemplate> metadataTemplateModel;
+    private final IModel<MetadataTemplate> metadataTemplateModel;
 
     private final boolean isNew;
 
 
     public MetadataTemplatePage() {
-        this(new Model<MetadataTemplate>(new MetadataTemplate()));
+        this(new Model<MetadataTemplate>(new MetadataTemplateImpl()));
         metadataTemplateModel.getObject().setMetadata(new ComplexMetadataMapImpl(new MetadataMap()));
         metadataTemplateModel.getObject().setPriority(0);
     }
 
-    public MetadataTemplatePage(Model<MetadataTemplate> metadataTemplateModel) {
+    public MetadataTemplatePage(IModel<MetadataTemplate> metadataTemplateModel) {
         this.metadataTemplateModel = metadataTemplateModel;
         isNew = metadataTemplateModel.getObject().getName() == null;
     }
 
     public void onInitialize() {
         super.onInitialize();
-        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(metadataTemplateModel.getObject().getMetadata());
+        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(
+                metadataTemplateModel.getObject().getMetadata());
 
         Form<?> form = new Form<Object>("form");
 

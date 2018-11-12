@@ -5,9 +5,9 @@
 package org.geoserver.metadata.data.model.comparator;
 
 
-import org.geoserver.metadata.data.model.MetadataTemplate;
-
 import java.util.Comparator;
+
+import org.geoserver.metadata.data.model.MetadataTemplate;
 
 /**
  * Sort templates according to the priority.
