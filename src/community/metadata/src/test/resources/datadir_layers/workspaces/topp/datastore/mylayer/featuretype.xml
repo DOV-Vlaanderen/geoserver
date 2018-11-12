@@ -35,15 +35,15 @@
           <string>Or select this row</string>
         </entry>
         <entry>
-          <string>object-catalog_max-occurence</string>
+          <string>object-catalog/max-occurence</string>
           <list/>
         </entry>
         <entry>
-          <string>referencesystem-object_code-space</string>
+          <string>referencesystem-object/code-space</string>
           <string>refsystem-codeSpace</string>
         </entry>
         <entry>
-          <string>object-catalog_domain_code</string>
+          <string>object-catalog/domain/code</string>
           <list>
             <list>
               <string>nestedobject</string>
@@ -51,17 +51,17 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_definition</string>
+          <string>object-catalog/definition</string>
           <list>
             <string>a date</string>
           </list>
         </entry>
         <entry>
-          <string>referencesystem-object_code</string>
+          <string>referencesystem-object/code</string>
           <string>refsystem-code</string>
         </entry>
         <entry>
-          <string>object-catalog_name</string>
+          <string>object-catalog/name</string>
           <list>
             <string>theObject catalog</string>
           </list>
@@ -71,7 +71,7 @@
           <date>2018-11-05 23:00:00.0 UTC</date>
         </entry>
         <entry>
-          <string>object-catalog_min-occurence</string>
+          <string>object-catalog/min-occurence</string>
           <list/>
         </entry>
         <entry>
@@ -79,13 +79,13 @@
           <list/>
         </entry>
         <entry>
-          <string>referencesystem-object-list_code</string>
+          <string>referencesystem-object-list/code</string>
           <list>
             <string>First object :code</string>
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_definition</string>
+          <string>object-catalog/domain/definition</string>
           <list/>
         </entry>
         <entry>
@@ -97,7 +97,7 @@
           <string>f7de06ca-f93c-457b-b0ae-9c52f5b1ca5e</string>
         </entry>
         <entry>
-          <string>referencesystem-object-list_code-space</string>
+          <string>referencesystem-object-list/code-space</string>
           <list>
             <string>First object :codeSpace</string>
           </list>
@@ -110,13 +110,13 @@
           </list>
         </entry>
         <entry>
-          <string>object-catalog_type</string>
+          <string>object-catalog/type</string>
           <list>
             <string>Date</string>
           </list>
         </entry>
         <entry>
-          <string>object-catalog_domain_value</string>
+          <string>object-catalog/domain/value</string>
           <list/>
         </entry>
         <entry>

@@ -103,7 +103,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Serializable initialCustom = initialMyLayer.getResource().getMetadata().get("custom");
         IModel<ComplexMetadataMap> initialMetadataModel = new Model<ComplexMetadataMap>(
                 new ComplexMetadataMapImpl((HashMap<String, Serializable>) initialCustom));
-        Assert.assertEquals(1, initialMetadataModel.getObject().size("object-catalog_type"));
+        Assert.assertEquals(1, initialMetadataModel.getObject().size("object-catalog/type"));
 
         service.update(initial);
 
@@ -119,7 +119,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
         Assert.assertEquals("updated value", metadataModel.getObject().get(String.class, "indentifier-single").getValue());
         //only linked data from the linked template should change
-        Assert.assertEquals(1, metadataModel.getObject().size("object-catalog_type"));
+        Assert.assertEquals(1, metadataModel.getObject().size("object-catalog/type"));
     }
 
 

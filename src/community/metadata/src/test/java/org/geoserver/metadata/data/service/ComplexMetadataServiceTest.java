@@ -149,8 +149,8 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(0, descriptionMap.get("refsystem-as-list").get(0).intValue());
         Assert.assertEquals(1, descriptionMap.get("refsystem-as-list").get(1).intValue());
         //Object fields
-        Assert.assertEquals("object-code", parent.get(String.class, "referencesystem-object_code").getValue());
-        Assert.assertEquals("object-codeSpace", parent.get(String.class, "referencesystem-object_code-space").getValue());
+        Assert.assertEquals("object-code", parent.get(String.class, "referencesystem-object/code").getValue());
+        Assert.assertEquals("object-codeSpace", parent.get(String.class, "referencesystem-object/code-space").getValue());
         //list of objects
         Assert.assertEquals(2, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
@@ -183,8 +183,8 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
         Assert.assertEquals("list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
         //Object fields
-        Assert.assertEquals("object-code", parent.get(String.class, "referencesystem-object_code").getValue());
-        Assert.assertEquals("object-codeSpace", parent.get(String.class, "referencesystem-object_code-space").getValue());
+        Assert.assertEquals("object-code", parent.get(String.class, "referencesystem-object/code").getValue());
+        Assert.assertEquals("object-codeSpace", parent.get(String.class, "referencesystem-object/code-space").getValue());
         //Should be updated list of objects
         Assert.assertEquals(4, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submapTemplateOne = parent.subMap("referencesystem-object-list", 0);
