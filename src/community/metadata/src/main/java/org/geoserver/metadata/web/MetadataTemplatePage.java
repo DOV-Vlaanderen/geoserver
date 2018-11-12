@@ -50,7 +50,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
     public MetadataTemplatePage() {
         this(new Model<MetadataTemplate>(new MetadataTemplateImpl()));
         metadataTemplateModel.getObject().setMetadata(new ComplexMetadataMapImpl(new MetadataMap()));
-        metadataTemplateModel.getObject().setPriority(0);
     }
 
     public MetadataTemplatePage(IModel<MetadataTemplate> metadataTemplateModel) {
@@ -78,11 +77,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         TextField<String> desicription = new TextField<String>("description",
                 new PropertyModel<String>(metadataTemplateModel, "description"));
         form.add(desicription);
-
-        NumberTextField<Integer> priority = new NumberTextField<Integer>("priority",
-                new PropertyModel<Integer>(metadataTemplateModel, "priority"), Integer.class);
-        priority.setRequired(true);
-        form.add(priority);
 
         MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel, null);
         form.add(metadataTemplatePanel);

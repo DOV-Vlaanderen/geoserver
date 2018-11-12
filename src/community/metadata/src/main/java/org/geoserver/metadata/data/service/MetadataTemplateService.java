@@ -14,13 +14,17 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
  */
 public interface MetadataTemplateService {
 
-    List<MetadataTemplate> list() throws IOException;
+    List<MetadataTemplate> list();
 
     void save(MetadataTemplate metadataTemplate) throws IOException;
 
     void update(MetadataTemplate metadataTemplate) throws IOException;
 
-    MetadataTemplate load(String templateName) throws IOException;
+    MetadataTemplate load(String templateName) ;
 
     void delete(MetadataTemplate metadataTemplate) throws IOException;
+
+    void increasePriority(MetadataTemplate metadataTemplate);
+
+    void decreasePriority(MetadataTemplate metadataTemplate);
 }

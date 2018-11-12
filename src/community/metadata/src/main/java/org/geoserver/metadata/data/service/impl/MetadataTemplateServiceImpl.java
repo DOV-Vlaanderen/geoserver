@@ -12,7 +12,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
-import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataIndexReference;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
@@ -75,8 +74,13 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     }
 
     @Override
-    public List<MetadataTemplate> list() throws IOException {
-        return readTemplates();
+    public List<MetadataTemplate> list() {
+        try {
+            return readTemplates();
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -104,8 +108,6 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         templates.add(metadataTemplate);
         updateTemplates(templates);
         //update layers
-        Collections.sort(templates, new MetadataTemplateComparator());
-
         if (metadataTemplate.getLinkedLayers() != null) {
             for (String key : metadataTemplate.getLinkedLayers()) {
                 LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
@@ -139,7 +141,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
 
     @Override
-    public MetadataTemplate load(String templateName) throws IOException {
+    public MetadataTemplate load(String templateName) {
         List<MetadataTemplate> tempates = list();
         for (MetadataTemplate tempate : tempates) {
             if (tempate.getName().equals(templateName)) {
@@ -163,6 +165,31 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         updateTemplates(templates);
     }
 
+    @Override
+    public void increasePriority(MetadataTemplate template) {
+        try {
+            List<MetadataTemplate> templates  = list();
+            int index = getIndex(template, templates);
+            templates.remove(index);
+            templates.add(index - 1, template);
+            updateTemplates(templates);
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
+    }
+
+    @Override
+    public void decreasePriority(MetadataTemplate template) {
+        try {
+            List<MetadataTemplate> templates  = list();
+            int index = getIndex(template, templates);
+            templates.remove(index);
+            templates.add(index + 1, template);
+            updateTemplates(templates);
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
+    }
 
     @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
@@ -197,6 +224,17 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             out.close();
         }
 
+    }
+
+
+    private int getIndex(MetadataTemplate template, List<MetadataTemplate> templates) {
+        for (int i = 0; i < templates.size(); i++) {
+            MetadataTemplate current = templates.get(i);
+            if (template.getName().equals(current.getName())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

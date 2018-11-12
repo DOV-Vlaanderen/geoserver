@@ -61,9 +61,9 @@ public abstract class AbstractWicketMetadataTest extends AbstractMetadataTest {
      * @param dumpValue if enabled, the component values are printed as well
      */
     public void print(Component c, boolean dumpClass, boolean dumpValue) {
-        if (isQuietTests()) {
+       /* if (isQuietTests()) {
             return;
-        }
+        }*/
 
         WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
     }

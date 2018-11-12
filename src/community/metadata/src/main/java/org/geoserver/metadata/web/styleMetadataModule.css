@@ -1,3 +1,7 @@
+ul.links-above-table {
+    list-style-type: none;
+
+}
 /*todo create component for first level labels*/
 .even td, .odd td {
     vertical-align: top;

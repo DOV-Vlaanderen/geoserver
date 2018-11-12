@@ -1,6 +1,6 @@
 <list>
   <MetadataTemplate>
-    <priority>10</priority>
+    <priority>5</priority>
     <name>simple fields</name>
     <description>Only basic fields</description>
     <metadata class="ComplexMetadataMap">
@@ -112,7 +112,7 @@
     </linkedLayers>
   </MetadataTemplate>
   <MetadataTemplate>
-    <priority>5</priority>
+    <priority>4</priority>
     <name>template-list-simple</name>
     <description>List of basic fields</description>
     <metadata class="ComplexMetadataMap">
@@ -387,7 +387,7 @@
     </metadata>
   </MetadataTemplate>
   <MetadataTemplate>
-    <priority>3</priority>
+    <priority>2</priority>
     <name>object-field</name>
     <description>An object</description>
     <metadata class="ComplexMetadataMap">
@@ -495,7 +495,7 @@
     </linkedLayers>
   </MetadataTemplate>
   <MetadataTemplate>
-    <priority>2</priority>
+    <priority>1</priority>
     <name>template-nested-object</name>
     <description>Nest complex objects</description>
     <metadata class="ComplexMetadataMap">

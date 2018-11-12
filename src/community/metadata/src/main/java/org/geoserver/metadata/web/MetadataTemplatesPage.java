@@ -13,6 +13,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
+import org.geoserver.metadata.web.panel.TemplatesPositionPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -119,6 +120,8 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                             setResponsePage(new MetadataTemplatePage(model));
                         }
                     };
+                } else if (property.equals(MetadataTemplateDataProvider.PRIORITY)) {
+                    return new TemplatesPositionPanel(id, itemModel, this);
                 }
                 return null;
             }

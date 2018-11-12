@@ -14,6 +14,7 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +33,11 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
     @Autowired
     private MetadataTemplateService service;
+
+    @Before
+    public void before() throws IOException {
+        restoreTemplates();
+    }
 
     @Test
     public void testList() throws IOException {
@@ -55,14 +61,12 @@ public class TemplateServiceTest extends AbstractMetadataTest {
 
         MetadataTemplate metadataTemplate = new MetadataTemplateImpl();
         metadataTemplate.setName("new-record");
-        metadataTemplate.setDescription("new-record-description");
         metadataTemplate.setMetadata(new ComplexMetadataMapImpl(new HashMap<>()));
 
         service.save(metadataTemplate);
 
         MetadataTemplate actual = service.load("new-record");
         Assert.assertEquals("new-record", actual.getName());
-        Assert.assertEquals("new-record-description", actual.getDescription());
         Assert.assertNotNull(actual.getMetadata());
         //Should not result in nullpointers because we read it from the xml
         //Empty sets en list are not stored in the xml file. this could result in nullpointers.
@@ -134,6 +138,29 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         service.delete(actual);
 
         Assert.assertEquals(initial - 1, service.list().size());
+    }
+
+
+    @Test
+    public void testIncreasePriority() throws IOException {
+        MetadataTemplate initial = service.load("allData");
+        Assert.assertEquals("allData", service.list().get(5).getName());
+
+        service.increasePriority(initial);
+        service.increasePriority(initial);
+
+        Assert.assertEquals("allData", service.list().get(3).getName());
+    }
+
+    @Test
+    public void testDecreasePriority() throws IOException {
+        MetadataTemplate initial = service.load("simple fields");
+        Assert.assertEquals("simple fields", service.list().get(0).getName());
+
+        service.decreasePriority(initial);
+        service.decreasePriority(initial);
+
+        Assert.assertEquals("simple fields", service.list().get(2).getName());
     }
 
 }

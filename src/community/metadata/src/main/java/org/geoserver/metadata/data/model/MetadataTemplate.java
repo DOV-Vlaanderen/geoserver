@@ -13,10 +13,6 @@ public interface MetadataTemplate extends Serializable {
 
     void setName(String name);
 
-    String getDescription();
-
-    void setDescription(String description);
-
     ComplexMetadataMap getMetadata();
 
     void setMetadata(ComplexMetadataMap metadata);

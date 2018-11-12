@@ -19,7 +19,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
-import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.MetadataTemplateDataProvider;
@@ -70,15 +69,10 @@ public abstract class ImportTemplatePanel extends Panel {
                                HashMap<String,List<Integer>> derivedAtts) {
         super(id, metadataModel);
         this.templatesModel = templatesModel;
-        try {
-            if (templatesModel.getObject() == null) {
-                MetadataTemplateService service =
-                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-                templatesModel.setObject(service.list());
-            }
-        } catch (IOException e) {
-            error(new ParamResourceModel("errorSelectGeonetwork",
-                    ImportTemplatePanel.this).getString());
+        if (templatesModel.getObject() == null) {
+            MetadataTemplateService service =
+                    GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+            templatesModel.setObject(service.list());
         }
         this.derivedAtts = derivedAtts;
         linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName, templatesModel);
@@ -275,7 +269,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
         ArrayList<ComplexMetadataMap> maps = new ArrayList<>();
         List<MetadataTemplate> templates = linkedTemplatesDataProvider.getItems();
-        Collections.sort(templates, new MetadataTemplateComparator());
         for (MetadataTemplate template : templates) {
             maps.add(template.getMetadata());
         }

@@ -65,22 +65,6 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
     }
 
     /* (non-Javadoc)
-     * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#getDescription()
-     */
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    /* (non-Javadoc)
-     * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#setDescription(java.lang.String)
-     */
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /* (non-Javadoc)
      * @see org.geoserver.metadata.data.model.impl.MetadataTemplate#getMetadata()
      */
     @Override
