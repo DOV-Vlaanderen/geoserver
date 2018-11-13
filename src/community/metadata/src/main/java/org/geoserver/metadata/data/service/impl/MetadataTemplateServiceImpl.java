@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.io.StreamException;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
@@ -42,7 +43,7 @@ import java.util.logging.Logger;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @Component
-public class MetadataTemplateServiceImpl implements MetadataTemplateService {
+public class MetadataTemplateServiceImpl implements MetadataTemplateService, GeoServerLifecycleHandler {
 
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplateServiceImpl.class);
@@ -60,6 +61,9 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     //TODO is this correct?
     @Autowired
     protected GeoServer geoServer;
+
+    //cache the template
+    private List templates;
 
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
@@ -93,7 +97,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         List<MetadataTemplate> templates = list();
         for (MetadataTemplate tempate : templates) {
             if (tempate.getName().equals(metadataTemplate.getName())) {
-                throw new IOException("Template with name " + metadataTemplate.getName() + "allready exists");
+                throw new IOException("Template with name " + metadataTemplate.getName() + "already exists");
             }
         }
         templates.add(metadataTemplate);
@@ -194,21 +198,24 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
-        Resource folder = getFolder();
-        Resource file = folder.get(FILE_NAME);
+        if (templates == null) {
+            Resource folder = getFolder();
+            Resource file = folder.get(FILE_NAME);
 
-        if (file != null) {
-            InputStream in = file.in();
-            try {
-                List<MetadataTemplate> templates = persister.load(in, List.class);
-                return templates;
-            } catch (StreamException exception) {
-                LOGGER.warning("File is empty");
-            } finally {
-                in.close();
+            if (file != null) {
+                try (InputStream in = file.in()) {
+                    templates = persister.load(in, List.class);
+                    return templates;
+                } catch (StreamException exception) {
+                    LOGGER.warning("File is empty");
+                }
+            }
+            //something when wrong reading the file.
+            if (templates == null) {
+                templates=  new ArrayList<>();
             }
         }
-        return new ArrayList<>();
+        return templates;
     }
 
 
@@ -220,11 +227,9 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             File fileResource = Resources.createNewFile(Files.asResource(new File(folder.dir(), FILE_NAME)));
             file = Files.asResource(fileResource);
         }
-        OutputStream out = file.out();
-        try {
+        try (OutputStream out = file.out()) {
             persister.save(tempates, out);
-        } finally {
-            out.close();
+            onReload();
         }
 
     }
@@ -240,5 +245,24 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         return -1;
     }
 
+    @Override
+    public void onReset() {
+
+    }
+
+    @Override
+    public void onDispose() {
+
+    }
+
+    @Override
+    public void beforeReload() {
+
+    }
+
+    @Override
+    public void onReload() {
+        templates = null;
+    }
 }
 

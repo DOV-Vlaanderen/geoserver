@@ -44,7 +44,6 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
         try {
             config = yamlService.readConfiguration();
         } catch (IOException e) {
-            //TODO welke fout gooien?
             throw new IllegalStateException("Metadata could not be merge." +
                     "The corresponding gui configuration cannot be read.");
         }
@@ -70,7 +69,6 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
         try {
             config = yamlService.readConfiguration();
         } catch (IOException e) {
-            // TODO welke fout gooien?
             throw new IllegalStateException("Metadata could not be merge."
                     + "The corresponding gui configuration cannot be read.");
         }

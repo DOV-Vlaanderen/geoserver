@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
 import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
@@ -40,7 +41,7 @@ import java.util.Set;
  * @author Timothy De Bock
  */
 @Component
-public class YamlServiceImpl implements YamlService {
+public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
 
     private static final String PREFIX = "metadata.generated.form.";
 
@@ -51,6 +52,8 @@ public class YamlServiceImpl implements YamlService {
     protected Properties properties;
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
+
+    private List<Resource> files;
 
     private Resource getFolder() {
         return dataDirectory.get(MetadataConstants.DIRECTORY);
@@ -63,7 +66,7 @@ public class YamlServiceImpl implements YamlService {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         MetadataEditorConfiguration configuration = new MetadataEditorConfigurationImpl();
         try {
-            List<Resource> files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));
+            List<Resource> files = findFiles(folder);
             Collections.sort(files, (o1, o2) -> o1.name().compareTo(o2.name()));
 
             for (Resource file : files) {
@@ -81,7 +84,7 @@ public class YamlServiceImpl implements YamlService {
 
         return configuration;
     }
-    
+
     private void readConfiguration(InputStream in, MetadataEditorConfiguration configuration, ObjectMapper mapper) {
         try {
             //read label from propertie file
@@ -135,7 +138,7 @@ public class YamlServiceImpl implements YamlService {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         AttributeMappingConfiguration configuration = new AttributeMappingConfigurationImpl();
         try {
-            for (Resource file : Resources.list(folder, new Resources.ExtensionFilter("YAML"))) {
+            for (Resource file : findFiles(folder)) {
                 try (InputStream in = file.in()) {
                     AttributeMappingConfiguration config = mapper.readValue(in, AttributeMappingConfigurationImpl.class);
                     Set<String> attKeys = new HashSet<>();
@@ -203,6 +206,29 @@ public class YamlServiceImpl implements YamlService {
             }
         }
 
+    }
+
+    private List<Resource> findFiles(Resource folder) {
+        if (files == null) {
+            files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));
+        }
+        return files;
+    }
+
+    @Override
+    public void onReset() {
+    }
+
+    @Override
+    public void onDispose() {
+    }
+
+    @Override
+    public void beforeReload() {}
+
+    @Override
+    public void onReload() {
+        files = null;
     }
 }
 
