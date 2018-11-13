@@ -64,10 +64,10 @@ public abstract class AbstractMetadataTest {
                     new File(metadata, "metadata-mapping.yaml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui.yaml"), 
                     new File(metadata, "metadata-ui.yaml"));
-            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui.properties"),
-                    new File(metadata, "metadata-ui.properties"));
-            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-ui-extra.properties"),
-                    new File(metadata, "metadata-ui-extra.properties"));
+            /*IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("GeoServerApplication.properties"),
+                    new File(metadata, "GeoServerApplication.properties"));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("GeoServerApplication_nl.properties"),
+                    new File(metadata, "GeoServerApplication_nl.properties"));*/
 
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("templates.xml"),
                     new File(metadata, "templates.xml"));

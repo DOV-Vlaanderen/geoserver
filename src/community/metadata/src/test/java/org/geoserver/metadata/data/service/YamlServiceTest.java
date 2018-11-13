@@ -34,13 +34,13 @@ public class YamlServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(3, configuration.getGeonetworks().size());
         Assert.assertEquals(3, configuration.getTypes().size());
 
-        Assert.assertEquals("Indentifier single", findAttribute(configuration.getAttributes(), "indentifier-single").getLabel());
-        Assert.assertEquals("Number field", findAttribute(configuration.getAttributes(), "number-field").getLabel());
-        Assert.assertEquals("Drop down field", findAttribute(configuration.getAttributes(), "dropdown-field").getLabel());
-        Assert.assertEquals("the refsystem as list field", findAttribute(configuration.getAttributes(), "refsystem-as-list").getLabel());
+        Assert.assertEquals("indentifier-single", findAttribute(configuration.getAttributes(), "indentifier-single").getLabel());
+        Assert.assertEquals("indentifier-single", findAttribute(configuration.getAttributes(), "indentifier-single").getLabel());
+        Assert.assertEquals("dropdown-field", findAttribute(configuration.getAttributes(), "dropdown-field").getLabel());
+        Assert.assertEquals("refsystem as list", findAttribute(configuration.getAttributes(), "refsystem-as-list").getLabel());
 
         List<MetadataAttributeConfiguration> complexAttributes = configuration.findType("referencesystem").getAttributes();
-        Assert.assertEquals("the code", findAttribute(complexAttributes, "code").getLabel());
+        Assert.assertEquals("Code", findAttribute(complexAttributes, "code").getLabel());
 
     }
 

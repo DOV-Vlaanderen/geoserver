@@ -43,13 +43,8 @@ import java.util.Set;
 @Component
 public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
 
-    private static final String PREFIX = "metadata.generated.form.";
-
     @Autowired
     private GeoServerDataDirectory dataDirectory;
-
-    // the configuration
-    protected Properties properties;
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
 
@@ -88,10 +83,6 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
     private void readConfiguration(InputStream in, MetadataEditorConfiguration configuration, ObjectMapper mapper) {
         try {
             //read label from propertie file
-            if(properties == null){
-                loadProperties();
-            }
-
             MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfigurationImpl.class);
             // Merge attribute configuration and remove duplicates
             Set<String> attributeKeys = new HashSet<>();
@@ -167,52 +158,19 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
         return configuration;
     }
 
-    /**
-     * Set the label value. Values from property files get priority.
-     * @param attribute
-     * @param typename
-     */
-    private void resolveLabelValue(MetadataAttributeConfiguration attribute, String typename) {
-        if(typename == null){
-            typename = "";
-        } else{
-            typename +=".";
-        }
-
-        attribute.setLabel((String) properties.get(PREFIX + typename +attribute.getKey()));
-        if (attribute.getLabel() == null) {
-            attribute.setLabel(attribute.getKey());
-
-        }
-    }
-
-    private void loadProperties() {
-        properties = new Properties();
-        List<Resource> files = getFolder().list();
-        for (Resource resource : files) {
-            if (resource.name().contains(".properties")) {
-                InputStream in = resource.in();
-                try {
-                    this.properties.load(in);
-                } catch (IOException e) {
-                    LOGGER.severe("Could not load metadata label properties, " + e.getMessage());
-                } finally {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        LOGGER.severe("Could not close stream, " + e.getMessage());
-                    }
-                }
-            }
-        }
-
-    }
 
     private List<Resource> findFiles(Resource folder) {
         if (files == null) {
             files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));
         }
         return files;
+    }
+
+    private void resolveLabelValue(MetadataAttributeConfiguration attribute, String typename) {
+        if (attribute.getLabel() == null) {
+            attribute.setLabel(attribute.getKey());
+
+        }
     }
 
     @Override

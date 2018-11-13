@@ -5,6 +5,7 @@
 package org.geoserver.metadata.web.panel.attribute;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
@@ -19,6 +20,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.MissingResourceException;
+
 /**
  * Entry point for the gui generation.
  * This parses the configuration and adds simple fields, complex fields (composition of multiple simple fields)
@@ -61,6 +64,10 @@ public class AttributesTablePanel extends Panel {
             protected Component getComponentForProperty(String id, 
                     IModel<MetadataAttributeConfiguration> itemModel,
                     GeoServerDataProvider.Property<MetadataAttributeConfiguration> property) {
+                if (property.equals(AttributeDataProvider.NAME)) {
+                    String labelValue = resolveLabelValue(itemModel.getObject());
+                    return new Label(id, labelValue);
+                }
                 if (property.equals(AttributeDataProvider.VALUE)) {
                     MetadataAttributeConfiguration attributeConfiguration = itemModel.getObject();
                     if (OccurenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
@@ -103,6 +110,20 @@ public class AttributesTablePanel extends Panel {
         };
     }
 
+    /**
+     * Try to find the label from the resource bundle
+     * @param attribute
+     * @return
+     */
+    private String resolveLabelValue(MetadataAttributeConfiguration attribute) {
+
+        try {
+            return getString(MetadataAttributeConfiguration.PREFIX + attribute.getKey());
+        } catch (MissingResourceException ignored) {
+        }
+        return attribute.getLabel();
+
+    }
 
     @SuppressWarnings("unchecked")
     public IModel<ComplexMetadataMap> getMetadataModel() {

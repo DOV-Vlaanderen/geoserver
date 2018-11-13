@@ -20,7 +20,9 @@ import java.util.List;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @JsonDeserialize(as = MetadataAttributeConfigurationImpl.class)
-public interface MetadataAttributeConfiguration extends Serializable{
+public interface MetadataAttributeConfiguration extends Serializable {
+
+    public static final String PREFIX = "metadata.generated.form.";
 
     public String getKey();
 

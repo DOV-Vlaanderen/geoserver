@@ -5,6 +5,7 @@
 package org.geoserver.metadata.wicket;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -24,6 +25,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Locale;
 
 /**
  * Test metadatatab in layer page.
@@ -34,6 +36,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
     @Before
     public void before() throws IOException {
+        Session.get().setLocale(new Locale("nl"));
         restoreTemplates();
         restoreLayers();
 
@@ -57,11 +60,21 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertComponent("publishedinfo:tabs:panel:geonetworkPanel", ImportGeonetworkPanel.class);
     }
 
+    //TODO how to load resource bundles in unit test.
+    @Test
+    public void testLocalizationLabels() {
+        tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:0:component", "Indentifier single field");
+        tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:0:component", "Getal veld");
+        tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:0:component", "the refsystem as list field");
+        tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:6:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component", "the code field");
+    }
+
     /**
      * The layer is linked to the 'simple field' template.
      */
     @Test
     public void testReadMedataFields() {
+        print(tester.getLastRenderedPage(), true, true);
         //Metadata field
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield", "f7de06ca-f93c-457b-b0ae-9c52f5b1ca5e");
         tester.clickLink("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:1:itemProperties:1:component:generateUUID");
