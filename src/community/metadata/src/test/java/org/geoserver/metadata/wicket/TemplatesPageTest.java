@@ -12,6 +12,7 @@ import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,8 +25,8 @@ import java.io.IOException;
  */
 public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
-    @Before
-    public void before() throws IOException {
+    @After
+    public void after() throws IOException {
         restoreTemplates();
         //Load the page
         MetadataTemplatesPage page = new MetadataTemplatesPage();

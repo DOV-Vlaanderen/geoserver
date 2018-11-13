@@ -12,6 +12,7 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +32,8 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     private MetadataTemplateService service;
 
 
-    @Before
-    public void before() throws IOException {
+    @After
+    public void after() throws IOException {
         restoreTemplates();
         //Load the page
         MetadataTemplate allData = service.load("allData");

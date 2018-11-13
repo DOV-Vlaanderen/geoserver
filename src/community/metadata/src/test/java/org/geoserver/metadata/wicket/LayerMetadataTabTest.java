@@ -17,6 +17,7 @@ import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +32,8 @@ import java.net.URISyntaxException;
  */
 public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
-    @Before
-    public void before() throws IOException, URISyntaxException {
+    @After
+    public void after() throws IOException, URISyntaxException {
         restoreTemplates();
         restoreLayers();
 

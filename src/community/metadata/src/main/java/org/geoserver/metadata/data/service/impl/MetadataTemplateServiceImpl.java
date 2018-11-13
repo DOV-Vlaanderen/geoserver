@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @Component
-public class MetadataTemplateServiceImpl implements MetadataTemplateService, GeoServerLifecycleHandler {
+public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplateServiceImpl.class);
@@ -61,9 +61,6 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Geo
     //TODO is this correct?
     @Autowired
     protected GeoServer geoServer;
-
-    //cache the template
-    private List templates;
 
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
@@ -198,24 +195,17 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Geo
 
     @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
-        if (templates == null) {
             Resource folder = getFolder();
             Resource file = folder.get(FILE_NAME);
 
             if (file != null) {
                 try (InputStream in = file.in()) {
-                    templates = persister.load(in, List.class);
-                    return templates;
+                    return persister.load(in, List.class);
                 } catch (StreamException exception) {
                     LOGGER.warning("File is empty");
                 }
             }
-            //something when wrong reading the file.
-            if (templates == null) {
-                templates=  new ArrayList<>();
-            }
-        }
-        return templates;
+           return new ArrayList<>();
     }
 
 
@@ -229,7 +219,6 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Geo
         }
         try (OutputStream out = file.out()) {
             persister.save(tempates, out);
-            onReload();
         }
 
     }
@@ -245,24 +234,5 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Geo
         return -1;
     }
 
-    @Override
-    public void onReset() {
-
-    }
-
-    @Override
-    public void onDispose() {
-
-    }
-
-    @Override
-    public void beforeReload() {
-
-    }
-
-    @Override
-    public void onReload() {
-        templates = null;
-    }
 }
 

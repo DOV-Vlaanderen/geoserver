@@ -13,6 +13,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +35,8 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Autowired
     private MetadataTemplateService service;
 
-    @Before
-    public void before() throws IOException {
+    @After
+    public void after() throws IOException {
         restoreTemplates();
     }
 
