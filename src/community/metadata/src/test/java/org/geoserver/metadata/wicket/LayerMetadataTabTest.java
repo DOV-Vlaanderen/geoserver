@@ -32,8 +32,8 @@ import java.net.URISyntaxException;
  */
 public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
-    @After
-    public void after() throws IOException, URISyntaxException {
+    @Before
+    public void before() throws IOException {
         restoreTemplates();
         restoreLayers();
 
@@ -43,6 +43,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.clickLink("publishedinfo:tabs:tabs-container:tabs:3:link");
     }
 
+    @After
+    public void after() throws IOException {
+        restoreTemplates();
+        restoreLayers();
+    }
 
     @Test
     public void testMetadataTab() {

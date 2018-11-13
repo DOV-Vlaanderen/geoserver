@@ -32,14 +32,18 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     private MetadataTemplateService service;
 
 
-    @After
-    public void after() throws IOException {
-        restoreTemplates();
+    @Before
+    public void before() throws IOException {
         //Load the page
         MetadataTemplate allData = service.load("allData");
         MetadataTemplatePage page = new MetadataTemplatePage(new Model<>(allData));
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatePage.class);
+    }
+
+    @After
+    public void after() throws IOException {
+        restoreTemplates();
     }
 
 

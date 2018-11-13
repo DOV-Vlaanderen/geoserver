@@ -25,15 +25,18 @@ import java.io.IOException;
  */
 public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
-    @After
-    public void after() throws IOException {
-        restoreTemplates();
+    @Before
+    public void before() throws IOException {
         //Load the page
         MetadataTemplatesPage page = new MetadataTemplatesPage();
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatesPage.class);
     }
 
+    @After
+    public void after() throws IOException {
+        restoreTemplates();
+    }
 
     @Test
     public void testPage() {
