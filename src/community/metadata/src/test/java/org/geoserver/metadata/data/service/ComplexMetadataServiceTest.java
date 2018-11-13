@@ -274,9 +274,9 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         //UNLINK
         service.merge(parent, new ArrayList<ComplexMetadataMap>(), derivedAtts);
 
-        Assert.assertEquals("template-identifier", parent.get(String.class, "indentifier-single").getValue());
-        Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
+        Assert.assertEquals("", parent.get(String.class, "indentifier-single").getValue());
+        Assert.assertEquals("", parent.get(String.class, "number-field").getValue());
+        Assert.assertEquals("", parent.get(String.class, "dropdown-field").getValue());
         Assert.assertNull(derivedAtts.get("indentifier-single"));
         Assert.assertNull(derivedAtts.get("number-field"));
         Assert.assertNull(derivedAtts.get("dropdown-field"));

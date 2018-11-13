@@ -9,6 +9,7 @@ import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.YamlService;
@@ -201,6 +202,11 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
             ArrayList<Integer> reversed = new ArrayList<Integer>(indexes);
             Collections.reverse(reversed);
             for (Integer index : reversed) {
+                ComplexMetadataAttribute<String> attribute = destination.get(String.class, key);
+                if(attribute != null && attribute.getValue() != null
+                        && !attribute.getValue().startsWith("[") && !attribute.getValue().startsWith("]")){
+                    attribute.setValue("");
+                }
                 destination.delete(key, index);
             }
         }
