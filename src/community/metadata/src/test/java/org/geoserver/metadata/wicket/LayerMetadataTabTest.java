@@ -73,13 +73,13 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertComponent("publishedinfo:tabs:panel:geonetworkPanel", ImportGeonetworkPanel.class);
     }
 
-    //TODO how to load resource bundles in unit test.
-    //@Test
+
+    @Test
     public void testLocalizationLabels() {
         tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:0:component", "Indentifier single field");
         tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:0:component", "Getal veld");
         tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:0:component", "the refsystem as list field");
-        tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:6:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component", "the code field");
+        tester.assertLabel("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:6:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component", "Het code veld");
     }
 
     /**
