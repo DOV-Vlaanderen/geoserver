@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -108,6 +109,7 @@ public abstract class ImportTemplatePanel extends Panel {
         templatesPanel.setSelectable(true);
         templatesPanel.setSortable(false);
         templatesPanel.setOutputMarkupId(true);
+        templatesPanel.setItemReuseStrategy(DefaultItemReuseStrategy.getInstance());
 
         add(templatesPanel);
 
@@ -196,6 +198,9 @@ public abstract class ImportTemplatePanel extends Panel {
 
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
+                for (MetadataTemplate template : templatesPanel.getSelection()) {
+                    System.out.println(template.getName());
+                }
                 remove.setEnabled(templatesPanel.getSelection().size() > 0);
                 target.add(remove);
 
@@ -205,17 +210,7 @@ public abstract class ImportTemplatePanel extends Panel {
             @Override
             protected Component getComponentForProperty(String id, IModel<MetadataTemplate> itemModel,
                                                         GeoServerDataProvider.Property<MetadataTemplate> property) {
-                if (property.equals(MetadataTemplateDataProvider.NAME)) {
-                    return new SimpleAjaxLink<String>(id, (IModel<String>) property.getModel(itemModel)) {
-                        private static final long serialVersionUID = -9184383036056499856L;
 
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            IModel<MetadataTemplate> model = new Model<>(itemModel.getObject());
-                            setResponsePage(new MetadataTemplatePage(model));
-                        }
-                    };
-                }
                 return null;
             }
         };
@@ -239,11 +234,11 @@ public abstract class ImportTemplatePanel extends Panel {
     public void unlinkTemplate(AjaxRequestTarget target,
                                List<MetadataTemplate> templates) throws IOException {
 
-
         linkedTemplatesDataProvider.removeLinks(templates);
         updateModel();
 
         templatesPanel.clearSelection();
+
         getDropDown().setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
         updateTableState(linkedTemplatesDataProvider);
 

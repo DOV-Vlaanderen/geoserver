@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.tester.Result;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
@@ -144,8 +145,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         //test list of linked templates
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:itemProperties:0:component", "simple fields");
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component", "template-list-simple");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component", "template-list-simple");
 
         //test values
         tester.assertModelValue("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:textfield", "template-value01");
@@ -165,9 +166,9 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
 
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:itemProperties:0:component", "simple fields");
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component", "template-list-simple");
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component", "template-object list");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:itemProperties:0:component", "template-list-simple");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:6:itemProperties:0:component", "template-object list");
 
         //print(tester.getLastRenderedPage(), true, true);
         
@@ -200,17 +201,18 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
+
         //check the link
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:itemProperties:0:component", "simple fields");
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component", "template-list-simple");
-        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component", "template-object list");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:itemProperties:0:component", "template-list-simple");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:6:itemProperties:0:component", "template-object list");
 
         //first check the checkboxes
-        Component checkbox01 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:selectItemContainer:selectItem");
+        Component checkbox01 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
-        Component checkbox02 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:selectItemContainer:selectItem");
+        Component checkbox02 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox02.getDefaultModel()).setObject(true);
-        Component checkbox03 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:selectItemContainer:selectItem");
+        Component checkbox03 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:6:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox03.getDefaultModel()).setObject(true);
         //click remove links
         tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:removeSelected").setEnabled(true);
@@ -224,6 +226,56 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component").isEnabled());
         Assert.assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component").isEnabled());
+    }
+
+    /**
+     * Adding and deleting a template multiple times deletes the wrong row.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testLinkAndUnlinkDeleteRowBuTemplates() {
+        //add link
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
+        ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
+
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component", "template-list-simple");
+
+        //delete first link
+        Component checkbox01 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:selectItemContainer:selectItem");
+        ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
+
+        //click remove links
+        tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:removeSelected").setEnabled(true);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
+
+        //Check first line is remove
+        tester.assertContainsNot("'simple fields'");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:itemProperties:0:component", "template-list-simple");
+
+        //add link
+        selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        template = (MetadataTemplateImpl) selectTemplate.getChoices().get(1);
+        ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
+
+
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:itemProperties:0:component", "template-list-simple");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:6:itemProperties:0:component", "template-object list");
+
+
+        //delete first link
+        Component checkbox02 = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:selectItemContainer:selectItem");
+        ((IModel<Boolean>) checkbox02.getDefaultModel()).setObject(true);
+
+        //click remove links
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
+
+        tester.assertContainsNot("'template-list-simple'");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component", "template-object list");
+
     }
 
     @SuppressWarnings("unchecked")
