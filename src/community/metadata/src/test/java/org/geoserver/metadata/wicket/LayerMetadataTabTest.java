@@ -43,8 +43,20 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
         login();
-        tester.startPage(new ResourceConfigurationPage(layer, false));
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
+        tester.startPage(page);
         tester.clickLink("publishedinfo:tabs:tabs-container:tabs:3:link");
+        tester.assertComponent("publishedinfo:tabs:panel:importTemplatePanel", ImportTemplatePanel.class);
+        ImportTemplatePanel linkTemplatePanel  =
+                (ImportTemplatePanel) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel");
+
+        //tester.clickLink() fails when we want to link a seccond template. so don't show the dialog at all.
+        linkTemplatePanel.suppressWarnings(true);
+        ImportGeonetworkPanel importPanel  =
+                (ImportGeonetworkPanel) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel");
+
+        //tester.clickLink() fails when we want to link a seccond template. so don't show the dialog at all.
+        importPanel.suppressWarnings(true);
     }
 
     @After

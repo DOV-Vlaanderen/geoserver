@@ -9,6 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -26,6 +27,7 @@ import org.geoserver.metadata.web.MetadataTemplateDataProvider;
 import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
@@ -61,13 +63,15 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private AjaxLink<Object> remove;
 
+    private boolean suppressWarnings;
+
 
     public ImportTemplatePanel(String id,
                                String workspace,
                                String layerName,
                                IModel<ComplexMetadataMap> metadataModel,
                                IModel<List<MetadataTemplate>> templatesModel,
-                               HashMap<String,List<Integer>> derivedAtts) {
+                               HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
         this.templatesModel = templatesModel;
         if (templatesModel.getObject() == null) {
@@ -86,13 +90,15 @@ public abstract class ImportTemplatePanel extends Panel {
 
         setOutputMarkupId(true);
 
+        GeoServerDialog dialog = new GeoServerDialog("importDialog");
+        add(dialog);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
         //link action and dropdown
         DropDownChoice<MetadataTemplate> dropDown = createTemplatesDropDown();
         dropDown.setOutputMarkupId(true);
         add(dropDown);
-        AjaxSubmitLink importAction = createImportAction(dropDown);
+        AjaxSubmitLink importAction = createImportAction(dropDown, dialog);
         add(importAction);
         //unlink button
         remove = createUnlinkAction();
@@ -138,25 +144,51 @@ public abstract class ImportTemplatePanel extends Panel {
         return (DropDownChoice<MetadataTemplate>) get("metadataTemplate");
     }
 
-    private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown) {
+    private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+
                 boolean valid = true;
                 if (dropDown.getModelObject() == null) {
                     error(new ParamResourceModel("errorSelectTemplate", ImportTemplatePanel.this).getString());
                     valid = false;
                 }
                 if (valid) {
-                    try {
-                        linkTemplate(dropDown.getModelObject());
-                        dropDown.setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
-                    } catch (IOException e) {
-                        error(new ParamResourceModel("errorSelectGeonetwork",
-                                ImportTemplatePanel.this).getString());
+                    if (!suppressWarnings) {
+                        dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportTemplatePanel.this));
+                        dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
+                            private static final long serialVersionUID = -5552087037163833563L;
+
+                            @Override
+                            protected Component getContents(String id) {
+                                ParamResourceModel resource =
+                                        new ParamResourceModel("confirmImportDialog.content", ImportTemplatePanel.this);
+                                return new MultiLineLabel(id, resource.getString());
+                            }
+
+                            @Override
+                            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                                performLink(target);
+                                return true;
+                            }
+                        });
+                    } else {
+                        performLink(target);
                     }
+                }
+            }
+
+            private void performLink(AjaxRequestTarget target) {
+                try {
+                    linkTemplate(dropDown.getModelObject());
+                    dropDown.setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
+                } catch (IOException e) {
+                    error(new ParamResourceModel("errorSelectGeonetwork",
+                            ImportTemplatePanel.this).getString());
                 }
                 updateTableState(linkedTemplatesDataProvider);
                 target.add(getFeedbackPanel());
@@ -280,13 +312,13 @@ public abstract class ImportTemplatePanel extends Panel {
     public void save() {
         MetadataTemplateService service =
                 GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-            try {
-                for (MetadataTemplate template : templatesModel.getObject()) {
-                    service.update(template);
-                }
-            } catch (IOException e) {
-                LOGGER.severe(e.getMessage());
+        try {
+            for (MetadataTemplate template : templatesModel.getObject()) {
+                service.update(template);
             }
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
     }
 
 
@@ -295,5 +327,9 @@ public abstract class ImportTemplatePanel extends Panel {
         templatesPanel.setVisible(!isEmpty);
         remove.setVisible(!isEmpty);
         noData.setVisible(isEmpty);
+    }
+
+    public void suppressWarnings(boolean suppressWarnings) {
+        this.suppressWarnings = suppressWarnings;
     }
 }

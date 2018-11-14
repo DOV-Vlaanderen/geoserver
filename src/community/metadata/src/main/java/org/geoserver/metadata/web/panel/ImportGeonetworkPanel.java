@@ -4,8 +4,10 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -16,6 +18,7 @@ import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 import org.geoserver.metadata.data.service.MetadataEditorConfigurationService;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 import java.util.ArrayList;
@@ -33,6 +36,8 @@ public class ImportGeonetworkPanel extends Panel {
 
     private List<MetadataGeonetworkConfiguration> geonetworks = new ArrayList<>();
 
+    private boolean suppressWarnings;
+
 
     public ImportGeonetworkPanel(String id) {
         super(id);
@@ -47,6 +52,9 @@ public class ImportGeonetworkPanel extends Panel {
     @Override
     public void onInitialize() {
         super.onInitialize();
+
+        GeoServerDialog dialog = new GeoServerDialog("importDialog");
+        add(dialog);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
@@ -60,10 +68,10 @@ public class ImportGeonetworkPanel extends Panel {
         TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
         add(inputUUID);
 
-        add(createImportAction(dropDown, inputUUID));
+        add(createImportAction(dropDown, inputUUID, dialog));
     }
 
-    private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID) {
+    private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
 
@@ -81,9 +89,32 @@ public class ImportGeonetworkPanel extends Panel {
                     valid = false;
                 }
                 if (valid) {
-                    String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
-                    handleImport(url, target);
+                    if (!suppressWarnings) {
+                        dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportGeonetworkPanel.this));
+                        dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
+                            private static final long serialVersionUID = -5552087037163833563L;
+
+                            @Override
+                            protected Component getContents(String id) {
+                                ParamResourceModel resource =
+                                        new ParamResourceModel("confirmImportDialog.content", ImportGeonetworkPanel.this);
+                                return new MultiLineLabel(id, resource.getString());
+                            }
+
+                            @Override
+                            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                                String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
+                                handleImport(url, target);
+                                return true;
+                            }
+                        });
+                    } else {
+                        String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
+                        handleImport(url, target);
+                    }
                 }
+
                 target.add(getFeedbackPanel());
             }
 
@@ -124,5 +155,9 @@ public class ImportGeonetworkPanel extends Panel {
 
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("feedback");
+    }
+
+    public void suppressWarnings(boolean suppressWarnings) {
+        this.suppressWarnings = suppressWarnings;
     }
 }
