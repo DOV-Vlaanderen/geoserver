@@ -46,6 +46,9 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(6, actual.size());
         Assert.assertEquals("simple fields", actual.get(0).getName());
         Assert.assertNotNull(actual.get(0).getMetadata());
+        Assert.assertEquals(0,actual.get(0).getOrder());
+        Assert.assertEquals(1,actual.get(1).getOrder());
+        Assert.assertEquals(2,actual.get(2).getOrder());
     }
 
     @Test

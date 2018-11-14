@@ -22,7 +22,7 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
 
     private static final long serialVersionUID = -1907518678061997394L;
 
-    private Integer priority;
+    private int order;
 
     private String name;
 
@@ -94,5 +94,14 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
     @Override
     public void setLinkedLayers(Set<String> linkedLayers) {
         this.linkedLayers = linkedLayers;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

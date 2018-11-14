@@ -21,4 +21,11 @@ public interface MetadataTemplate extends Serializable {
 
     void setLinkedLayers(Set<String> linkedLayers);
 
+    /**
+     * Lowest value has highest priority.
+     * @return int
+     */
+    int getOrder();
+
+    void setOrder(int order);
 }

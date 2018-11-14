@@ -229,7 +229,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     }
 
     /**
-     * Adding and deleting a template multiple times deletes the wrong row.
+     * Adding and deleting a template multiple times deletes the wrong row (selection model out of sync).
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -275,6 +275,26 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
         tester.assertContainsNot("'template-list-simple'");
         tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component", "template-object list");
+
+    }
+
+    @Test
+    public void testTemplatesRemainInPriorityOrder() {
+        //add link
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(4);
+        ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
+        selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        template = (MetadataTemplateImpl) selectTemplate.getChoices().get(1);
+        ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:itemProperties:0:component", "simple fields");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:itemProperties:0:component", "template-object list");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:6:itemProperties:0:component", "allData");
 
     }
 

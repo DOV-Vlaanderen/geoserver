@@ -200,7 +200,12 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
             if (file != null) {
                 try (InputStream in = file.in()) {
-                    return persister.load(in, List.class);
+                    List<MetadataTemplate> list = persister.load(in, List.class);
+                    for (int i = 0; i < list.size(); i++) {
+                         MetadataTemplate template = list.get(i);
+                        template.setOrder(i);
+                    }
+                    return list;
                 } catch (StreamException exception) {
                     LOGGER.warning("File is empty");
                 }
