@@ -12,6 +12,8 @@ public final class MetadataConstants {
     
     public final static String DIRECTORY = "metadata";
 
+    public final static String TEMPLATES_DIRECTORY = "metadata-template";
+
     public final static String CUSTOM_METADATA_KEY = "custom";
 
     public final static String DERIVED_KEY = "custom-derived-attributes";

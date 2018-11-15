@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.util.file.File;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.geoserver.util.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -54,6 +55,8 @@ public abstract class AbstractMetadataTest {
 
     private static File metadata;
 
+    private static File metadataTemplates;
+
     @Autowired
     protected GeoServer geoServer;
 
@@ -66,8 +69,10 @@ public abstract class AbstractMetadataTest {
                     DATA_DIRECTORY.getDataDirectoryRoot().toString());
 
             //copy test files to data directory
-            metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata");
+            metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), MetadataConstants.DIRECTORY);
+            metadataTemplates = new File(DATA_DIRECTORY.getDataDirectoryRoot(), MetadataConstants.TEMPLATES_DIRECTORY);
             metadata.mkdirs();
+            metadataTemplates.mkdirs();
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("fouteinhoud.yaml"),
                     new File(metadata, "fouteinhoud.yaml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("metadata-geonetwork.yaml"),
@@ -82,7 +87,7 @@ public abstract class AbstractMetadataTest {
                     new File(metadata, "metadata_nl.properties"));
 
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("templates.xml"),
-                    new File(metadata, "templates.xml"));
+                    new File(metadataTemplates, "templates.xml"));
             IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"),
                     new File(metadata, "geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"));
 
@@ -162,7 +167,7 @@ public abstract class AbstractMetadataTest {
 
     protected void restoreTemplates() throws IOException {
         IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("templates.xml"),
-                new File(metadata, "templates.xml"));
+                new File(metadataTemplates, "templates.xml"));
     }
 
     protected void restoreLayers() throws IOException {

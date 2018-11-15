@@ -72,7 +72,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     }
 
     private Resource getFolder() {
-        return dataDirectory.get(MetadataConstants.DIRECTORY);
+        return dataDirectory.get(MetadataConstants.TEMPLATES_DIRECTORY);
     }
 
     @Override
