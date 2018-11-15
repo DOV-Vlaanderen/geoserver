@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.panel.TemplatesPositionPanel;
@@ -75,13 +76,27 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
             public void onClick(AjaxRequestTarget target) {
                 MetadataTemplateService service =
                         GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-                for (MetadataTemplate metadataTemplate : templatesPanel.getSelection()) {
+                for (MetadataTemplate template : templatesPanel.getSelection()) {
 
                     try {
-                        service.delete(metadataTemplate);
+                        service.delete(template);
                     } catch (IOException e) {
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
-                        error(e.getMessage());
+                        if (template.getLinkedLayers() != null && !template.getLinkedLayers().isEmpty()) {
+                            StringBuilder layers = new StringBuilder();
+                            for (String layer : template.getLinkedLayers()) {
+                                if (layers.length() > 0) {
+                                    layers.append(",\n");
+                                }
+                                layers.append(layer);
+                            }
+                            StringResourceModel msg =
+                                    new StringResourceModel("errorIsLinked", templatesPanel).setParameters(template.getName(), layers);
+                            error(msg.getString());
+                            ;
+                        } else {
+                            error(e.getMessage());
+                        }
                         target.add(getFeedbackPanel());
                     }
                 }

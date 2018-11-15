@@ -48,7 +48,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Assert.assertNotNull(actual.get(0).getMetadata());
         Assert.assertEquals(0,actual.get(0).getOrder());
         Assert.assertEquals(1,actual.get(1).getOrder());
-        Assert.assertEquals(2,actual.get(2).getOrder());
+        Assert.assertEquals(2, actual.get(2).getOrder());
     }
 
     @Test
@@ -142,6 +142,21 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         service.delete(actual);
 
         Assert.assertEquals(initial - 1, service.list().size());
+    }
+
+    @Test
+    public void testDeleteWarning() throws IOException {
+        int initial = service.list().size();
+
+        MetadataTemplate actual = service.load("simple fields");
+        try {
+            service.delete(actual);
+            Assert.fail("should throw error for linked templates");
+        } catch (IOException e) {
+
+        }
+
+        Assert.assertEquals(initial, service.list().size());
     }
 
 

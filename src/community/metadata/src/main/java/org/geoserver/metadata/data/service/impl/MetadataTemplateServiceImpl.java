@@ -104,41 +104,51 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @Override
     public void update(MetadataTemplate metadataTemplate) throws IOException {
-        delete(metadataTemplate);
-
         List<MetadataTemplate> templates = list();
-        templates.add(metadataTemplate);
-        updateTemplates(templates);
-        //update layers
-        if (metadataTemplate.getLinkedLayers() != null) {
-            for (String key : metadataTemplate.getLinkedLayers()) {
-                LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
 
-                if (layer != null) {
-                    @SuppressWarnings("unchecked")
-                    HashMap<String, List<Integer>>  derivedAtts = (HashMap<String, List<Integer>>)
-                            layer.getResource().getMetadata().get(MetadataConstants.DERIVED_KEY);
-
-                    Serializable custom = layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
-                    @SuppressWarnings("unchecked")
-                    ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
-
-                    ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
-                    for (MetadataTemplate template : templates) {
-                        if (template.getLinkedLayers() != null && template.getLinkedLayers().contains(key)) {
-                            sources.add(template.getMetadata());
-                        }
-                    }
-
-                    metadataService.merge(model, sources, derivedAtts);
-
-                    geoServer.getCatalog().save(layer);
-                } else {
-                    LOGGER.severe("Update metadata for linked layer failed: " + key);
-                }
+        int index = -1;
+        for (MetadataTemplate template : templates) {
+            if (template.getName().equals(metadataTemplate.getName())) {
+                index = templates.indexOf(template);
             }
         }
+        if (index != -1) {
+            templates.remove(index);
+            templates.add(index, metadataTemplate);
 
+            updateTemplates(templates);
+            //update layers
+            if (metadataTemplate.getLinkedLayers() != null) {
+                for (String key : metadataTemplate.getLinkedLayers()) {
+                    LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
+
+                    if (layer != null) {
+                        @SuppressWarnings("unchecked")
+                        HashMap<String, List<Integer>> derivedAtts = (HashMap<String, List<Integer>>)
+                                layer.getResource().getMetadata().get(MetadataConstants.DERIVED_KEY);
+
+                        Serializable custom = layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                        @SuppressWarnings("unchecked")
+                        ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+
+                        ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
+                        for (MetadataTemplate template : templates) {
+                            if (template.getLinkedLayers() != null && template.getLinkedLayers().contains(key)) {
+                                sources.add(template.getMetadata());
+                            }
+                        }
+
+                        metadataService.merge(model, sources, derivedAtts);
+
+                        geoServer.getCatalog().save(layer);
+                    } else {
+                        LOGGER.severe("Update metadata for linked layer failed: " + key);
+                    }
+                }
+            }
+        } else {
+            throw new IOException("The template " + metadataTemplate.getName() + " was not found and could not be updated.");
+        }
     }
 
 
@@ -163,14 +173,20 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                 break;
             }
         }
-        templates.remove(toDelete);
-        updateTemplates(templates);
+        if (toDelete != null) {
+            if (toDelete.getLinkedLayers() == null || toDelete.getLinkedLayers().isEmpty()) {
+                templates.remove(toDelete);
+                updateTemplates(templates);
+            } else {
+                throw new IOException("The template is still linked.");
+            }
+        }
     }
 
     @Override
     public void increasePriority(MetadataTemplate template) {
         try {
-            List<MetadataTemplate> templates  = list();
+            List<MetadataTemplate> templates = list();
             int index = getIndex(template, templates);
             templates.remove(index);
             templates.add(index - 1, template);
@@ -183,7 +199,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     @Override
     public void decreasePriority(MetadataTemplate template) {
         try {
-            List<MetadataTemplate> templates  = list();
+            List<MetadataTemplate> templates = list();
             int index = getIndex(template, templates);
             templates.remove(index);
             templates.add(index + 1, template);
@@ -195,22 +211,22 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     @SuppressWarnings("unchecked")
     private List<MetadataTemplate> readTemplates() throws IOException {
-            Resource folder = getFolder();
-            Resource file = folder.get(FILE_NAME);
+        Resource folder = getFolder();
+        Resource file = folder.get(FILE_NAME);
 
-            if (file != null) {
-                try (InputStream in = file.in()) {
-                    List<MetadataTemplate> list = persister.load(in, List.class);
-                    for (int i = 0; i < list.size(); i++) {
-                         MetadataTemplate template = list.get(i);
-                        template.setOrder(i);
-                    }
-                    return list;
-                } catch (StreamException exception) {
-                    LOGGER.warning("File is empty");
+        if (file != null) {
+            try (InputStream in = file.in()) {
+                List<MetadataTemplate> list = persister.load(in, List.class);
+                for (int i = 0; i < list.size(); i++) {
+                    MetadataTemplate template = list.get(i);
+                    template.setOrder(i);
                 }
+                return list;
+            } catch (StreamException exception) {
+                LOGGER.warning("File is empty");
             }
-           return new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 
 

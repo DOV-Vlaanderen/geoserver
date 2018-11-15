@@ -5,6 +5,7 @@
 package org.geoserver.metadata.wicket;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
@@ -13,6 +14,7 @@ import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -99,6 +101,27 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
     @Test
     public void testDelete() throws Exception {
         //select first template
+        ((IModel<Boolean>) tester.getComponentFromLastRenderedPage("templatesPanel:listContainer:items:2:selectItemContainer:selectItem").getDefaultModel()).setObject(true);
+        //select third templete
+        ((IModel<Boolean>) tester.getComponentFromLastRenderedPage("templatesPanel:listContainer:items:3:selectItemContainer:selectItem").getDefaultModel()).setObject(true);
+        //delete
+        tester.getComponentFromLastRenderedPage("removeSelected").setEnabled(true);
+        tester.clickLink("removeSelected");
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        //Check update content of the table
+        tester.assertLabel("templatesPanel:listContainer:items:7:itemProperties:1:component:link:label", "simple fields");
+        tester.assertLabel("templatesPanel:listContainer:items:8:itemProperties:1:component:link:label", "object-field");
+        tester.assertLabel("templatesPanel:listContainer:items:9:itemProperties:1:component:link:label", "template-nested-object");
+        tester.assertLabel("templatesPanel:listContainer:items:10:itemProperties:1:component:link:label", "allData");
+
+    }
+
+    //TODO
+    @Test
+    public void testDeleteWarning() throws Exception {
+        //select first template
         ((IModel<Boolean>) tester.getComponentFromLastRenderedPage("templatesPanel:listContainer:items:1:selectItemContainer:selectItem").getDefaultModel()).setObject(true);
         //select third templete
         ((IModel<Boolean>) tester.getComponentFromLastRenderedPage("templatesPanel:listContainer:items:3:selectItemContainer:selectItem").getDefaultModel()).setObject(true);
@@ -109,12 +132,18 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         print(tester.getLastRenderedPage(), true, true);
 
         //Check update content of the table
-        tester.assertLabel("templatesPanel:listContainer:items:7:itemProperties:1:component:link:label", "template-list-simple");
-        tester.assertLabel("templatesPanel:listContainer:items:8:itemProperties:1:component:link:label", "object-field");
-        tester.assertLabel("templatesPanel:listContainer:items:9:itemProperties:1:component:link:label", "template-nested-object");
-        tester.assertLabel("templatesPanel:listContainer:items:10:itemProperties:1:component:link:label", "allData");
+        tester.assertLabel("templatesPanel:listContainer:items:7:itemProperties:1:component:link:label", "simple fields");
+        tester.assertLabel("templatesPanel:listContainer:items:8:itemProperties:1:component:link:label", "template-list-simple");
+        tester.assertLabel("templatesPanel:listContainer:items:9:itemProperties:1:component:link:label", "object-field");
+        tester.assertLabel("templatesPanel:listContainer:items:10:itemProperties:1:component:link:label", "template-nested-object");
+        tester.assertLabel("templatesPanel:listContainer:items:11:itemProperties:1:component:link:label", "allData");
 
+
+        Assert.assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        Assert.assertEquals("Template 'simple fields' is not deleted. Linked to layers: topp:mylayer", tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
+        tester.assertLabel("feedback:feedbackul:messages:0:message", "Template &#039;simple fields&#039; is not deleted. Linked to layers: topp:mylayer");
     }
+
     @Test
     public void testIncreasePriority() throws Exception {
         //template-nested-object
