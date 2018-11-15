@@ -1809,16 +1809,12 @@
 
  <distributionManagement>
   <repository>
-   <id>boundless</id>
-   <name>Boundless Release Repository</name>
-   <url>https://repo.boundlessgeo.com/release/</url>
-   <uniqueVersion>false</uniqueVersion>
+  <id>release</id>
+  <url>${acd.repository.release.url}</url>
   </repository>
   <snapshotRepository>
-   <id>boundless</id>
-   <uniqueVersion>false</uniqueVersion>
-   <name>Boundless Snapshot Repository</name>
-   <url>https://repo.boundlessgeo.com/snapshot/</url>
+  <id>snapshot</id>
+  <url>${acd.repository.snapshot.url}</url>
   </snapshotRepository>
  </distributionManagement>
 
@@ -1843,8 +1839,8 @@
  </modules>
 
  <properties>
-  <gs.version>2.12.2</gs.version>
-  <gt.version>18.2</gt.version>
+  <gs.version>${project.parent.version}</gs.version>
+  <gt.version>18.2-dov-0.1-SNAPSHOT</gt.version>
   <gwc.version>1.12.2</gwc.version>
   <spring.version>4.3.7.RELEASE</spring.version>
   <spring.security.version>4.0.4.RELEASE</spring.security.version> 
@@ -1889,6 +1885,14 @@
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
+  <acd.issueManagement.url>https://www.milieuinfo.be/jira</acd.issueManagement.url>
+  <acd.ciManagement.system>Bamboo</acd.ciManagement.system>
+  <acd.ciManagement.url>https://www.milieuinfo.be/bamboo</acd.ciManagement.url>
+  <acd.repository.url>https://www.milieuinfo.be/artifactory</acd.repository.url>
+  <acd.repository.snapshot.url>${acd.repository.url}/snapshot</acd.repository.snapshot.url>
+  <acd.repository.release.url>${acd.repository.url}/release</acd.repository.release.url>
+  <acd.scm.maven-url>scm:svn:https://svn.milieuinfo.be/productie/svn</acd.scm.maven-url>
+
  </properties>
 
  <profiles>
