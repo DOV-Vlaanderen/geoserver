@@ -166,12 +166,12 @@ public abstract class AbstractMetadataTest {
     }
 
     protected void restoreLayers() throws IOException {
-        File target = new File(DATA_DIRECTORY.getDataDirectoryRoot());
-        URL sourceUrl = AbstractMetadataTest.class.getClassLoader().getResource("datadir_layers");
-        File sourceDir = null;
         try {
-            sourceDir = new File(sourceUrl.toURI());
-            IOUtils.deepCopy(sourceDir, target);
+            //All files for the layer
+            unzip(AbstractMetadataTest.class.getResourceAsStream("myLayer.zip"),
+                    new File(DATA_DIRECTORY.getDataDirectoryRoot()));
+            IOUtils.copy(AbstractMetadataTest.class.getResourceAsStream("myLayer-featuretype.xml"),
+                    new File(DATA_DIRECTORY.getDataDirectoryRoot(), "workspaces/topp/datastore/mylayer/featuretype.xml"));
             geoServer.reload();
         } catch (URISyntaxException e) {
             throw new IOException(e);
