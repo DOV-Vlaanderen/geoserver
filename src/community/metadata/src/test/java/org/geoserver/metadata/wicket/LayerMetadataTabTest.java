@@ -350,8 +350,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         Assert.assertEquals(2, tester.getMessages(FeedbackMessage.ERROR).size());
         Assert.assertEquals("Select a geonetwork", tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         Assert.assertEquals("A metadata UUID is required", tester.getMessages(FeedbackMessage.ERROR).get(1).toString());
-        tester.assertLabel("publishedinfo:tabs:panel:geonetworkPanel:feedback:feedbackul:messages:0:message", "Select a geonetwork");
-        tester.assertLabel("publishedinfo:tabs:panel:geonetworkPanel:feedback:feedbackul:messages:1:message", "A metadata UUID is required");
+        tester.assertLabel("publishedinfo:tabs:panel:geonetworkPanel:importFeedback:feedbackul:messages:0:message", "Select a geonetwork");
+        tester.assertLabel("publishedinfo:tabs:panel:geonetworkPanel:importFeedback:feedbackul:messages:1:message", "A metadata UUID is required");
 
     }
 }

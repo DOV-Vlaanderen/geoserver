@@ -65,6 +65,7 @@ public class ImportGeonetworkPanel extends Panel {
         }
 
         DropDownChoice<String> dropDown = createDropDown(optionsGeonetwork);
+        dropDown.setNullValid(true);
         add(dropDown);
 
         TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
@@ -85,7 +86,7 @@ public class ImportGeonetworkPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 boolean valid = true;
-                if (dropDown.getModelObject() == null) {
+                if (dropDown.getModelObject() == null || "".equals(dropDown.getModelObject())) {
                     error(new ParamResourceModel("errorSelectGeonetwork",
                             ImportGeonetworkPanel.this).getString());
                     valid = false;
