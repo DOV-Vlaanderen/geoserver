@@ -112,7 +112,7 @@ public class WicketFileResourceLoader implements IStringResourceLoader {
                 throw new WicketRuntimeException(String.format("Unable able to locate resource bundle for the specifed base name: %s", resourceBundleName));
             }
 
-            LOGGER.warning("No value found key " + key + " in resource bundle " + resourceBundleName);
+            LOGGER.fine("No value found key " + key + " in resource bundle " + resourceBundleName);
         }
         return string;
     }

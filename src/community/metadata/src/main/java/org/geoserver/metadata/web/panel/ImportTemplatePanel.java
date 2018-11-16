@@ -8,11 +8,14 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.feedback.ComponentFeedbackMessageFilter;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.ComponentFeedbackPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
@@ -23,19 +26,15 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
-import org.geoserver.metadata.web.MetadataTemplateDataProvider;
-import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -92,7 +91,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
         GeoServerDialog dialog = new GeoServerDialog("importDialog");
         add(dialog);
-        add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
         //link action and dropdown
         DropDownChoice<MetadataTemplate> dropDown = createTemplatesDropDown();
@@ -105,6 +103,7 @@ public abstract class ImportTemplatePanel extends Panel {
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
         add(remove);
+        add(new FeedbackPanel("linkTemplateFeedback",new ContainerFeedbackMessageFilter(this)).setOutputMarkupId(true));
 
         //the panel
         templatesPanel = createTemplateTable(remove);
@@ -128,7 +127,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
 
     public FeedbackPanel getFeedbackPanel() {
-        return (FeedbackPanel) get("feedback");
+        return (FeedbackPanel) get("linkTemplateFeedback");
     }
 
 
@@ -147,6 +146,11 @@ public abstract class ImportTemplatePanel extends Panel {
     private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -180,6 +184,7 @@ public abstract class ImportTemplatePanel extends Panel {
                         performLink(target);
                     }
                 }
+                target.add(getFeedbackPanel());
             }
 
             private void performLink(AjaxRequestTarget target) {
@@ -191,10 +196,8 @@ public abstract class ImportTemplatePanel extends Panel {
                             ImportTemplatePanel.this).getString());
                 }
                 updateTableState(linkedTemplatesDataProvider);
-                target.add(getFeedbackPanel());
                 target.add(templatesPanel);
                 target.add(dropDown);
-                target.add(ImportTemplatePanel.this);
                 handleUpdate(target);
             }
 

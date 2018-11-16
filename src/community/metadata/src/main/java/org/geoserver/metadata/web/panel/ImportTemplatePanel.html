@@ -11,8 +11,6 @@
                 <legend>
                     <span><wicket:message key="header"></wicket:message></span>
                 </legend>
-                <span wicket:id="feedback"></span>
-
 					<ul class="links-above-table">
 						<li><select wicket:id="metadataTemplate" /> <a href="#"
 							wicket:id="link"> <wicket:message key="actionImport" />
@@ -22,7 +20,7 @@
 									key="removeSelected" />
 						</a></li>
 					</ul>
-
+					<span wicket:id="linkTemplateFeedback"></span>
 					<div wicket:id="templatesPanel"></div>
 					<div wicket:id="noData"></div>
 				</fieldset>

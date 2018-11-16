@@ -7,6 +7,8 @@ package org.geoserver.metadata.web.panel;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.feedback.ComponentFeedbackMessageFilter;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -55,7 +57,7 @@ public class ImportGeonetworkPanel extends Panel {
 
         GeoServerDialog dialog = new GeoServerDialog("importDialog");
         add(dialog);
-        add(new FeedbackPanel("feedback").setOutputMarkupId(true));
+        add(new FeedbackPanel("importFeedback", new ContainerFeedbackMessageFilter(this)).setOutputMarkupId(true));
 
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
         for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
@@ -74,6 +76,11 @@ public class ImportGeonetworkPanel extends Panel {
     private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -154,7 +161,7 @@ public class ImportGeonetworkPanel extends Panel {
 
 
     public FeedbackPanel getFeedbackPanel() {
-        return (FeedbackPanel) get("feedback");
+        return (FeedbackPanel) get("importFeedback");
     }
 
     public void suppressWarnings(boolean suppressWarnings) {
