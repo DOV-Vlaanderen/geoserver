@@ -51,32 +51,34 @@ public class WicketFileResourceLoader implements IStringResourceLoader {
         String string = null;
 
         ResourceBundle resourceBundle = null;
-        try {
-            File file = new File(folder, resourceBundleName + "_" + locale.getLanguage() + FILE_EXTIONSION);
-            //Try the specific resource
-            if (file.exists()) {
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    resourceBundle = new PropertyResourceBundle(fis);
-                    try {
-                        string = findString(key, string, resourceBundle);
-                    } catch (Exception ignored) {
-                        //ignore, try the generic resource
+        if (locale != null && key != null) {
+            try {
+                File file = new File(folder, resourceBundleName + "_" + locale.getLanguage() + FILE_EXTIONSION);
+                //Try the specific resource
+                if (file.exists()) {
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        resourceBundle = new PropertyResourceBundle(fis);
+                        try {
+                            string = findString(key, string, resourceBundle);
+                        } catch (Exception ignored) {
+                            //ignore, try the generic resource
+                        }
                     }
                 }
-            }
-            //Fallback to the main resource
-            if(string == null) {
-                file = new File(folder, resourceBundleName + FILE_EXTIONSION);
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    resourceBundle = new PropertyResourceBundle(fis);
-                    string = findString(key, string, resourceBundle);
+                //Fallback to the main resource
+                if(string == null) {
+                    file = new File(folder, resourceBundleName + FILE_EXTIONSION);
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        resourceBundle = new PropertyResourceBundle(fis);
+                        string = findString(key, string, resourceBundle);
+                    }
                 }
+            } catch (IOException e) {
+                if (shouldThrowExceptionForMissingResource()) {
+                    throw new WicketRuntimeException(String.format("Unable able to locate resource bundle for the specifed base name: %s", resourceBundleName));
+                }
+                LOGGER.warning("Unable able to locate resource bundle for the specifed base name:" + resourceBundleName);
             }
-        } catch (IOException e) {
-            if (shouldThrowExceptionForMissingResource()) {
-                throw new WicketRuntimeException(String.format("Unable able to locate resource bundle for the specifed base name: %s", resourceBundleName));
-            }
-            LOGGER.warning("Unable able to locate resource bundle for the specifed base name:" + resourceBundleName);
         }
         return string;
     }
@@ -92,7 +94,10 @@ public class WicketFileResourceLoader implements IStringResourceLoader {
 
     @Override
     public String loadStringResource(Component component, String key, Locale locale, String style, String variation) {
-        return findResource(component.getLocale(), key);
+        if (component != null) {
+            return findResource(component.getLocale(), key);
+        }
+        return "";
     }
 
     public void setShouldThrowException(boolean shouldThrowException) {
