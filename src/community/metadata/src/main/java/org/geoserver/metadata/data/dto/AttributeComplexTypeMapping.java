@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.geoserver.metadata.data.dto.impl.AttributeComplexTypeMappingImpl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 

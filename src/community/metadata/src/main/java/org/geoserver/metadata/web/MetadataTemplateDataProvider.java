@@ -8,7 +8,6 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geotools.util.logging.Logging;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +15,6 @@ import java.util.List;
 public class MetadataTemplateDataProvider extends GeoServerDataProvider<MetadataTemplate> {
 
     private static final long serialVersionUID = -8246320435114536132L;
-    
-    private static final java.util.logging.Logger LOGGER = Logging.getLogger(MetadataTemplateDataProvider.class);
 
     public static final Property<MetadataTemplate> PRIORITY = new BeanProperty<MetadataTemplate>("priority", "");
 

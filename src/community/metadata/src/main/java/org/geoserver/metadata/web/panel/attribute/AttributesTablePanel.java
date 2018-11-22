@@ -4,7 +4,6 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -24,7 +23,6 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.MissingResourceException;

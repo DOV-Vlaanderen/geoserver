@@ -7,7 +7,6 @@ package org.geoserver.metadata.data.dto.impl;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

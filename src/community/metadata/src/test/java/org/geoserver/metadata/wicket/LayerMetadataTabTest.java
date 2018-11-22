@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.tester.Result;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
@@ -25,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Locale;
 
 /**
@@ -290,6 +288,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testTemplatesRemainInPriorityOrder() {
         //add link

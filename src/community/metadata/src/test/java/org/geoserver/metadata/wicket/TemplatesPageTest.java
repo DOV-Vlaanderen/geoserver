@@ -119,6 +119,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
     }
 
     //TODO
+    @SuppressWarnings("unchecked")
     @Test
     public void testDeleteWarning() throws Exception {
         //select first template

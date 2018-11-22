@@ -8,7 +8,6 @@ import com.thoughtworks.xstream.io.StreamException;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;

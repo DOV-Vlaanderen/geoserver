@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.geoserver.metadata.data.dto.impl.AttributeMappingConfigurationImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

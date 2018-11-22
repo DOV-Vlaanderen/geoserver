@@ -9,8 +9,6 @@ import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 
-import java.io.Serializable;
-
 /**
  * Object that matches yaml structure.
  *

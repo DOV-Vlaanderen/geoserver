@@ -8,7 +8,6 @@ import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

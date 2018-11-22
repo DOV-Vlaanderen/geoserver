@@ -6,9 +6,7 @@ package org.geoserver.metadata.data.service;
 
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

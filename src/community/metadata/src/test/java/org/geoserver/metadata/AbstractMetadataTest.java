@@ -4,7 +4,6 @@
  */
 package org.geoserver.metadata;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.util.file.File;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
@@ -26,18 +25,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**

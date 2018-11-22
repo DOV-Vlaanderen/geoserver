@@ -6,8 +6,6 @@ package org.geoserver.metadata.data.dto.impl;
 
 import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 
-import java.io.Serializable;
-
 /**
  * Object that matches yaml structure.
  *

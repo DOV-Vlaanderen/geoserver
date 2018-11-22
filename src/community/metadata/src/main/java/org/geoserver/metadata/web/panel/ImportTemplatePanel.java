@@ -8,14 +8,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.feedback.ComponentFeedbackMessageFilter;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.ComponentFeedbackPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
@@ -73,11 +71,6 @@ public abstract class ImportTemplatePanel extends Panel {
                                HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
         this.templatesModel = templatesModel;
-        if (templatesModel.getObject() == null) {
-            MetadataTemplateService service =
-                    GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-            templatesModel.setObject(service.list());
-        }
         this.derivedAtts = derivedAtts;
         linkedTemplatesDataProvider = new ImportTemplateDataProvider(workspace, layerName, templatesModel);
 
@@ -241,7 +234,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             protected Component getComponentForProperty(String id, IModel<MetadataTemplate> itemModel,
                                                         GeoServerDataProvider.Property<MetadataTemplate> property) {

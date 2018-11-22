@@ -5,9 +5,7 @@
 package org.geoserver.metadata.wicket;
 
 import org.apache.wicket.Session;
-import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.util.file.File;
-import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.geoserver.metadata.web.resource.WicketFileResourceLoader;

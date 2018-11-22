@@ -19,7 +19,6 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
-import java.io.IOException;
 import java.util.List;
 
 public class TemplatesPositionPanel extends Panel {

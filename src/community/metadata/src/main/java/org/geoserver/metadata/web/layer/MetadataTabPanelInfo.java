@@ -7,10 +7,10 @@ package org.geoserver.metadata.web.layer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
+import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.service.MetadataTemplateService;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedEditTabPanelInfo;
-
-import java.util.List;
 
 public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo>  {
 
@@ -23,6 +23,8 @@ public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo>  
 
     @Override
     public IModel<?> createOwnModel(IModel<? extends LayerInfo> model, boolean isNew) {
-        return new ListModel<List<MetadataTemplateImpl>>();
+        MetadataTemplateService service =
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+        return new ListModel<MetadataTemplate>(service.list());
     }
 }
