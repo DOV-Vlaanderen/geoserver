@@ -98,7 +98,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                                 } else {
                                     error(e.getMessage());
                                 }
-                                target.add(getFeedbackPanel());
+                                addFeedbackPanels(target);
                             }
                         }
                         target.add(templatesPanel);

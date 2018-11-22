@@ -129,13 +129,13 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                         form.error(message);
                     }
                     // TODO use the new syntax
-                    target.add(getFeedbackPanel());
+                    addFeedbackPanels(target);
                 }
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(getFeedbackPanel());
+                addFeedbackPanels(target);
             }
         };
     }
