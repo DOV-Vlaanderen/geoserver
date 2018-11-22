@@ -4,19 +4,17 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
-
-import org.geoserver.metadata.data.service.RemoteDocumentReader;
-import org.springframework.stereotype.Repository;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.geoserver.metadata.data.service.RemoteDocumentReader;
+import org.springframework.stereotype.Repository;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 @Repository
 public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
@@ -42,9 +40,4 @@ public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
         }
         throw new IOException("Could not read metadata from:" + url);
     }
-
-
-
-
-
 }

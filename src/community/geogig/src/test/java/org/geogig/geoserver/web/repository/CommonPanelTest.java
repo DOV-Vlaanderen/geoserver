@@ -9,11 +9,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,18 +29,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-
-/**
- * Parent test class to hold common methods.
- */
+/** Parent test class to hold common methods. */
 public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
 
     protected RepositoriesPage repoPage;
 
-    @Rule
-    public TemporaryFolder temp;
+    @Rule public TemporaryFolder temp;
 
     @After
     public void after() {
@@ -51,6 +46,7 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
 
     /**
      * Before method that navigates all subclass tests to their respective starting pages.
+     *
      * @throws java.io.IOException
      */
     protected void navigateToStartPage() throws IOException {
@@ -78,20 +74,28 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
      * Asserts that FeedbackMessages match the expected list of messages.
      *
      * @param actualMsgs List of FeedbackMessages received from submitting the form.
-     * @param expectedMsgs List of expected String messages that should appear in the Feedback Panel.
+     * @param expectedMsgs List of expected String messages that should appear in the Feedback
+     *     Panel.
      */
-    protected void assertFeedbackMessages(List<FeedbackMessage> actualMsgs, List<String> expectedMsgs) {
+    protected void assertFeedbackMessages(
+            List<FeedbackMessage> actualMsgs, List<String> expectedMsgs) {
         // assert sizes are equal
-        assertEquals("Unexpected number of FeedbackMessages", expectedMsgs.size(), actualMsgs.size());
+        assertEquals(
+                "Unexpected number of FeedbackMessages", expectedMsgs.size(), actualMsgs.size());
         // loop through expected and assert they are present in the actuals
-        final List<String> actuals = Lists.transform(actualMsgs, new Function<FeedbackMessage, String>() {
-            @Override
-            public String apply(FeedbackMessage input) {
-                return input.getMessage().toString();
-            }
-        });
+        final List<String> actuals =
+                Lists.transform(
+                        actualMsgs,
+                        new Function<FeedbackMessage, String>() {
+                            @Override
+                            public String apply(FeedbackMessage input) {
+                                return input.getMessage().toString();
+                            }
+                        });
         for (String expectedMsg : expectedMsgs) {
-            assertTrue(String.format("Missing expected FeedbackMessage: %s", expectedMsg), actuals.contains(expectedMsg));
+            assertTrue(
+                    String.format("Missing expected FeedbackMessage: %s", expectedMsg),
+                    actuals.contains(expectedMsg));
         }
     }
 
@@ -102,14 +106,16 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
      */
     protected void select(final String type) {
         // get the component holding the dropdown
-        DropDownChoiceParamPanel panel = (DropDownChoiceParamPanel) tester.getComponentFromLastRenderedPage(
-                getChoicePanel());
+        DropDownChoiceParamPanel panel =
+                (DropDownChoiceParamPanel)
+                        tester.getComponentFromLastRenderedPage(getChoicePanel());
         // get the dropdown choice component
         DropDownChoice<Serializable> choice = panel.getFormComponent();
         // get the form
         FormTester formTester = tester.newFormTester(getFrom());
         // ensure choice is available
-        assertTrue("Choice is not available from DropDown: " + type,
+        assertTrue(
+                "Choice is not available from DropDown: " + type,
                 choice.getChoices().contains(type));
         // make the selection
         formTester.select(getFormChoiceComponent(), choice.getChoices().indexOf(type));
@@ -120,7 +126,8 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
     /**
      * Retrieve the String representation of the DropDownChoice component on the form.
      *
-     * @return String representation of the path to the Choice component, relative to the containing form.
+     * @return String representation of the path to the Choice component, relative to the containing
+     *     form.
      */
     protected abstract String getFormChoiceComponent();
 
@@ -134,22 +141,24 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
     /**
      * Retrieve the String representation of the DropDownChoice panel.
      *
-     * @return String representation of the path to the panel containing the DropDownChoice component, relative to the
-     *         start page.
+     * @return String representation of the path to the panel containing the DropDownChoice
+     *     component, relative to the start page.
      */
     protected abstract String getChoicePanel();
 
     /**
      * Retrieve the String representation of the Page from which this test should start.
      *
-     * @return String representation of the path to the Page from which subclasses should start testing.
+     * @return String representation of the path to the Page from which subclasses should start
+     *     testing.
      */
     protected abstract String getStartPage();
 
     /**
      * Retrieve the Class of the Page from which this test should start.
      *
-     * @return Page subclass Class type of the start page for this test. Used for asserting the correct start page.
+     * @return Page subclass Class type of the start page for this test. Used for asserting the
+     *     correct start page.
      */
     protected abstract Class<? extends Page> getStartPageClass();
 
@@ -170,8 +179,9 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
         // try to select Directory from the dropdown
         try {
             select(DropDownModel.DIRECTORY_CONFIG);
-            fail("DropDown config option should not be available: "
-                    + DropDownModel.DIRECTORY_CONFIG);
+            fail(
+                    "DropDown config option should not be available: "
+                            + DropDownModel.DIRECTORY_CONFIG);
         } catch (AssertionError ae) {
             // AssertionException expected here from the call to select()
         }
@@ -190,8 +200,7 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
         // try to select PostgreSQL from the dropdown
         try {
             select(DropDownModel.PG_CONFIG);
-            fail("DropDown config option should not be available: "
-                    + DropDownModel.PG_CONFIG);
+            fail("DropDown config option should not be available: " + DropDownModel.PG_CONFIG);
         } catch (AssertionError ae) {
             // AssertionException expected here from the call to select()
         }
@@ -208,16 +217,16 @@ public abstract class CommonPanelTest extends GeoServerWicketTestSupport {
         // try to select Directory from the dropdown
         try {
             select(DropDownModel.DIRECTORY_CONFIG);
-            fail("DropDown config option should not be available: "
-                    + DropDownModel.DIRECTORY_CONFIG);
+            fail(
+                    "DropDown config option should not be available: "
+                            + DropDownModel.DIRECTORY_CONFIG);
         } catch (AssertionError ae) {
             // AssertionException expected here from the call to select()
         }
         // try to select PostgreSQL from the dropdown
         try {
             select(DropDownModel.PG_CONFIG);
-            fail("DropDown config option should not be available: "
-                    + DropDownModel.PG_CONFIG);
+            fail("DropDown config option should not be available: " + DropDownModel.PG_CONFIG);
         } catch (AssertionError ae) {
             // AssertionException expected here from the call to select()
         }

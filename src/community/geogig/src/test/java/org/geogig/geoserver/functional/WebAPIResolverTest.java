@@ -4,21 +4,21 @@
  */
 package org.geogig.geoserver.functional;
 
-import org.junit.runner.RunWith;
-
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
+import org.junit.runner.RunWith;
 
 /**
  * Single cucumber test runner. Its sole purpose is to serve as an entry point for junit. Step
  * definitions and hooks are defined in their own classes so they can be reused across features.
+ *
  * <p>
  */
 @RunWith(Cucumber.class)
-@CucumberOptions(strict = true,
-        features = {"classpath:features/resolvers"},
-        glue = {"org.geogig.web.functional", "org.geogig.geoserver.functional"},
-        plugin = {"pretty", "html:cucumber-report","json:cucumber-report/cucumber.json"})
-public class WebAPIResolverTest {
-
-}
+@CucumberOptions(
+    strict = true,
+    features = {"classpath:features/resolvers"},
+    glue = {"org.geogig.web.functional", "org.geogig.geoserver.functional"},
+    plugin = {"pretty", "html:cucumber-report", "json:cucumber-report/cucumber.json"}
+)
+public class WebAPIResolverTest {}

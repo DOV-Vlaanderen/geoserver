@@ -4,15 +4,24 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
-
-import org.geoserver.metadata.data.dto.impl.AttributeMappingImpl;
-import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
-import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
 import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
+import org.geoserver.metadata.data.dto.impl.AttributeMappingImpl;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.service.GeonetworkXmlParser;
 import org.geoserver.metadata.data.service.YamlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +30,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
 @Repository
 public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
     private static final long serialVersionUID = -4931070325217885824L;
 
-    @Autowired
-    private YamlService yamlService;
-
+    @Autowired private YamlService yamlService;
 
     @Override
     public void parseMetadata(Document doc, ComplexMetadataMap metadataMap) throws IOException {
@@ -50,7 +46,12 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         }
     }
 
-    private void addAttribute(ComplexMetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
+    private void addAttribute(
+            ComplexMetadataMap metadataMap,
+            AttributeMapping attributeMapping,
+            Document doc,
+            Node node,
+            List<AttributeComplexTypeMapping> mapping) {
         NodeList nodes = findNode(doc, attributeMapping.getGeonetwork(), node);
 
         if (nodes != null && nodes.getLength() > 0) {
@@ -65,11 +66,14 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
                     break;
             }
         }
-
-
     }
 
-    private void mapNode(ComplexMetadataMap metadataMap, AttributeMapping attributeMapping, Document doc, Node node, List<AttributeComplexTypeMapping> mapping) {
+    private void mapNode(
+            ComplexMetadataMap metadataMap,
+            AttributeMapping attributeMapping,
+            Document doc,
+            Node node,
+            List<AttributeComplexTypeMapping> mapping) {
         if (FieldTypeEnum.COMPLEX.equals(attributeMapping.getFieldType())) {
             for (AttributeComplexTypeMapping complexTypeMapping : mapping) {
                 if (attributeMapping.getTypename().equals(complexTypeMapping.getTypename())) {
@@ -97,7 +101,6 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         }
     }
 
-
     /*private Document readXmlMetadata(Resource resource) throws IOException {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -118,7 +121,6 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         throw new IOException("Could not read resource:" + resource);
     }*/
 
-
     private NodeList findNode(Document doc, String geonetwork, Node node) {
         try {
             XPathFactory factory = XPathFactory.newInstance();
@@ -132,7 +134,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
                 result = expr.evaluate(doc, XPathConstants.NODESET);
             }
             NodeList nodes = (NodeList) result;
-           /* for (int i = 0; i < nodes.getLength(); i++) {
+            /* for (int i = 0; i < nodes.getLength(); i++) {
                 System.out.println(nodes.item(i).getTextContent());
             }*/
             return nodes;
@@ -142,16 +144,15 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         return null;
     }
 
-
     public class NamespaceResolver implements NamespaceContext {
-        //Store the source document to search the namespaces
+        // Store the source document to search the namespaces
         private Document sourceDocument;
 
         public NamespaceResolver(Document document) {
             sourceDocument = document;
         }
 
-        //The lookup for the namespace uris is delegated to the stored document.
+        // The lookup for the namespace uris is delegated to the stored document.
         public String getNamespaceURI(String prefix) {
             if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
                 return sourceDocument.lookupNamespaceURI(null);
@@ -169,5 +170,4 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
             return null;
         }
     }
-
 }

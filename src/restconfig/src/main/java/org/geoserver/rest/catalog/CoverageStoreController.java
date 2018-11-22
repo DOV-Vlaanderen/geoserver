@@ -4,12 +4,13 @@
  */
 package org.geoserver.rest.catalog;
 
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -50,16 +51,10 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-
-
-/**
- * Coverage store controller
- */
+/** Coverage store controller */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/coveragestores")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores")
 public class CoverageStoreController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -69,38 +64,46 @@ public class CoverageStoreController extends AbstractCatalogController {
         super(catalog);
     }
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE })
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public RestWrapper<CoverageStoreInfo> coverageStoresGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
-        if(ws == null) {
+        if (ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
         }
-        List<CoverageStoreInfo> coverageStores = catalog
-                .getCoverageStoresByWorkspace(ws);
+        List<CoverageStoreInfo> coverageStores = catalog.getCoverageStoresByWorkspace(ws);
         return wrapList(coverageStores, CoverageStoreInfo.class);
     }
 
-    @GetMapping(path = "{storeName}", produces = {
+    @GetMapping(
+        path = "{storeName}",
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE })
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public RestWrapper<CoverageStoreInfo> coverageStoreGet(
-            @PathVariable String workspaceName,
-            @PathVariable String storeName) {
+            @PathVariable String workspaceName, @PathVariable String storeName) {
 
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         return wrapObject(coverageStore, CoverageStoreInfo.class);
     }
-    
-    @PostMapping(consumes = {
+
+    @PostMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public ResponseEntity<String> coverageStorePost(
             @RequestBody CoverageStoreInfo coverageStore,
             @PathVariable String workspaceName,
@@ -111,26 +114,30 @@ public class CoverageStoreController extends AbstractCatalogController {
 
         String storeName = coverageStore.getName();
         LOGGER.info("POST coverage store " + storeName);
-        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{storeName}")
-            .buildAndExpand(workspaceName, storeName);
+        UriComponents uriComponents =
+                builder.path("/workspaces/{workspaceName}/coveragestores/{storeName}")
+                        .buildAndExpand(workspaceName, storeName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>(storeName, headers, HttpStatus.CREATED);
     }
 
-    
-    @PutMapping(value = "{storeName}", consumes = {
+    @PutMapping(
+        value = "{storeName}",
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public void coverageStorePut(
             @RequestBody CoverageStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
 
         CoverageStoreInfo original = getExistingCoverageStore(workspaceName, storeName);
-        
+
         new CatalogBuilder(catalog).updateCoverageStore(original, info);
         catalog.validate(original, false).throwIfInvalid();
         catalog.save(original);
@@ -141,19 +148,22 @@ public class CoverageStoreController extends AbstractCatalogController {
 
     private CoverageStoreInfo getExistingCoverageStore(String workspaceName, String storeName) {
         CoverageStoreInfo original = catalog.getCoverageStoreByName(workspaceName, storeName);
-        if(original == null) {
+        if (original == null) {
             throw new ResourceNotFoundException(
                     "No such coverage store: " + workspaceName + "," + storeName);
         }
         return original;
     }
-    
+
     @DeleteMapping(value = "{storeName}")
     public void coverageStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
-            @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
-            @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+            @RequestParam(name = "recurse", required = false, defaultValue = "false")
+                    boolean recurse,
+            @RequestParam(name = "purge", required = false, defaultValue = "none")
+                    String deleteType)
+            throws IOException {
 
         CoverageStoreInfo cs = getExistingCoverageStore(workspaceName, storeName);
         if (!recurse) {
@@ -171,14 +181,17 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     /**
-     * Check the deleteType parameter in order to decide whether to delete some data too (all, or just metadata).
+     * Check the deleteType parameter in order to decide whether to delete some data too (all, or
+     * just metadata).
+     *
      * @param deleteType
      * @param cs
      * @throws IOException
      */
     private void delete(String deleteType, CoverageStoreInfo cs) throws IOException {
-        if (!deleteType.equalsIgnoreCase("none") &&
-                (deleteType.equalsIgnoreCase("all") || deleteType.equalsIgnoreCase("metadata"))) {
+        if (!deleteType.equalsIgnoreCase("none")
+                && (deleteType.equalsIgnoreCase("all")
+                        || deleteType.equalsIgnoreCase("metadata"))) {
 
             final boolean deleteData = deleteType.equalsIgnoreCase("all");
             GridCoverageReader reader = cs.getGridCoverageReader(null, null);
@@ -193,46 +206,62 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return CoverageStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(new XStreamPersister.Callback() {
-            @Override
-            protected Class<CoverageStoreInfo> getObjectClass() {
-                return CoverageStoreInfo.class;
-            }
+        persister.setCallback(
+                new XStreamPersister.Callback() {
+                    @Override
+                    protected Class<CoverageStoreInfo> getObjectClass() {
+                        return CoverageStoreInfo.class;
+                    }
 
-            @Override
-            protected CatalogInfo getCatalogObject() {
-                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspaceName");
-                String coveragestore = uriTemplateVars.get("storeName");
+                    @Override
+                    protected CatalogInfo getCatalogObject() {
+                        Map<String, String> uriTemplateVars =
+                                (Map<String, String>)
+                                        RequestContextHolder.getRequestAttributes()
+                                                .getAttribute(
+                                                        HandlerMapping
+                                                                .URI_TEMPLATE_VARIABLES_ATTRIBUTE,
+                                                        RequestAttributes.SCOPE_REQUEST);
+                        String workspace = uriTemplateVars.get("workspaceName");
+                        String coveragestore = uriTemplateVars.get("storeName");
 
-                if (workspace == null || coveragestore == null) {
-                    return null;
-                }
-                return catalog.getCoverageStoreByName(workspace, coveragestore);
-            }
+                        if (workspace == null || coveragestore == null) {
+                            return null;
+                        }
+                        return catalog.getCoverageStoreByName(workspace, coveragestore);
+                    }
 
-            @Override
-            protected void postEncodeCoverageStore(CoverageStoreInfo cs,
-                    HierarchicalStreamWriter writer, MarshallingContext context) {
-                // add a link to the coverages
-                writer.startNode("coverages");
-                converter.encodeCollectionLink("coverages", writer);
-                writer.endNode();
-            }
+                    @Override
+                    protected void postEncodeCoverageStore(
+                            CoverageStoreInfo cs,
+                            HierarchicalStreamWriter writer,
+                            MarshallingContext context) {
+                        // add a link to the coverages
+                        writer.startNode("coverages");
+                        converter.encodeCollectionLink("coverages", writer);
+                        writer.endNode();
+                    }
 
-            @Override
-            protected void postEncodeReference(Object obj, String ref, String prefix,
-                    HierarchicalStreamWriter writer, MarshallingContext context) {
-                if (obj instanceof WorkspaceInfo) {
-                    converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
-                }
-            }
-        });
+                    @Override
+                    protected void postEncodeReference(
+                            Object obj,
+                            String ref,
+                            String prefix,
+                            HierarchicalStreamWriter writer,
+                            MarshallingContext context) {
+                        if (obj instanceof WorkspaceInfo) {
+                            converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
+                        }
+                    }
+                });
     }
 }

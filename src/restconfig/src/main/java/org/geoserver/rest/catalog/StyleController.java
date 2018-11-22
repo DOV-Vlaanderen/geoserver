@@ -5,6 +5,15 @@
 package org.geoserver.rest.catalog;
 
 import com.google.common.io.Files;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.*;
@@ -37,23 +46,16 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.xml.sax.EntityResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * Example style resource controller
- */
-@RestController @RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
-    MediaType.APPLICATION_JSON_VALUE,
-    MediaType.APPLICATION_XML_VALUE,
-    MediaType.TEXT_HTML_VALUE})
+/** Example style resource controller */
+@RestController
+@RequestMapping(
+    path = RestBaseController.ROOT_PATH,
+    produces = {
+        MediaType.APPLICATION_JSON_VALUE,
+        MediaType.APPLICATION_XML_VALUE,
+        MediaType.TEXT_HTML_VALUE
+    }
+)
 public class StyleController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
@@ -63,15 +65,17 @@ public class StyleController extends AbstractCatalogController {
         super(catalog);
     }
 
-    @GetMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"})
+    @GetMapping(
+        value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"}
+    )
     public RestWrapper<?> stylesGet(
             @PathVariable(required = false) String layerName,
             @PathVariable(required = false) String workspaceName) {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
-        
+
         if (layerName != null) {
             return wrapList(catalog.getLayerByName(layerName).getStyles(), StyleInfo.class);
         } else if (workspaceName != null) {
@@ -81,23 +85,27 @@ public class StyleController extends AbstractCatalogController {
         return wrapList(styles, StyleInfo.class);
     }
 
-    @PostMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
+    @PostMapping(
+        value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"},
+        consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE})
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        }
+    )
     @ResponseStatus(HttpStatus.CREATED)
     public String stylePost(
             @RequestBody StyleInfo style,
-            @PathVariable( required = false) String layerName,
+            @PathVariable(required = false) String layerName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(defaultValue = "false", name = "default") boolean makeDefault) {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
         checkFullAdminRequired(workspaceName);
-        
+
         if (layerName != null) {
             StyleInfo existing = catalog.getStyleByName(style.getName());
             if (existing == null) {
@@ -107,7 +115,7 @@ public class StyleController extends AbstractCatalogController {
             LayerInfo l = catalog.getLayerByName(layerName);
             l.getStyles().add(existing);
 
-            //check for default
+            // check for default
             if (makeDefault) {
                 l.setDefaultStyle(existing);
             }
@@ -126,29 +134,30 @@ public class StyleController extends AbstractCatalogController {
         return style.getName();
     }
 
-    @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
-            SLDHandler.MIMETYPE_11,
-            SLDHandler.MIMETYPE_10})
+    @PostMapping(
+        value = {"/styles", "/workspaces/{workspaceName}/styles"},
+        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10}
+    )
     public ResponseEntity<String> styleSLDPost(
             @RequestBody Style style,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false) String name,
-            @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder) {
+            @RequestHeader("Content-Type") String contentType,
+            UriComponentsBuilder builder) {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
         checkFullAdminRequired(workspaceName);
-        
+
         StyleHandler handler = org.geoserver.catalog.Styles.handler(contentType);
         if (name == null) {
             name = findNameFromObject(style);
         }
 
-        //ensure that the style does not already exist
+        // ensure that the style does not already exist
         if (catalog.getStyleByName(workspaceName, name) != null) {
-            throw new RestException("Style " + name + " already exists.",
-                    HttpStatus.FORBIDDEN);
+            throw new RestException("Style " + name + " already exists.", HttpStatus.FORBIDDEN);
         }
 
         StyleInfo sinfo = catalog.getFactory().createStyle();
@@ -161,13 +170,13 @@ public class StyleController extends AbstractCatalogController {
             sinfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
         }
 
-        // ensure that a existing resource does not already exist, because we may not want to overwrite it
+        // ensure that a existing resource does not already exist, because we may not want to
+        // overwrite it
         GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
         if (dataDir.style(sinfo).getType() != Resource.Type.UNDEFINED) {
             String msg = "Style resource " + sinfo.getFilename() + " already exists.";
             throw new RestException(msg, HttpStatus.FORBIDDEN);
         }
-
 
         ResourcePool resourcePool = catalog.getResourcePool();
         try {
@@ -182,39 +191,42 @@ public class StyleController extends AbstractCatalogController {
 
         catalog.add(sinfo);
         LOGGER.info("POST Style " + name);
-        //build the new path
+        // build the new path
         UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
     }
 
-    private UriComponents getUriComponents(String name, String workspace,
-        UriComponentsBuilder builder) {
+    private UriComponents getUriComponents(
+            String name, String workspace, UriComponentsBuilder builder) {
         UriComponents uriComponents;
         if (workspace != null) {
-            uriComponents = builder.path("/workspaces/{workspaceName}/styles/{styleName}")
-                .buildAndExpand(workspace, name);
+            uriComponents =
+                    builder.path("/workspaces/{workspaceName}/styles/{styleName}")
+                            .buildAndExpand(workspace, name);
         } else {
             uriComponents = builder.path("/styles/{id}").buildAndExpand(name);
         }
         return uriComponents;
     }
 
-    @GetMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, produces = {MediaType.ALL_VALUE})
+    @GetMapping(
+        path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+        produces = {MediaType.ALL_VALUE}
+    )
     protected RestWrapper<StyleInfo> styleGet(
-            @PathVariable String styleName,
-            @PathVariable(required = false) String workspaceName) {
+            @PathVariable String styleName, @PathVariable(required = false) String workspaceName) {
 
         return wrapObject(getStyleInternal(styleName, workspaceName), StyleInfo.class);
     }
 
-    @GetMapping(path = {"/styles/{styleName}","/workspaces/{workspaceName}/styles/{styleName}"}, produces = {
-            SLDHandler.MIMETYPE_10,
-            SLDHandler.MIMETYPE_11})
+    @GetMapping(
+        path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+        produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11}
+    )
     protected StyleInfo styleSLDGet(
-            @PathVariable String styleName,
-            @PathVariable(required = false) String workspaceName) {
+            @PathVariable String styleName, @PathVariable(required = false) String workspaceName) {
 
         return getStyleInternal(styleName, workspaceName);
     }
@@ -226,7 +238,7 @@ public class StyleController extends AbstractCatalogController {
         if (sinfo == null) {
             String message = "No such style: " + styleName;
             if (workspace != null) {
-                message = "No such style "+ styleName +" in workspace " + workspace;
+                message = "No such style " + styleName + " in workspace " + workspace;
             }
             throw new ResourceNotFoundException(message);
         } else {
@@ -239,16 +251,19 @@ public class StyleController extends AbstractCatalogController {
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false, defaultValue = "false") boolean recurse,
-            @RequestParam(required = false, defaultValue = "false") boolean purge) throws IOException {
-        
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            @RequestParam(required = false, defaultValue = "false") boolean purge)
+            throws IOException {
+
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
 
-        StyleInfo style = workspaceName != null ? catalog.getStyleByName(workspaceName, styleName) :
-                catalog.getStyleByName(styleName);
-        
-        if(style == null) {
+        StyleInfo style =
+                workspaceName != null
+                        ? catalog.getStyleByName(workspaceName, styleName)
+                        : catalog.getStyleByName(styleName);
+
+        if (style == null) {
             throw new ResourceNotFoundException("Style " + styleName + " not found");
         }
 
@@ -258,7 +273,8 @@ public class StyleController extends AbstractCatalogController {
             // ensure that no layers reference the style
             List<LayerInfo> layers = catalog.getLayers(style);
             if (!layers.isEmpty()) {
-                throw new RestException("Can't delete style referenced by existing layers.", HttpStatus.FORBIDDEN);
+                throw new RestException(
+                        "Can't delete style referenced by existing layers.", HttpStatus.FORBIDDEN);
             }
             catalog.remove(style);
         }
@@ -271,13 +287,13 @@ public class StyleController extends AbstractCatalogController {
     String findNameFromObject(Object object) {
         String name = null;
         if (object instanceof Style) {
-            name = ((Style)object).getName();
+            name = ((Style) object).getName();
         }
 
         if (name == null) {
             // generate a random one
             for (int i = 0; name == null && i < 100; i++) {
-                String candidate = "style-"+ UUID.randomUUID().toString().substring(0, 7);
+                String candidate = "style-" + UUID.randomUUID().toString().substring(0, 7);
                 if (catalog.getStyleByName(candidate) == null) {
                     name = candidate;
                 }
@@ -285,26 +301,30 @@ public class StyleController extends AbstractCatalogController {
         }
 
         if (name == null) {
-            throw new RestException("Unable to generate style name, specify one with 'name' "
-                + "parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException(
+                    "Unable to generate style name, specify one with 'name' " + "parameter",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return name;
     }
 
-    @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
-            MediaTypeExtensions.APPLICATION_ZIP_VALUE})
+    @PostMapping(
+        value = {"/styles", "/workspaces/{workspaceName}/styles"},
+        consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
+    )
     public ResponseEntity<String> stylePost(
             InputStream stream,
             @RequestParam(required = false) String name,
             @PathVariable(required = false) String workspaceName,
-            UriComponentsBuilder builder) throws IOException {
+            UriComponentsBuilder builder)
+            throws IOException {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
         checkFullAdminRequired(workspaceName);
-        
+
         File directory = unzipSldPackage(stream);
         File uploadedFile = retrieveSldFile(directory);
 
@@ -314,7 +334,7 @@ public class StyleController extends AbstractCatalogController {
             name = findNameFromObject(styleSld);
         }
 
-        //ensure that the style does not already exist
+        // ensure that the style does not already exist
         if (catalog.getStyleByName(workspaceName, name) != null) {
             throw new RestException("Style " + name + " already exists.", HttpStatus.FORBIDDEN);
         }
@@ -322,7 +342,7 @@ public class StyleController extends AbstractCatalogController {
         // save image resources
         saveImageResources(directory, workspaceName);
 
-        //create a style info object
+        // create a style info object
         StyleInfo styleInfo = catalog.getFactory().createStyle();
         styleInfo.setName(name);
         styleInfo.setFilename(name + ".sld");
@@ -332,7 +352,8 @@ public class StyleController extends AbstractCatalogController {
         }
 
         Resource style = dataDir.style(styleInfo);
-        // ensure that a existing resource does not already exist, because we may not want to overwrite it
+        // ensure that a existing resource does not already exist, because we may not want to
+        // overwrite it
         if (dataDir.style(styleInfo).getType() != Resource.Type.UNDEFINED) {
             String msg = "Style resource " + styleInfo.getFilename() + " already exists.";
             throw new RestException(msg, HttpStatus.FORBIDDEN);
@@ -349,8 +370,10 @@ public class StyleController extends AbstractCatalogController {
         return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping( value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
-            MediaTypeExtensions.APPLICATION_ZIP_VALUE})
+    @PutMapping(
+        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+        consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
+    )
     public void styleZipPut(
             InputStream is,
             @PathVariable String styleName,
@@ -359,38 +382,45 @@ public class StyleController extends AbstractCatalogController {
         putZipInternal(is, workspaceName, styleName);
     }
 
-    /**
-     * Workaround to support regular response content type when extension is in path
-     */
+    /** Workaround to support regular response content type when extension is in path */
     @Configuration
     static class StyleControllerConfiguration {
         @Bean
         PutIgnoringExtensionContentNegotiationStrategy stylePutContentNegotiationStrategy() {
             return new PutIgnoringExtensionContentNegotiationStrategy(
-                    new PatternsRequestCondition("/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"),
-                    Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML));
+                    new PatternsRequestCondition(
+                            "/styles/{styleName}",
+                            "/workspaces/{workspaceName}/styles/{styleName}"),
+                    Arrays.asList(
+                            MediaType.APPLICATION_JSON,
+                            MediaType.APPLICATION_XML,
+                            MediaType.TEXT_HTML));
         }
     }
 
-    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
-            MediaType.ALL_VALUE})
+    @PutMapping(
+        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+        consumes = {MediaType.ALL_VALUE}
+    )
     public void stylePut(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(name = "raw", required = false, defaultValue = "false") boolean raw,
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request)
+            throws IOException {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
         checkFullAdminRequired(workspaceName);
-        StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
+        StyleInfo s = catalog.getStyleByName(workspaceName, styleName);
 
-        // Extracting mimeType and charset from content type formated as "Content-Type: text/html; charset=utf-8"
+        // Extracting mimeType and charset from content type formated as "Content-Type: text/html;
+        // charset=utf-8"
         String contentType = getMimeTypeFromContentType(request.getContentType());
         String charset = getCharsetFromContentType(request.getContentType());
         // String extentsion = "sld"; // TODO: determine this from path
-        
+
         ResourcePool resourcePool = catalog.getResourcePool();
         byte[] rawData = IOUtils.toByteArray(request.getInputStream());
         String content = new String(rawData, charset);
@@ -410,21 +440,27 @@ public class StyleController extends AbstractCatalogController {
                     }
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Could not determine the version of the raw style, the previous one was " +
-                        "retained", e);
+                LOGGER.log(
+                        Level.WARNING,
+                        "Could not determine the version of the raw style, the previous one was "
+                                + "retained",
+                        e);
             }
         } else {
             for (StyleHandler format : Styles.handlers()) {
                 for (Version version : format.getVersions()) {
                     String mimeType = format.mimeType(version);
-                    if( !mimeType.equals(contentType)){
+                    if (!mimeType.equals(contentType)) {
                         continue; // skip this format
                     }
                     try {
-                        StyledLayerDescriptor sld = format.parse( content, version, null, entityResolver);
-                        //If there are more than one layers, assume this is a style group and validate accordingly.
+                        StyledLayerDescriptor sld =
+                                format.parse(content, version, null, entityResolver);
+                        // If there are more than one layers, assume this is a style group and
+                        // validate accordingly.
                         if (sld.getStyledLayers().length > 1) {
-                            List<Exception> validationErrors = SLDNamedLayerValidator.validate(catalog, sld);
+                            List<Exception> validationErrors =
+                                    SLDNamedLayerValidator.validate(catalog, sld);
                             if (validationErrors.size() > 0) {
                                 throw validationErrors.get(0);
                             }
@@ -441,45 +477,54 @@ public class StyleController extends AbstractCatalogController {
                             writeRaw(s, new ByteArrayInputStream(rawData));
                         }
                         return;
-                    }
-                    catch(Exception invalid){
-                        throw new RestException("Invalid style:"+invalid.getMessage(), HttpStatus.BAD_REQUEST, invalid);
+                    } catch (Exception invalid) {
+                        throw new RestException(
+                                "Invalid style:" + invalid.getMessage(),
+                                HttpStatus.BAD_REQUEST,
+                                invalid);
                     }
                 }
             }
-            throw new RestException("Unknown style format '"+contentType+"'", HttpStatus.BAD_REQUEST);
+            throw new RestException(
+                    "Unknown style format '" + contentType + "'", HttpStatus.BAD_REQUEST);
         }
     }
-    
-    private void writeRaw( StyleInfo info, InputStream input) throws IOException{
+
+    private void writeRaw(StyleInfo info, InputStream input) throws IOException {
         ResourcePool resourcePool = catalog.getResourcePool();
-        
+
         resourcePool.writeStyle(info, input);
-        catalog.save( info);
+        catalog.save(info);
     }
-    
-    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
+
+    @PutMapping(
+        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+        consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE})
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        }
+    )
     public void stylePut(
             @RequestBody StyleInfo info,
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
 
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
         checkFullAdminRequired(workspaceName);
-        
+
         StyleInfo original = catalog.getStyleByName(workspaceName, styleName);
 
-        //ensure no workspace change
+        // ensure no workspace change
         if (info.getWorkspace() != null) {
             if (!info.getWorkspace().equals(original.getWorkspace())) {
-                throw new RestException( "Can't change the workspace of a style, instead " +
-                        "DELETE from existing workspace and POST to new workspace", HttpStatus.FORBIDDEN);
+                throw new RestException(
+                        "Can't change the workspace of a style, instead "
+                                + "DELETE from existing workspace and POST to new workspace",
+                        HttpStatus.FORBIDDEN);
             }
         }
 
@@ -487,10 +532,7 @@ public class StyleController extends AbstractCatalogController {
         catalog.save(original);
     }
 
-    /**
-     * Unzips the ZIP stream.
-     *
-     */
+    /** Unzips the ZIP stream. */
     private File unzipSldPackage(InputStream object) throws IOException {
         File tempDir = Files.createTempDir();
 
@@ -503,7 +545,6 @@ public class StyleController extends AbstractCatalogController {
      * Returns the sld file in the given directory. If no sld file, throws an exception
      *
      * @param directory
-     *
      */
     private File retrieveSldFile(File directory) {
         File[] matchingFiles = directory.listFiles((dir, name) -> name.endsWith("sld"));
@@ -521,7 +562,6 @@ public class StyleController extends AbstractCatalogController {
      * Parses the sld file.
      *
      * @param sldFile
-     *
      */
     private Style parseSld(File sldFile) {
         Style style = null;
@@ -530,10 +570,9 @@ public class StyleController extends AbstractCatalogController {
         try {
             is = new FileInputStream(sldFile);
 
-            SLDParser parser
-                = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
+            SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
             EntityResolver resolver = catalog.getResourcePool().getEntityResolver();
-            if(resolver != null) {
+            if (resolver != null) {
                 parser.setEntityResolver(resolver);
             }
 
@@ -560,18 +599,24 @@ public class StyleController extends AbstractCatalogController {
     /**
      * Save the image resources in the styles folder
      *
-     * @param directory     Temporary directory with images from SLD package
-     * @param workspace     Geoserver workspace name for the style
+     * @param directory Temporary directory with images from SLD package
+     * @param workspace Geoserver workspace name for the style
      * @throws java.io.IOException
      */
     private void saveImageResources(File directory, String workspace) throws IOException {
-        Resource stylesDir = workspace == null ? dataDir.getStyles() : dataDir.getStyles(catalog.getWorkspaceByName(workspace));
+        Resource stylesDir =
+                workspace == null
+                        ? dataDir.getStyles()
+                        : dataDir.getStyles(catalog.getWorkspaceByName(workspace));
 
         File[] imageFiles = retrieveImageFiles(directory);
 
         for (int i = 0; i < imageFiles.length; i++) {
-            IOUtils.copyStream(new FileInputStream(imageFiles[i]),
-                stylesDir.get(imageFiles[i].getName()).out(), true, true);
+            IOUtils.copyStream(
+                    new FileInputStream(imageFiles[i]),
+                    stylesDir.get(imageFiles[i].getName()).out(),
+                    true,
+                    true);
         }
     }
 
@@ -579,11 +624,12 @@ public class StyleController extends AbstractCatalogController {
      * Returns a list of image files in the given directory
      *
      * @param directory
-     *
      */
     private File[] retrieveImageFiles(File directory) {
-        return directory.listFiles((dir, name) ->
-                validImageFileExtensions.contains(FilenameUtils.getExtension(name).toLowerCase()));
+        return directory.listFiles(
+                (dir, name) ->
+                        validImageFileExtensions.contains(
+                                FilenameUtils.getExtension(name).toLowerCase()));
     }
 
     /**
@@ -605,14 +651,13 @@ public class StyleController extends AbstractCatalogController {
             IOUtils.closeQuietly(out);
         }
     }
-    
+
     private void putZipInternal(InputStream is, String workspace, String style) {
-        if(workspace != null && catalog.getWorkspaceByName(workspace) == null) {
+        if (workspace != null && catalog.getWorkspaceByName(workspace) == null) {
             throw new ResourceNotFoundException("Workspace " + workspace + " not found");
         }
         checkFullAdminRequired(workspace);
 
-        
         File directory = null;
         try {
             directory = unzipSldPackage(is);
@@ -628,7 +673,7 @@ public class StyleController extends AbstractCatalogController {
                 throw new RestException("Style must have a name.", HttpStatus.BAD_REQUEST);
             }
 
-            //ensure that the style already exists
+            // ensure that the style already exists
             if (!existsStyleInCatalog(workspace, style)) {
                 throw new RestException("Style " + style + " doesn't exist.", HttpStatus.FORBIDDEN);
             }
@@ -644,7 +689,8 @@ public class StyleController extends AbstractCatalogController {
 
         } catch (Exception e) {
             LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());
-            throw new RestException("Error processing the style", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new RestException(
+                    "Error processing the style", HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             FileUtils.deleteQuietly(directory);
         }
@@ -653,16 +699,17 @@ public class StyleController extends AbstractCatalogController {
     /**
      * Checks if style is in the catalog.
      *
-     * @param workspaceName     Workspace name
-     * @param name              Style name
+     * @param workspaceName Workspace name
+     * @param name Style name
      */
     private boolean existsStyleInCatalog(String workspaceName, String name) {
-        return (catalog.getStyleByName(workspaceName, name ) != null);
+        return (catalog.getStyleByName(workspaceName, name) != null);
     }
 
     /**
      * Extracts MimeType from HTTP ContentType header
-     * @param contentType       ContentType header
+     *
+     * @param contentType ContentType header
      */
     private String getMimeTypeFromContentType(String contentType) {
         if (contentType != null) {
@@ -673,7 +720,8 @@ public class StyleController extends AbstractCatalogController {
 
     /**
      * Extracts Charset from HTTP ContentType header
-     * @param contentType       ContentType header
+     *
+     * @param contentType ContentType header
      */
     private String getCharsetFromContentType(String contentType) {
         if (contentType != null && contentType.split(";").length > 1) {

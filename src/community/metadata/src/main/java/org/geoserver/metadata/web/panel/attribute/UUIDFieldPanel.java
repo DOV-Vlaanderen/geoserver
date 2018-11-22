@@ -4,13 +4,12 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.util.UUID;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
-import java.util.UUID;
 
 public class UUIDFieldPanel extends Panel {
 
@@ -23,17 +22,16 @@ public class UUIDFieldPanel extends Panel {
         textfield.setOutputMarkupId(true);
         add(textfield);
 
-        add(new AjaxLink<Object>("generateUUID") {
-            private static final long serialVersionUID = 3581476968062788921L;
+        add(
+                new AjaxLink<Object>("generateUUID") {
+                    private static final long serialVersionUID = 3581476968062788921L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                UUID uuid = UUID.randomUUID();
-                model.setObject(uuid.toString());
-                target.add(textfield);
-            }
-        });
-
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        UUID uuid = UUID.randomUUID();
+                        model.setObject(uuid.toString());
+                        target.add(textfield);
+                    }
+                });
     }
-
 }

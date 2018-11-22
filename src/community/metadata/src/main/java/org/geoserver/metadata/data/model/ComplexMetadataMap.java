@@ -6,16 +6,16 @@ package org.geoserver.metadata.data.model;
 
 import java.io.Serializable;
 
-public interface ComplexMetadataMap extends Serializable {    
-    
+public interface ComplexMetadataMap extends Serializable {
+
     <T extends Serializable> ComplexMetadataAttribute<T> get(
             Class<T> clazz, String att, int... index);
-    
-    ComplexMetadataMap subMap(String name, int... index);
-    
-    void delete(String att, int... index);
-    
-    int size(String att, int... index);
-    ComplexMetadataMap clone();
 
+    ComplexMetadataMap subMap(String name, int... index);
+
+    void delete(String att, int... index);
+
+    int size(String att, int... index);
+
+    ComplexMetadataMap clone();
 }

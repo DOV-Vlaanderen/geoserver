@@ -4,14 +4,12 @@
  */
 package org.geoserver.metadata.data.service;
 
-import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.w3c.dom.Document;
-
 import java.io.IOException;
 import java.io.Serializable;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.w3c.dom.Document;
 
 public interface GeonetworkXmlParser extends Serializable {
 
     void parseMetadata(Document doc, ComplexMetadataMap metadataMap) throws IOException;
-
 }

@@ -4,7 +4,6 @@
  */
 package org.geoserver.metadata.data.service;
 
-
 import org.geoserver.metadata.data.dto.MetadataEditorConfiguration;
 
 public interface MetadataEditorConfigurationService {

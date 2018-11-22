@@ -6,7 +6,12 @@ package org.geoserver.metadata.data.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.metadata.data.dto.AttributeComplexTypeMapping;
@@ -25,24 +30,16 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
- * Service responsible for interaction with yaml files. It will search for all *.yaml files in a given directory and try
- * to parse the files. Yaml files that cannot do parsed will be ignored.
+ * Service responsible for interaction with yaml files. It will search for all *.yaml files in a
+ * given directory and try to parse the files. Yaml files that cannot do parsed will be ignored.
  *
  * @author Timothy De Bock
  */
 @Component
 public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
 
-    @Autowired
-    private GeoServerDataDirectory dataDirectory;
+    @Autowired private GeoServerDataDirectory dataDirectory;
 
     private static final java.util.logging.Logger LOGGER = Logging.getLogger(YamlServiceImpl.class);
 
@@ -65,10 +62,11 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
             for (Resource file : files) {
                 try (InputStream in = file.in()) {
                     readConfiguration(in, configuration, mapper);
-                } 
-            }            
-            //add feature catalog
-            try (InputStream in  = getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
+                }
+            }
+            // add feature catalog
+            try (InputStream in =
+                    getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
                 readConfiguration(in, configuration, mapper);
             }
         } catch (Exception e) {
@@ -78,10 +76,12 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
         return configuration;
     }
 
-    private void readConfiguration(InputStream in, MetadataEditorConfiguration configuration, ObjectMapper mapper) {
+    private void readConfiguration(
+            InputStream in, MetadataEditorConfiguration configuration, ObjectMapper mapper) {
         try {
-            //read label from propertie file
-            MetadataEditorConfiguration config = mapper.readValue(in, MetadataEditorConfigurationImpl.class);
+            // read label from propertie file
+            MetadataEditorConfiguration config =
+                    mapper.readValue(in, MetadataEditorConfigurationImpl.class);
             // Merge attribute configuration and remove duplicates
             Set<String> attributeKeys = new HashSet<>();
             for (MetadataAttributeConfiguration attribute : config.getAttributes()) {
@@ -129,7 +129,8 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
         try {
             for (Resource file : findFiles(folder)) {
                 try (InputStream in = file.in()) {
-                    AttributeMappingConfiguration config = mapper.readValue(in, AttributeMappingConfigurationImpl.class);
+                    AttributeMappingConfiguration config =
+                            mapper.readValue(in, AttributeMappingConfigurationImpl.class);
                     Set<String> attKeys = new HashSet<>();
                     for (AttributeMapping mapping : config.getGeonetworkmapping()) {
                         if (!attKeys.contains(mapping.getGeoserver())) {
@@ -156,7 +157,6 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
         return configuration;
     }
 
-
     private List<Resource> findFiles(Resource folder) {
         if (files == null) {
             files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));
@@ -167,17 +167,14 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
     private void resolveLabelValue(MetadataAttributeConfiguration attribute, String typename) {
         if (attribute.getLabel() == null) {
             attribute.setLabel(attribute.getKey());
-
         }
     }
 
     @Override
-    public void onReset() {
-    }
+    public void onReset() {}
 
     @Override
-    public void onDispose() {
-    }
+    public void onDispose() {}
 
     @Override
     public void beforeReload() {}
@@ -187,4 +184,3 @@ public class YamlServiceImpl implements YamlService, GeoServerLifecycleHandler {
         files = null;
     }
 }
-

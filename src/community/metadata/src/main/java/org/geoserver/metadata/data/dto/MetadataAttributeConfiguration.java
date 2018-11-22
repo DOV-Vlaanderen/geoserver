@@ -5,14 +5,14 @@
 package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.geoserver.metadata.data.dto.impl.MetadataAttributeConfigurationImpl;
 import java.io.Serializable;
 import java.util.List;
+import org.geoserver.metadata.data.dto.impl.MetadataAttributeConfigurationImpl;
 
 /**
  * Object that matches yaml structure.
  *
- * The configuration descibes one field for the gui.
+ * <p>The configuration descibes one field for the gui.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

@@ -5,18 +5,19 @@
 package org.geoserver.wfs.xslt.rest;
 
 import com.thoughtworks.xstream.XStream;
+import java.util.Collection;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.converters.XStreamCatalogListConverter;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-
 @Component
-public class TransformationsJsonConverter extends XStreamCatalogListConverter.JSONXStreamListConverter {
+public class TransformationsJsonConverter
+        extends XStreamCatalogListConverter.JSONXStreamListConverter {
 
     @Override
-    protected void aliasCollection(Object data, XStream xstream, Class clazz, RestListWrapper wrapper) {
+    protected void aliasCollection(
+            Object data, XStream xstream, Class clazz, RestListWrapper wrapper) {
         xstream.alias("transforms", Collection.class, data.getClass());
     }
 

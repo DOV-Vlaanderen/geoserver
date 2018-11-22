@@ -4,11 +4,6 @@
  */
 package org.geoserver.metadata.web.panel;
 
-import org.apache.wicket.model.IModel;
-import org.geoserver.metadata.data.model.MetadataTemplate;
-import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +11,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.wicket.model.IModel;
+import org.geoserver.metadata.data.model.MetadataTemplate;
+import org.geoserver.metadata.data.model.comparator.MetadataTemplateComparator;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 
 /**
  * DataProvider that manages the list of linked templates for a layer.
@@ -26,9 +25,11 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     private static final long serialVersionUID = -8246320435114536132L;
 
-    public static final Property<MetadataTemplate> NAME = new BeanProperty<MetadataTemplate>("name", "name");
+    public static final Property<MetadataTemplate> NAME =
+            new BeanProperty<MetadataTemplate>("name", "name");
 
-    public static final Property<MetadataTemplate> DESCRIPTION = new BeanProperty<MetadataTemplate>("description", "description");
+    public static final Property<MetadataTemplate> DESCRIPTION =
+            new BeanProperty<MetadataTemplate>("description", "description");
 
     private final String workspace;
 
@@ -38,22 +39,20 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     private List<MetadataTemplate> linkedTemplates = new ArrayList<>();
 
-    public ImportTemplateDataProvider(String workspace, String layerName, 
-            IModel<List<MetadataTemplate>> templatesModel) {
+    public ImportTemplateDataProvider(
+            String workspace, String layerName, IModel<List<MetadataTemplate>> templatesModel) {
         this.workspace = workspace;
         this.layerName = layerName;
 
         allTemplates = templatesModel.getObject();
 
         for (MetadataTemplate template : allTemplates) {
-            if (template.getLinkedLayers() != null &&
-                    template.getLinkedLayers().contains(getKey(workspace, layerName))) {
+            if (template.getLinkedLayers() != null
+                    && template.getLinkedLayers().contains(getKey(workspace, layerName))) {
                 linkedTemplates.add(template);
             }
         }
-
     }
-
 
     @Override
     protected List<Property<MetadataTemplate>> getProperties() {
@@ -77,7 +76,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public void removeLinks(List<MetadataTemplate> templates) throws IOException {
         Iterator<MetadataTemplate> iterator = new ArrayList<>(templates).iterator();
         while (iterator.hasNext()) {
-            MetadataTemplate modelObject =  iterator.next();
+            MetadataTemplate modelObject = iterator.next();
 
             if (modelObject.getLinkedLayers() == null) {
                 modelObject.setLinkedLayers(new HashSet<>());
@@ -89,6 +88,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     /**
      * The remain values are used in the dropdown.
+     *
      * @return
      */
     public List<MetadataTemplate> getUnlinkedItems() {
@@ -97,7 +97,6 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         Collections.sort(result, new MetadataTemplateComparator());
         return result;
     }
-
 
     private String getKey(String workspace, String layerName) {
         return workspace + ":" + layerName;

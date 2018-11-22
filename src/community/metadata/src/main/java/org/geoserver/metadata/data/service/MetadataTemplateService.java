@@ -6,12 +6,9 @@ package org.geoserver.metadata.data.service;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.metadata.data.model.MetadataTemplate;
 
-/**
- * @author Timothy De Bock
- */
+/** @author Timothy De Bock */
 public interface MetadataTemplateService {
 
     List<MetadataTemplate> list();
@@ -20,7 +17,7 @@ public interface MetadataTemplateService {
 
     void update(MetadataTemplate metadataTemplate) throws IOException;
 
-    MetadataTemplate load(String templateName) ;
+    MetadataTemplate load(String templateName);
 
     void delete(MetadataTemplate metadataTemplate) throws IOException;
 

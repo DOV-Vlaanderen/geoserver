@@ -5,7 +5,6 @@
 package org.geoserver.metadata.data.service;
 
 public interface GeneratorService {
-    
-    ComplexAttributeGenerator findGeneratorByType(String typeName);
 
+    ComplexAttributeGenerator findGeneratorByType(String typeName);
 }

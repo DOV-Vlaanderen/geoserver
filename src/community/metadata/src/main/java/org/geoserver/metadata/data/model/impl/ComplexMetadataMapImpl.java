@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,11 +12,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.apache.commons.lang.ArrayUtils;
-import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
 @XStreamAlias("ComplexMetadataMap")
 public class ComplexMetadataMapImpl implements ComplexMetadataMap {
@@ -24,36 +23,29 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     private static final String PATH_SEPARATOR = "/";
 
-    /**
-     * the underlying flat map
-     */
+    /** the underlying flat map */
     private Map<String, Serializable> delegate;
 
-    /**
-     * for submaps
-     */
+    /** for submaps */
     private String[] basePath;
 
-
-    /**
-     * for submaps
-     */
+    /** for submaps */
     private ComplexMetadataIndexReference baseIndexRef;
 
-    /**
-     * indexes, helps attributes to auto-update their indexes after delete
-     */
+    /** indexes, helps attributes to auto-update their indexes after delete */
     private HashMap<String, ArrayList<ComplexMetadataIndexReference>> indexes =
             new HashMap<String, ArrayList<ComplexMetadataIndexReference>>();
 
     public ComplexMetadataMapImpl(Map<String, Serializable> delegate) {
         this.delegate = delegate;
-        this.basePath = new String[]{};
-        this.baseIndexRef = new ComplexMetadataIndexReference(new int[]{});
+        this.basePath = new String[] {};
+        this.baseIndexRef = new ComplexMetadataIndexReference(new int[] {});
     }
 
-    protected ComplexMetadataMapImpl(ComplexMetadataMapImpl parent,
-                                     String[] basePath, ComplexMetadataIndexReference baseIndexRef) {
+    protected ComplexMetadataMapImpl(
+            ComplexMetadataMapImpl parent,
+            String[] basePath,
+            ComplexMetadataIndexReference baseIndexRef) {
         this.delegate = parent.getDelegate();
         this.indexes = parent.getIndexes();
         this.basePath = basePath;
@@ -61,29 +53,26 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     }
 
     @Override
-    public <T extends Serializable>
-    ComplexMetadataAttribute<T> get(Class<T> clazz,
-                                    String path, int... index) {
-        String strPath = String.join(PATH_SEPARATOR,
-                concat(basePath, path));
+    public <T extends Serializable> ComplexMetadataAttribute<T> get(
+            Class<T> clazz, String path, int... index) {
+        String strPath = String.join(PATH_SEPARATOR, concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
-        return new ComplexMetadataAttributeImpl<T>(getDelegate(),
-                strPath,
-                getOrCreateIndex(strPath, fullIndex),
-                clazz);
+        return new ComplexMetadataAttributeImpl<T>(
+                getDelegate(), strPath, getOrCreateIndex(strPath, fullIndex), clazz);
     }
 
     @Override
-    public ComplexMetadataMap subMap(String path,
-                                     int... index) {
+    public ComplexMetadataMap subMap(String path, int... index) {
         String[] fullPath = concat(basePath, path);
-        return new ComplexMetadataMapImpl(this, fullPath,
-                getOrCreateIndex(String.join(PATH_SEPARATOR, fullPath),
+        return new ComplexMetadataMapImpl(
+                this,
+                fullPath,
+                getOrCreateIndex(
+                        String.join(PATH_SEPARATOR, fullPath),
                         concat(baseIndexRef.getIndex(), index)));
     }
 
-    protected ComplexMetadataIndexReference getOrCreateIndex(
-            String strPath, int[] index) {
+    protected ComplexMetadataIndexReference getOrCreateIndex(String strPath, int[] index) {
         ComplexMetadataIndexReference result = null;
         ArrayList<ComplexMetadataIndexReference> list = getIndexes().get(strPath);
         if (list == null) {
@@ -106,13 +95,12 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     @Override
     public int size(String path, int... index) {
-        String strPath = String.join(PATH_SEPARATOR,
-                concat(basePath, path));
+        String strPath = String.join(PATH_SEPARATOR, concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
         if (getDelegate().containsKey(strPath)) {
             return sizeInternal(strPath, index);
         } else {
-            //subtype
+            // subtype
             int size = 0;
             for (String key : getDelegate().keySet()) {
                 if (key.startsWith(strPath + PATH_SEPARATOR)) {
@@ -144,8 +132,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     @Override
     public void delete(String path, int... index) {
-        String strPath = String.join(PATH_SEPARATOR,
-                concat(basePath, path));
+        String strPath = String.join(PATH_SEPARATOR, concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
         if (fullIndex.length > 0) {
             deleteFromList(strPath, fullIndex);
@@ -165,7 +152,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             }
         }
     }
-    
+
     @Override
     public ComplexMetadataMap clone() {
         Map<String, Serializable> newDelegate = new HashMap<String, Serializable>();
@@ -173,8 +160,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         for (String key : getDelegate().keySet()) {
             if (key.startsWith(strPath + PATH_SEPARATOR)) {
                 String strippedKey = key.substring(strPath.length() + 1);
-                newDelegate.put(strippedKey, 
-                        get(Serializable.class, strippedKey).getValue());
+                newDelegate.put(strippedKey, get(Serializable.class, strippedKey).getValue());
             }
         }
         return new ComplexMetadataMapImpl(newDelegate);
@@ -211,7 +197,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
                     int[] rootItemIndex = Arrays.copyOfRange(item.getIndex(), 0, index.length - 1);
                     int[] rootIndex = Arrays.copyOfRange(index, 0, index.length - 1);
                     if (Arrays.equals(rootIndex, rootItemIndex)) {
-                        if(item.getIndex()[index.length - 1] == index[index.length - 1]) {
+                        if (item.getIndex()[index.length - 1] == index[index.length - 1]) {
                             item.setIndex(null);
                             it.remove();
                         } else if (item.getIndex()[index.length - 1] > index[index.length - 1]) {
@@ -222,7 +208,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             }
         }
     }
-    
+
     protected static String[] concat(String[] first, String... second) {
         return (String[]) ArrayUtils.addAll(first, second);
     }
@@ -233,10 +219,11 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     /**
      * When unmarshalling the xml these values can be null.
+     *
      * @return
      */
     private Map<String, Serializable> getDelegate() {
-        if(delegate == null){
+        if (delegate == null) {
             delegate = new HashMap<>();
         }
         return delegate;
@@ -244,13 +231,13 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
     /**
      * When unmarshalling the xml these values can be null.
+     *
      * @return
      */
     private HashMap<String, ArrayList<ComplexMetadataIndexReference>> getIndexes() {
-        if(indexes == null){
+        if (indexes == null) {
             indexes = new HashMap<>();
         }
         return indexes;
     }
-
 }

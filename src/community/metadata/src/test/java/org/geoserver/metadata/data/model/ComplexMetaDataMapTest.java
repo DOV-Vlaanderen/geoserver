@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
-import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.junit.Test;
 
@@ -23,12 +21,11 @@ public class ComplexMetaDataMapTest {
 
         assertEquals(0, map.size("field-doesntexist"));
 
-        //single-valued
+        // single-valued
 
         assertEquals(1, map.size("field-single"));
 
-        ComplexMetadataAttribute<String> att = map.get(String.class,
-                "field-single");
+        ComplexMetadataAttribute<String> att = map.get(String.class, "field-single");
 
         assertEquals("single value string", att.getValue());
         att.setValue("alteredValue");
@@ -39,12 +36,11 @@ public class ComplexMetaDataMapTest {
         assertEquals(0, map.size("field-single"));
         assertNull(underlying.get("field-single"));
 
-        //multi-valued
+        // multi-valued
 
         assertEquals(2, map.size("field-as-list"));
 
-        att = map.get(String.class,
-                "field-as-list", 1);
+        att = map.get(String.class, "field-as-list", 1);
         assertEquals("field list value 2", att.getValue());
         att.setValue("alteredListValue");
         assertEquals("alteredListValue", ((ArrayList<?>) underlying.get("field-as-list")).get(1));
@@ -58,7 +54,7 @@ public class ComplexMetaDataMapTest {
         att.setValue("alteredListValue2");
         assertEquals("alteredListValue2", ((ArrayList<?>) underlying.get("field-as-list")).get(0));
 
-        //create new multi value
+        // create new multi value
         assertEquals(0, map.size("ohter-as-list"));
 
         att = map.get(String.class, "ohter-as-list", 1);
@@ -71,7 +67,6 @@ public class ComplexMetaDataMapTest {
 
         att = map.get(String.class, "ohter-as-list", 0);
         assertEquals(null, att.getValue());
-
     }
 
     @Test
@@ -79,36 +74,33 @@ public class ComplexMetaDataMapTest {
         MetadataMap underlying = createMap();
         ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
 
-        ComplexMetadataMap subMap =
-                map.subMap("object-field");
+        ComplexMetadataMap subMap = map.subMap("object-field");
 
         assertEquals(1, subMap.size("field1"));
         assertEquals(1, subMap.size("field2"));
         assertEquals(2, subMap.size("field3"));
 
-        ComplexMetadataAttribute<String> att =
-                subMap.get(String.class,
-                        "field1");
+        ComplexMetadataAttribute<String> att = subMap.get(String.class, "field1");
         assertEquals("object field 01", att.getValue());
         att.setValue("alteredValue");
         assertEquals("alteredValue", underlying.get("object-field/field1"));
 
-        att = subMap.get(String.class,
-                "field3", 1);
+        att = subMap.get(String.class, "field3", 1);
         assertEquals("object field list value 2", att.getValue());
         att.setValue("alteredListValue");
-        assertEquals("alteredListValue", ((ArrayList<?>) underlying.get("object-field/field3")).get(1));
+        assertEquals(
+                "alteredListValue", ((ArrayList<?>) underlying.get("object-field/field3")).get(1));
 
         subMap.delete("field3", 0);
 
         assertEquals(1, subMap.size("field3"));
 
         assertEquals("alteredListValue", att.getValue());
-        assertEquals("alteredListValue", ((ArrayList<?>) underlying.get("object-field/field3")).get(0));
+        assertEquals(
+                "alteredListValue", ((ArrayList<?>) underlying.get("object-field/field3")).get(0));
         att.setValue("alteredListValue2");
-        assertEquals("alteredListValue2", ((ArrayList<?>) underlying.get("object-field/field3")).get(0));
-
-
+        assertEquals(
+                "alteredListValue2", ((ArrayList<?>) underlying.get("object-field/field3")).get(0));
     }
 
     @Test
@@ -116,52 +108,63 @@ public class ComplexMetaDataMapTest {
         MetadataMap underlying = createMap();
         ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
 
-        ComplexMetadataMap subMap =
-                map.subMap("object-as-list", 1);
+        ComplexMetadataMap subMap = map.subMap("object-as-list", 1);
 
-        ComplexMetadataAttribute<String> att1 =
-                subMap.get(String.class, "field 01");
+        ComplexMetadataAttribute<String> att1 = subMap.get(String.class, "field 01");
         assertEquals("object list value 2", att1.getValue());
         att1.setValue("alteredValue");
-        assertEquals("alteredValue", ((ArrayList<?>) underlying.get("object-as-list/field 01")).get(1));
+        assertEquals(
+                "alteredValue", ((ArrayList<?>) underlying.get("object-as-list/field 01")).get(1));
 
-        ComplexMetadataAttribute<String> att2 =
-                subMap.get(String.class, "field 02", 1);
+        ComplexMetadataAttribute<String> att2 = subMap.get(String.class, "field 02", 1);
         assertEquals("object list value other 2.2", att2.getValue());
         att2.setValue("alteredOtherValue");
-        assertEquals("alteredOtherValue",
-                ((ArrayList<?>) ((ArrayList<?>) underlying.get("object-as-list/field 02")).get(1)).get(1));
+        assertEquals(
+                "alteredOtherValue",
+                ((ArrayList<?>) ((ArrayList<?>) underlying.get("object-as-list/field 02")).get(1))
+                        .get(1));
 
-        ComplexMetadataAttribute<String> att3 =
-                subMap.get(String.class, "field 03");
+        ComplexMetadataAttribute<String> att3 = subMap.get(String.class, "field 03");
         assertNull(att3.getValue());
         att3.setValue("alteredYetOtherValue");
-        assertEquals("alteredYetOtherValue", ((ArrayList<?>) underlying.get("object-as-list/field 03")).get(1));
+        assertEquals(
+                "alteredYetOtherValue",
+                ((ArrayList<?>) underlying.get("object-as-list/field 03")).get(1));
 
-        ComplexMetadataAttribute<String> att4 =
-                subMap.get(String.class, "field 04");
+        ComplexMetadataAttribute<String> att4 = subMap.get(String.class, "field 04");
         assertEquals("object single value", att4.getValue());
         att4.setValue("alteredYetYetOtherValue");
-        assertEquals("alteredYetYetOtherValue", ((ArrayList<?>) underlying.get("object-as-list/field 04")).get(1));
-        assertEquals("object single value", ((ArrayList<?>) underlying.get("object-as-list/field 04")).get(0));
+        assertEquals(
+                "alteredYetYetOtherValue",
+                ((ArrayList<?>) underlying.get("object-as-list/field 04")).get(1));
+        assertEquals(
+                "object single value",
+                ((ArrayList<?>) underlying.get("object-as-list/field 04")).get(0));
 
         map.delete("object-as-list", 0);
 
         assertEquals("alteredValue", subMap.get(String.class, "field 01").getValue());
         assertEquals("alteredValue", att1.getValue());
-        assertEquals("alteredValue", ((ArrayList<?>) underlying.get("object-as-list/field 01")).get(0));
+        assertEquals(
+                "alteredValue", ((ArrayList<?>) underlying.get("object-as-list/field 01")).get(0));
         assertEquals("alteredOtherValue", att2.getValue());
-        assertEquals("alteredOtherValue",
-                ((ArrayList<?>) ((ArrayList<?>) underlying.get("object-as-list/field 02")).get(0)).get(1));
+        assertEquals(
+                "alteredOtherValue",
+                ((ArrayList<?>) ((ArrayList<?>) underlying.get("object-as-list/field 02")).get(0))
+                        .get(1));
         assertEquals("alteredYetOtherValue", att3.getValue());
-        assertEquals("alteredYetOtherValue", ((ArrayList<?>) underlying.get("object-as-list/field 03")).get(0));
+        assertEquals(
+                "alteredYetOtherValue",
+                ((ArrayList<?>) underlying.get("object-as-list/field 03")).get(0));
         assertEquals("alteredYetYetOtherValue", att4.getValue());
-        assertEquals("alteredYetYetOtherValue", ((ArrayList<?>) underlying.get("object-as-list/field 04")).get(0));
+        assertEquals(
+                "alteredYetYetOtherValue",
+                ((ArrayList<?>) underlying.get("object-as-list/field 04")).get(0));
     }
 
     private MetadataMap createMap() {
         MetadataMap map = new MetadataMap();
-        //String
+        // String
         map.put("field-single", "single value string");
 
         // list String
@@ -170,7 +173,7 @@ public class ComplexMetaDataMapTest {
         fieldAsList.add("field list value 2");
         map.put("field-as-list", fieldAsList);
 
-        //Object
+        // Object
         map.put("object-field/field1", "object field 01");
         map.put("object-field/field2", "object field 02");
         fieldAsList = new ArrayList<>();
@@ -178,13 +181,13 @@ public class ComplexMetaDataMapTest {
         fieldAsList.add("object field list value 2");
         map.put("object-field/field3", fieldAsList);
 
-        //String per object
+        // String per object
         ArrayList<Object> fieldAsListObjectValue01 = new ArrayList<>();
         fieldAsListObjectValue01.add("object list value 1");
         fieldAsListObjectValue01.add("object list value 2");
         map.put("object-as-list/field 01", fieldAsListObjectValue01);
 
-        //list per object
+        // list per object
         ArrayList<Object> fieldAsListObjectValue02 = new ArrayList<>();
         ArrayList<Object> fieldAsListObjectValue0201 = new ArrayList<>();
         fieldAsListObjectValue0201.add("object list value other 1");
@@ -201,8 +204,6 @@ public class ComplexMetaDataMapTest {
 
         map.put("object-as-list/field 04", "object single value");
 
-
         return map;
     }
-
 }

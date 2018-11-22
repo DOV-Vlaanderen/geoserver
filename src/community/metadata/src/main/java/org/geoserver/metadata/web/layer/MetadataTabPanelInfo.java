@@ -12,7 +12,7 @@ import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedEditTabPanelInfo;
 
-public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo>  {
+public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
 
     private static final long serialVersionUID = 7092956796960461825L;
 
@@ -24,7 +24,9 @@ public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo>  
     @Override
     public IModel<?> createOwnModel(IModel<? extends LayerInfo> model, boolean isNew) {
         MetadataTemplateService service =
-                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+                GeoServerApplication.get()
+                        .getApplicationContext()
+                        .getBean(MetadataTemplateService.class);
         return new ListModel<MetadataTemplate>(service.list());
     }
 }

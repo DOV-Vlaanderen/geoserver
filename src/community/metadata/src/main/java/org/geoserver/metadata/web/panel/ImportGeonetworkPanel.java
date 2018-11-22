@@ -4,6 +4,8 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -22,13 +24,11 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * A panel that lets the user select a geonetwork endpoint and input a uuid of the metadata record in geonetwork.
+ * A panel that lets the user select a geonetwork endpoint and input a uuid of the metadata record
+ * in geonetwork.
  *
- * The available geonetwork endpoints are configured in the yaml.
+ * <p>The available geonetwork endpoints are configured in the yaml.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -39,15 +39,16 @@ public class ImportGeonetworkPanel extends Panel {
 
     private boolean suppressWarnings;
 
-
     public ImportGeonetworkPanel(String id) {
         super(id);
-        MetadataEditorConfigurationService metadataService = GeoServerApplication.get().getApplicationContext().getBean(MetadataEditorConfigurationService.class);
+        MetadataEditorConfigurationService metadataService =
+                GeoServerApplication.get()
+                        .getApplicationContext()
+                        .getBean(MetadataEditorConfigurationService.class);
         MetadataEditorConfiguration configuration = metadataService.readConfiguration();
         if (configuration != null && configuration.getGeonetworks() != null) {
             this.geonetworks = configuration.getGeonetworks();
         }
-
     }
 
     @Override
@@ -56,7 +57,9 @@ public class ImportGeonetworkPanel extends Panel {
 
         GeoServerDialog dialog = new GeoServerDialog("importDialog");
         add(dialog);
-        add(new FeedbackPanel("importFeedback", new ContainerFeedbackMessageFilter(this)).setOutputMarkupId(true));
+        add(
+                new FeedbackPanel("importFeedback", new ContainerFeedbackMessageFilter(this))
+                        .setOutputMarkupId(true));
 
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
         for (MetadataGeonetworkConfiguration geonetwork : geonetworks) {
@@ -73,7 +76,10 @@ public class ImportGeonetworkPanel extends Panel {
         add(createImportAction(dropDown, inputUUID, dialog));
     }
 
-    private AjaxSubmitLink createImportAction(final DropDownChoice<String> dropDown, final TextField<String> inputUUID, GeoServerDialog dialog) {
+    private AjaxSubmitLink createImportAction(
+            final DropDownChoice<String> dropDown,
+            final TextField<String> inputUUID,
+            GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
 
@@ -86,51 +92,64 @@ public class ImportGeonetworkPanel extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 boolean valid = true;
                 if (dropDown.getModelObject() == null || "".equals(dropDown.getModelObject())) {
-                    error(new ParamResourceModel("errorSelectGeonetwork",
-                            ImportGeonetworkPanel.this).getString());
+                    error(
+                            new ParamResourceModel(
+                                            "errorSelectGeonetwork", ImportGeonetworkPanel.this)
+                                    .getString());
                     valid = false;
                 }
                 if ("".equals(inputUUID.getValue())) {
-                    error(new ParamResourceModel("errorUuidRequired",
-                            ImportGeonetworkPanel.this).getString());
+                    error(
+                            new ParamResourceModel("errorUuidRequired", ImportGeonetworkPanel.this)
+                                    .getString());
                     valid = false;
                 }
                 if (valid) {
                     if (!suppressWarnings) {
-                        dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportGeonetworkPanel.this));
-                        dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                        dialog.setTitle(
+                                new ParamResourceModel(
+                                        "confirmImportDialog.title", ImportGeonetworkPanel.this));
+                        dialog.showOkCancel(
+                                target,
+                                new GeoServerDialog.DialogDelegate() {
 
-                            private static final long serialVersionUID = -5552087037163833563L;
+                                    private static final long serialVersionUID =
+                                            -5552087037163833563L;
 
-                            @Override
-                            protected Component getContents(String id) {
-                                ParamResourceModel resource =
-                                        new ParamResourceModel("confirmImportDialog.content", ImportGeonetworkPanel.this);
-                                return new MultiLineLabel(id, resource.getString());
-                            }
+                                    @Override
+                                    protected Component getContents(String id) {
+                                        ParamResourceModel resource =
+                                                new ParamResourceModel(
+                                                        "confirmImportDialog.content",
+                                                        ImportGeonetworkPanel.this);
+                                        return new MultiLineLabel(id, resource.getString());
+                                    }
 
-                            @Override
-                            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                                String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
-                                handleImport(url, target);
-                                return true;
-                            }
-                        });
+                                    @Override
+                                    protected boolean onSubmit(
+                                            AjaxRequestTarget target, Component contents) {
+                                        String url =
+                                                generateMetadataUrl(
+                                                        dropDown.getModelObject(),
+                                                        inputUUID.getValue());
+                                        handleImport(url, target);
+                                        return true;
+                                    }
+                                });
                     } else {
-                        String url = generateMetadataUrl(dropDown.getModelObject(), inputUUID.getValue());
+                        String url =
+                                generateMetadataUrl(
+                                        dropDown.getModelObject(), inputUUID.getValue());
                         handleImport(url, target);
                     }
                 }
 
                 target.add(getFeedbackPanel());
             }
-
         };
     }
 
-    public void handleImport(String url, AjaxRequestTarget target) {
-
-    }
+    public void handleImport(String url, AjaxRequestTarget target) {}
 
     private String generateMetadataUrl(String modelValue, String uuid) {
         String url = "";
@@ -142,7 +161,7 @@ public class ImportGeonetworkPanel extends Panel {
                 }
             }
             if (!url.contains("xml_iso19139_save?uuid=")) {
-                //assume we got the base url.
+                // assume we got the base url.
                 if (!url.endsWith("/")) {
                     url = url + "/";
                 }
@@ -153,12 +172,10 @@ public class ImportGeonetworkPanel extends Panel {
         return url;
     }
 
-
     private DropDownChoice<String> createDropDown(final ArrayList<String> optionsGeonetwork) {
-        return new DropDownChoice<String>("geonetworkName", new Model<String>(""), optionsGeonetwork);
+        return new DropDownChoice<String>(
+                "geonetworkName", new Model<String>(""), optionsGeonetwork);
     }
-
-
 
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("importFeedback");

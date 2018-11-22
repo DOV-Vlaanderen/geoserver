@@ -6,7 +6,6 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.ows.Dispatcher;
@@ -30,33 +29,33 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
     }
 
     @Override
-    public GridCoverage getGridCoverage(ProgressListener listener, Hints hints)
-            throws IOException {
-        if(policy.level == AccessLevel.METADATA) 
+    public GridCoverage getGridCoverage(ProgressListener listener, Hints hints) throws IOException {
+        if (policy.level == AccessLevel.METADATA)
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
-        
+
         // go through the secured reader
         GridCoverageReader reader = getGridCoverageReader(listener, hints);
         return getCatalog().getResourcePool().getGridCoverage(this, reader, null, hints);
     }
 
     @Override
-    public GridCoverage getGridCoverage(ProgressListener listener,
-            ReferencedEnvelope envelope, Hints hints) throws IOException {
-        if(policy.level == AccessLevel.METADATA) 
+    public GridCoverage getGridCoverage(
+            ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
+            throws IOException {
+        if (policy.level == AccessLevel.METADATA)
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
-        
+
         // go through the secured reader
         GridCoverageReader reader = getGridCoverageReader(listener, hints);
         return getCatalog().getResourcePool().getGridCoverage(this, reader, envelope, hints);
     }
 
     @Override
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener,
-            Hints hints) throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
+            throws IOException {
         Request request = Dispatcher.REQUEST.get();
-        if(policy.level == AccessLevel.METADATA && 
-                (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest()))) {
+        if (policy.level == AccessLevel.METADATA
+                && (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest()))) {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         }
         GridCoverageReader reader = super.getGridCoverageReader(listener, hints);
@@ -67,5 +66,4 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
     public CoverageStoreInfo getStore() {
         return new SecuredCoverageStoreInfo(super.getStore(), policy);
     }
-
 }

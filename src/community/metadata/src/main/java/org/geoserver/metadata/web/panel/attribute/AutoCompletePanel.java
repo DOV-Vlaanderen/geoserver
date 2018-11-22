@@ -4,13 +4,12 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
 public class AutoCompletePanel extends Panel {
 
@@ -20,27 +19,25 @@ public class AutoCompletePanel extends Panel {
 
         super(id, model);
 
-        add(new AutoCompleteTextField<String>("autoComplete", model) {
+        add(
+                new AutoCompleteTextField<String>("autoComplete", model) {
 
-            private static final long serialVersionUID = 7742400754591550452L;
+                    private static final long serialVersionUID = 7742400754591550452L;
 
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                List<String> result = new ArrayList<String>();
-                for (String value : values) {
-                    if(value.toLowerCase().startsWith(input.toLowerCase())){
-                        result.add(value);
+                    @Override
+                    protected Iterator<String> getChoices(String input) {
+                        List<String> result = new ArrayList<String>();
+                        for (String value : values) {
+                            if (value.toLowerCase().startsWith(input.toLowerCase())) {
+                                result.add(value);
+                            }
+                        }
+                        if (result.isEmpty()) {
+                            return values.iterator();
+                        } else {
+                            return result.iterator();
+                        }
                     }
-                }
-                if (result.isEmpty()) {
-                    return values.iterator();
-                } else {
-                    return result.iterator();
-                }
-            }
-        });
-
-
+                });
     }
-
 }

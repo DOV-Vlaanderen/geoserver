@@ -5,6 +5,16 @@
 package org.geoserver.metadata.data.service.impl;
 
 import com.thoughtworks.xstream.io.StreamException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -24,26 +34,14 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-
 /**
- * Service that manages the list of templates.
- * When the config of a template is updated all linked metadata is also updated.
+ * Service that manages the list of templates. When the config of a template is updated all linked
+ * metadata is also updated.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @Component
 public class MetadataTemplateServiceImpl implements MetadataTemplateService {
-
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplateServiceImpl.class);
 
@@ -51,23 +49,21 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     private static String FILE_NAME = "templates.xml";
 
-    @Autowired
-    private GeoServerDataDirectory dataDirectory;
+    @Autowired private GeoServerDataDirectory dataDirectory;
 
-    @Autowired
-    private ComplexMetadataService metadataService;
+    @Autowired private ComplexMetadataService metadataService;
 
-    //TODO is this correct?
-    @Autowired
-    protected GeoServer geoServer;
+    // TODO is this correct?
+    @Autowired protected GeoServer geoServer;
 
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
-        this.persister.getXStream().allowTypesByWildcard(new String[]{"org.geoserver.metadata.data.model.**"});
+        this.persister
+                .getXStream()
+                .allowTypesByWildcard(new String[] {"org.geoserver.metadata.data.model.**"});
         this.persister.getXStream().processAnnotations(MetadataTemplateImpl.class);
         this.persister.getXStream().processAnnotations(ComplexMetadataMapImpl.class);
         this.persister.getXStream().processAnnotations(ComplexMetadataIndexReference.class);
-
     }
 
     private Resource getFolder() {
@@ -93,13 +89,13 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         List<MetadataTemplate> templates = list();
         for (MetadataTemplate tempate : templates) {
             if (tempate.getName().equals(metadataTemplate.getName())) {
-                throw new IOException("Template with name " + metadataTemplate.getName() + "already exists");
+                throw new IOException(
+                        "Template with name " + metadataTemplate.getName() + "already exists");
             }
         }
         templates.add(metadataTemplate);
         updateTemplates(templates);
     }
-
 
     @Override
     public void update(MetadataTemplate metadataTemplate) throws IOException {
@@ -116,23 +112,31 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             templates.add(index, metadataTemplate);
 
             updateTemplates(templates);
-            //update layers
+            // update layers
             if (metadataTemplate.getLinkedLayers() != null) {
                 for (String key : metadataTemplate.getLinkedLayers()) {
                     LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
 
                     if (layer != null) {
                         @SuppressWarnings("unchecked")
-                        HashMap<String, List<Integer>> derivedAtts = (HashMap<String, List<Integer>>)
-                                layer.getResource().getMetadata().get(MetadataConstants.DERIVED_KEY);
+                        HashMap<String, List<Integer>> derivedAtts =
+                                (HashMap<String, List<Integer>>)
+                                        layer.getResource()
+                                                .getMetadata()
+                                                .get(MetadataConstants.DERIVED_KEY);
 
-                        Serializable custom = layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                        Serializable custom =
+                                layer.getResource()
+                                        .getMetadata()
+                                        .get(MetadataConstants.CUSTOM_METADATA_KEY);
                         @SuppressWarnings("unchecked")
-                        ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+                        ComplexMetadataMapImpl model =
+                                new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
 
                         ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
                         for (MetadataTemplate template : templates) {
-                            if (template.getLinkedLayers() != null && template.getLinkedLayers().contains(key)) {
+                            if (template.getLinkedLayers() != null
+                                    && template.getLinkedLayers().contains(key)) {
                                 sources.add(template.getMetadata());
                             }
                         }
@@ -146,10 +150,12 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                 }
             }
         } else {
-            throw new IOException("The template " + metadataTemplate.getName() + " was not found and could not be updated.");
+            throw new IOException(
+                    "The template "
+                            + metadataTemplate.getName()
+                            + " was not found and could not be updated.");
         }
     }
-
 
     @Override
     public MetadataTemplate load(String templateName) {
@@ -228,21 +234,19 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         return new ArrayList<>();
     }
 
-
     private void updateTemplates(List<MetadataTemplate> tempates) throws IOException {
         Resource folder = getFolder();
         Resource file = folder.get(FILE_NAME);
 
         if (file == null) {
-            File fileResource = Resources.createNewFile(Files.asResource(new File(folder.dir(), FILE_NAME)));
+            File fileResource =
+                    Resources.createNewFile(Files.asResource(new File(folder.dir(), FILE_NAME)));
             file = Files.asResource(fileResource);
         }
         try (OutputStream out = file.out()) {
             persister.save(tempates, out);
         }
-
     }
-
 
     private int getIndex(MetadataTemplate template, List<MetadataTemplate> templates) {
         for (int i = 0; i < templates.size(); i++) {
@@ -253,6 +257,4 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
         }
         return -1;
     }
-
 }
-

@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,78 +20,99 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
-import java.util.List;
-
 public class TemplatesPositionPanel extends Panel {
     private static final long serialVersionUID = -4645368967597125299L;
 
     private ImageAjaxLink<Object> upLink;
     private ImageAjaxLink<Object> downLink;
 
-    public TemplatesPositionPanel(String id, IModel<MetadataTemplate> model, GeoServerTablePanel<MetadataTemplate> tablePanel) {
+    public TemplatesPositionPanel(
+            String id,
+            IModel<MetadataTemplate> model,
+            GeoServerTablePanel<MetadataTemplate> tablePanel) {
         super(id, model);
-        upLink = new ImageAjaxLink<Object>("up", new PackageResourceReference(GeoServerBasePage.class,
-                "img/icons/silk/arrow_up.png")) {
-            private static final long serialVersionUID = -4165434301439054175L;
+        upLink =
+                new ImageAjaxLink<Object>(
+                        "up",
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                    private static final long serialVersionUID = -4165434301439054175L;
 
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                MetadataTemplateService service =
-                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-                service.increasePriority(model.getObject());
-                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                tablePanel.clearSelection();
-                target.add(tablePanel);
-            }
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        MetadataTemplateService service =
+                                GeoServerApplication.get()
+                                        .getApplicationContext()
+                                        .getBean(MetadataTemplateService.class);
+                        service.increasePriority(model.getObject());
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
+                                .removeAll();
+                        tablePanel.clearSelection();
+                        target.add(tablePanel);
+                    }
 
-            @Override
-            protected void onComponentTag(ComponentTag tag) {
-                MetadataTemplateService service =
-                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-                List<MetadataTemplate> templates = service.list();
-                if (getIndex(model.getObject(), templates) == 0) {
-                    tag.put("style", "visibility:hidden");
-                } else {
-                    tag.put("style", "visibility:visible");
-                }
-            }
-        };
-        upLink.getImage().add(new AttributeModifier("alt",
-                new ParamResourceModel("up", TemplatesPositionPanel.this)));
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        MetadataTemplateService service =
+                                GeoServerApplication.get()
+                                        .getApplicationContext()
+                                        .getBean(MetadataTemplateService.class);
+                        List<MetadataTemplate> templates = service.list();
+                        if (getIndex(model.getObject(), templates) == 0) {
+                            tag.put("style", "visibility:hidden");
+                        } else {
+                            tag.put("style", "visibility:visible");
+                        }
+                    }
+                };
+        upLink.getImage()
+                .add(
+                        new AttributeModifier(
+                                "alt", new ParamResourceModel("up", TemplatesPositionPanel.this)));
         add(upLink);
 
-        downLink = new ImageAjaxLink<Object>("down", new PackageResourceReference(GeoServerBasePage.class,
-                "img/icons/silk/arrow_down.png")) {
-            private static final long serialVersionUID = -8005026702401617344L;
+        downLink =
+                new ImageAjaxLink<Object>(
+                        "down",
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                    private static final long serialVersionUID = -8005026702401617344L;
 
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                MetadataTemplateService service =
-                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-                service.decreasePriority(model.getObject());
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        MetadataTemplateService service =
+                                GeoServerApplication.get()
+                                        .getApplicationContext()
+                                        .getBean(MetadataTemplateService.class);
+                        service.decreasePriority(model.getObject());
 
-                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                tablePanel.clearSelection();
-                target.add(tablePanel);
-            }
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
+                                .removeAll();
+                        tablePanel.clearSelection();
+                        target.add(tablePanel);
+                    }
 
-            @Override
-            protected void onComponentTag(ComponentTag tag) {
-                MetadataTemplateService service =
-                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
-                List<MetadataTemplate> templates = service.list();
-                if (getIndex(model.getObject(), templates) == templates.size() - 1) {
-                    tag.put("style", "visibility:hidden");
-                } else {
-                    tag.put("style", "visibility:visible");
-                }
-            }
-        };
-        downLink.getImage().add(new AttributeModifier("alt",
-                new ParamResourceModel("down", TemplatesPositionPanel.this)));
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        MetadataTemplateService service =
+                                GeoServerApplication.get()
+                                        .getApplicationContext()
+                                        .getBean(MetadataTemplateService.class);
+                        List<MetadataTemplate> templates = service.list();
+                        if (getIndex(model.getObject(), templates) == templates.size() - 1) {
+                            tag.put("style", "visibility:hidden");
+                        } else {
+                            tag.put("style", "visibility:visible");
+                        }
+                    }
+                };
+        downLink.getImage()
+                .add(
+                        new AttributeModifier(
+                                "alt",
+                                new ParamResourceModel("down", TemplatesPositionPanel.this)));
         add(downLink);
     }
-
 
     private int getIndex(MetadataTemplate template, List<MetadataTemplate> templates) {
         for (int i = 0; i < templates.size(); i++) {

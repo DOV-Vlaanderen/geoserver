@@ -6,10 +6,9 @@ package org.geoserver.metadata.data.model;
 
 import java.io.Serializable;
 
-public interface ComplexMetadataAttribute <T extends Serializable> extends Serializable {
-    
-    public T getValue();
-    
-    public void setValue(T value);
+public interface ComplexMetadataAttribute<T extends Serializable> extends Serializable {
 
+    public T getValue();
+
+    public void setValue(T value);
 }

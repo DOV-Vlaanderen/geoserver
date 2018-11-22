@@ -9,7 +9,7 @@ import org.geoserver.metadata.data.dto.MetadataGeonetworkConfiguration;
 /**
  * Object that matches yaml structure.
  *
- * Describe a geonetwork endpoint.
+ * <p>Describe a geonetwork endpoint.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -21,24 +21,27 @@ public class MetadataGeonetworkConfigurationImpl implements MetadataGeonetworkCo
 
     String url;
 
-    public MetadataGeonetworkConfigurationImpl() {
-    }
+    public MetadataGeonetworkConfigurationImpl() {}
 
     public MetadataGeonetworkConfigurationImpl(String url) {
         this.url = url;
     }
+
     @Override
     public String getName() {
         return name;
     }
+
     @Override
     public void setName(String name) {
         this.name = name;
     }
+
     @Override
     public String getUrl() {
         return url;
     }
+
     @Override
     public void setUrl(String url) {
         this.url = url;

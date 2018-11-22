@@ -4,12 +4,11 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.util.Date;
 import org.apache.wicket.extensions.markup.html.form.DateTextField;
 import org.apache.wicket.extensions.yui.calendar.DatePicker;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
-import java.util.Date;
 
 public class DateFieldPanel extends Panel {
 
@@ -22,6 +21,4 @@ public class DateFieldPanel extends Panel {
         dateTextField.setModel(model);
         add(dateTextField);
     }
-
-
 }

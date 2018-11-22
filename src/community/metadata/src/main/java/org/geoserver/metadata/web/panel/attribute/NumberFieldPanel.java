@@ -16,5 +16,4 @@ public class NumberFieldPanel extends Panel {
         super(id, model);
         add(new NumberTextField<Integer>("textfield", model, Integer.class));
     }
-
 }

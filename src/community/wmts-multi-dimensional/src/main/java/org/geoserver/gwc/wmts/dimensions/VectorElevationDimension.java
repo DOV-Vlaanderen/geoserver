@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import java.util.List;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -12,11 +13,7 @@ import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
-import java.util.List;
-
-/**
- * Represents an elevation dimension of a vector (feature type).
- */
+/** Represents an elevation dimension of a vector (feature type). */
 public class VectorElevationDimension extends Dimension {
 
     public VectorElevationDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
@@ -29,7 +26,8 @@ public class VectorElevationDimension extends Dimension {
     }
 
     @Override
-    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
+    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(
+            Filter filter, boolean noDuplicates) {
         return getVectorDomainValues(filter, noDuplicates, DimensionsUtils.NUMERICAL_COMPARATOR);
     }
 

@@ -4,17 +4,16 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Object that matches yaml structure.
  *
- * The configuration descibes one field for the gui.
+ * <p>The configuration descibes one field for the gui.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -34,8 +33,7 @@ public class MetadataAttributeConfigurationImpl implements MetadataAttributeConf
 
     String typename;
 
-    public MetadataAttributeConfigurationImpl() {
-    }
+    public MetadataAttributeConfigurationImpl() {}
 
     public MetadataAttributeConfigurationImpl(String key, FieldTypeEnum fieldType) {
         this.key = key;
@@ -60,46 +58,57 @@ public class MetadataAttributeConfigurationImpl implements MetadataAttributeConf
     public String getKey() {
         return key;
     }
+
     @Override
     public void setKey(String key) {
         this.key = key;
     }
+
     @Override
     public String getLabel() {
         return label;
     }
+
     @Override
     public void setLabel(String label) {
         this.label = label;
     }
+
     @Override
     public FieldTypeEnum getFieldType() {
         return fieldType;
     }
+
     @Override
     public void setFieldType(FieldTypeEnum fieldType) {
         this.fieldType = fieldType;
     }
+
     @Override
     public List<String> getValues() {
         return values;
     }
+
     @Override
     public void setValues(List<String> values) {
         this.values = values;
     }
+
     @Override
     public String getTypename() {
         return typename;
     }
+
     @Override
     public void setTypename(String typename) {
         this.typename = typename;
     }
+
     @Override
     public OccurenceEnum getOccurrence() {
         return occurrence;
     }
+
     @Override
     public void setOccurrence(OccurenceEnum occurrence) {
         this.occurrence = occurrence;

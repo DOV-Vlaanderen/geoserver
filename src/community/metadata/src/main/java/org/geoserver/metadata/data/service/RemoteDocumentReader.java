@@ -4,10 +4,9 @@
  */
 package org.geoserver.metadata.data.service;
 
-import org.w3c.dom.Document;
-
 import java.io.IOException;
 import java.net.URL;
+import org.w3c.dom.Document;
 
 /**
  * Import the metadata from a geonetwork server.

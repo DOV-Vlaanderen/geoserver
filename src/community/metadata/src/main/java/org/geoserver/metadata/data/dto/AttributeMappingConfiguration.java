@@ -6,17 +6,16 @@ package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.geoserver.metadata.data.dto.impl.AttributeMappingConfigurationImpl;
-
 import java.util.List;
+import org.geoserver.metadata.data.dto.impl.AttributeMappingConfigurationImpl;
 
 /**
  * Toplevel Object that matches yaml structure.
  *
- * This part or the yaml contains the configuration that matches fields in the xml (Xpath expressions)
- * to the field configuration of the geoserver metadata GUI.
+ * <p>This part or the yaml contains the configuration that matches fields in the xml (Xpath
+ * expressions) to the field configuration of the geoserver metadata GUI.
  *
- * example of the yaml file: metadata-mapping.yaml
+ * <p>example of the yaml file: metadata-mapping.yaml
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

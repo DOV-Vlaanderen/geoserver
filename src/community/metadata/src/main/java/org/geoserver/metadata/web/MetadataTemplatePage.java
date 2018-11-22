@@ -5,14 +5,17 @@
 
 package org.geoserver.metadata.web;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
@@ -25,10 +28,6 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geotools.util.logging.Logging;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The template page, view or edit the values in the template.
@@ -45,10 +44,11 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     private final boolean isNew;
 
-
     public MetadataTemplatePage() {
         this(new Model<MetadataTemplate>(new MetadataTemplateImpl()));
-        metadataTemplateModel.getObject().setMetadata(new ComplexMetadataMapImpl(new MetadataMap()));
+        metadataTemplateModel
+                .getObject()
+                .setMetadata(new ComplexMetadataMapImpl(new MetadataMap()));
     }
 
     public MetadataTemplatePage(IModel<MetadataTemplate> metadataTemplateModel) {
@@ -58,11 +58,10 @@ public class MetadataTemplatePage extends GeoServerBasePage {
 
     public void onInitialize() {
         super.onInitialize();
-        IModel<ComplexMetadataMap> metadataModel = new Model<ComplexMetadataMap>(
-                metadataTemplateModel.getObject().getMetadata());
+        IModel<ComplexMetadataMap> metadataModel =
+                new Model<ComplexMetadataMap>(metadataTemplateModel.getObject().getMetadata());
 
         Form<?> form = new Form<Object>("form");
-
 
         AjaxSubmitLink saveButton = createSaveButton();
         saveButton.setOutputMarkupId(true);
@@ -73,11 +72,14 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         nameField.setEnabled(isNew);
         form.add(nameField);
 
-        TextField<String> desicription = new TextField<String>("description",
-                new PropertyModel<String>(metadataTemplateModel, "description"));
+        TextField<String> desicription =
+                new TextField<String>(
+                        "description",
+                        new PropertyModel<String>(metadataTemplateModel, "description"));
         form.add(desicription);
 
-        MetadataPanel metadataTemplatePanel = new MetadataPanel("metadataTemplatePanel", metadataModel, null);
+        MetadataPanel metadataTemplatePanel =
+                new MetadataPanel("metadataTemplatePanel", metadataModel, null);
         form.add(metadataTemplatePanel);
 
         this.add(form);
@@ -87,9 +89,9 @@ public class MetadataTemplatePage extends GeoServerBasePage {
         return ComponentAuthorizer.AUTHENTICATED;
     }
 
-
     private TextField<String> createNameField(final Form<?> form, final AjaxSubmitLink saveButton) {
-        return new TextField<String>("name", new PropertyModel<String>(metadataTemplateModel, "name")) {
+        return new TextField<String>(
+                "name", new PropertyModel<String>(metadataTemplateModel, "name")) {
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
@@ -106,7 +108,9 @@ public class MetadataTemplatePage extends GeoServerBasePage {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 MetadataTemplateService service =
-                        GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
+                        GeoServerApplication.get()
+                                .getApplicationContext()
+                                .getBean(MetadataTemplateService.class);
                 try {
                     if (isNew) {
                         service.save(metadataTemplateModel.getObject());
@@ -117,12 +121,14 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                     Throwable rootCause = ExceptionUtils.getRootCause(e);
-                    String message = rootCause == null ? e.getLocalizedMessage() :
-                            rootCause.getLocalizedMessage();
+                    String message =
+                            rootCause == null
+                                    ? e.getLocalizedMessage()
+                                    : rootCause.getLocalizedMessage();
                     if (message != null) {
                         form.error(message);
                     }
-                    //TODO use the new syntax
+                    // TODO use the new syntax
                     target.add(getFeedbackPanel());
                 }
             }
@@ -144,5 +150,4 @@ public class MetadataTemplatePage extends GeoServerBasePage {
             }
         };
     }
-
 }

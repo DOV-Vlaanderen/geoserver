@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 
@@ -29,5 +28,4 @@ public class CommaSeparatedListConverter implements IConverter<List<String>> {
     public String convertToString(List<String> value, Locale locale) {
         return value.stream().collect(Collectors.joining(", "));
     }
-
 }

@@ -4,18 +4,17 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.util.HashMap;
+import java.util.List;
 import org.apache.wicket.markup.html.panel.Panel;
-
 import org.apache.wicket.model.IModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.web.panel.attribute.AttributeDataProvider;
 import org.geoserver.metadata.web.panel.attribute.AttributesTablePanel;
 
-import java.util.HashMap;
-import java.util.List;
-
 /**
- * The dynamically generated metadata input panel. All fields are added on the fly based on the yaml configuration.
+ * The dynamically generated metadata input panel. All fields are added on the fly based on the yaml
+ * configuration.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -24,33 +23,31 @@ public class MetadataPanel extends Panel {
 
     private final HashMap<String, List<Integer>> derivedAtts;
 
-
-    public MetadataPanel(String id, IModel<ComplexMetadataMap> metadataModel,
-                         HashMap<String, List<Integer>> derivedAtts) {
+    public MetadataPanel(
+            String id,
+            IModel<ComplexMetadataMap> metadataModel,
+            HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
         this.derivedAtts = derivedAtts;
     }
 
-
     @Override
     public void onInitialize() {
         super.onInitialize();
-        //the attributes panel
+        // the attributes panel
         AttributesTablePanel attributesPanel =
-                new AttributesTablePanel("attributesPanel",
+                new AttributesTablePanel(
+                        "attributesPanel",
                         new AttributeDataProvider(),
                         getMetadataModel(),
                         derivedAtts);
 
         attributesPanel.setOutputMarkupId(true);
         add(attributesPanel);
-
     }
-    
+
     @SuppressWarnings("unchecked")
     public IModel<ComplexMetadataMap> getMetadataModel() {
         return (IModel<ComplexMetadataMap>) getDefaultModel();
     }
-
-
 }

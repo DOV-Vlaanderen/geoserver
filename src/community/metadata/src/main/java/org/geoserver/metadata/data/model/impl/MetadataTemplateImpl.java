@@ -4,19 +4,14 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 
-/**
- * @author Timothy De Bock - timothy.debock.github@gmail.com
- */
+/** @author Timothy De Bock - timothy.debock.github@gmail.com */
 @XStreamAlias("MetadataTemplate")
 public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
 

@@ -6,7 +6,6 @@ package org.geoserver.metadata.data.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.springframework.stereotype.Component;
@@ -16,14 +15,9 @@ public class MetadataXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType(
-                "ArrayList",
-                ArrayList.class);
-        persister.registerBreifMapComplexType(
-                "HashMap",
-                HashMap.class);
+        persister.registerBreifMapComplexType("ArrayList", ArrayList.class);
+        persister.registerBreifMapComplexType("HashMap", HashMap.class);
         persister.getXStream().alias("ArrayList", ArrayList.class);
         persister.getXStream().alias("HashMap", HashMap.class);
     }
-
 }

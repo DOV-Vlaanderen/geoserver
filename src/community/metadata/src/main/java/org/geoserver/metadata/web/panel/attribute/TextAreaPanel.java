@@ -14,8 +14,7 @@ public class TextAreaPanel extends Panel {
 
     public TextAreaPanel(String id, IModel<String> model) {
         super(id, model);
-        
+
         add(new TextArea<>("textarea", model));
     }
-
 }

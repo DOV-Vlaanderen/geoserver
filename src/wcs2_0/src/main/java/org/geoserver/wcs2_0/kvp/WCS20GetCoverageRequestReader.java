@@ -7,7 +7,15 @@ package org.geoserver.wcs2_0.kvp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
+import net.opengis.wcs20.DimensionSubsetType;
+import net.opengis.wcs20.ExtensionItemType;
+import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.ScaleAxisByFactorType;
+import net.opengis.wcs20.ScaleByFactorType;
+import net.opengis.wcs20.ScaleToExtentType;
+import net.opengis.wcs20.ScaleToSizeType;
+import net.opengis.wcs20.ScalingType;
+import net.opengis.wcs20.Wcs20Factory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
@@ -18,19 +26,9 @@ import org.geotools.wcs.v2_0.Interpolation;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 
-import net.opengis.wcs20.DimensionSubsetType;
-import net.opengis.wcs20.ExtensionItemType;
-import net.opengis.wcs20.GetCoverageType;
-import net.opengis.wcs20.ScaleAxisByFactorType;
-import net.opengis.wcs20.ScaleByFactorType;
-import net.opengis.wcs20.ScaleToExtentType;
-import net.opengis.wcs20.ScaleToSizeType;
-import net.opengis.wcs20.ScalingType;
-import net.opengis.wcs20.Wcs20Factory;
-
 /**
  * KVP reader for WCS 2.0 GetCoverage request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("rawtypes")
@@ -76,8 +74,15 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
-        List<String> geoTiffParams = Arrays.asList("compression", "jpeg_quality", "predictor",
-                "interleave", "tiling", "tileheight", "tilewidth");
+        List<String> geoTiffParams =
+                Arrays.asList(
+                        "compression",
+                        "jpeg_quality",
+                        "predictor",
+                        "interleave",
+                        "tiling",
+                        "tileheight",
+                        "tilewidth");
         parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS);
     }
 
@@ -86,8 +91,8 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         parseSimpleContentList(gc, kvp, geoTiffParams, CRS_NS);
     }
 
-    private void parseSimpleContentList(GetCoverageType gc, Map kvp, List<String> geoTiffParams,
-            String namespace) {
+    private void parseSimpleContentList(
+            GetCoverageType gc, Map kvp, List<String> geoTiffParams, String namespace) {
         for (String param : geoTiffParams) {
             String value = KvpUtils.firstValue(kvp, param);
             if (value != null) {
@@ -162,7 +167,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
             }
         }
     }
-    
+
     @Override
     protected void setValue(EObject eObject, String property, Object value) {
         if ("sortBy".equalsIgnoreCase(property)) {
@@ -172,8 +177,10 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
             if (sortsSize != 1) {
                 throw new OWS20Exception(
                         "Invalid sortBy specification, expecting sorts for just one coverage, but got "
-                                + sortsSize + " instead",
-                        WCS20Exception.WCS20ExceptionCode.InvalidParameterValue, "sortBy");
+                                + sortsSize
+                                + " instead",
+                        WCS20Exception.WCS20ExceptionCode.InvalidParameterValue,
+                        "sortBy");
             }
             final GetCoverageType getCoverage = (GetCoverageType) (eObject);
             getCoverage.getSortBy().addAll((List) sorts.get(0));

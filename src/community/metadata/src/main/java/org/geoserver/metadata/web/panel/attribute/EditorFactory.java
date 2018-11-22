@@ -4,18 +4,17 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
-import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
-import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
-import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
+import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
+import org.geoserver.metadata.data.model.ComplexMetadataAttributeModel;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 
 /**
  * Factory to generate a component based on the configuration.
@@ -26,37 +25,44 @@ public class EditorFactory {
 
     private static final EditorFactory instance = new EditorFactory();
 
-    //private constructor to avoid client applications to use constructor
-    private EditorFactory(){}
+    // private constructor to avoid client applications to use constructor
+    private EditorFactory() {}
 
-    public static EditorFactory getInstance(){
+    public static EditorFactory getInstance() {
         return instance;
     }
 
     public <T extends Serializable> Component create(
-            MetadataAttributeConfiguration configuration, String id, ComplexMetadataMap metadataMap) {
+            MetadataAttributeConfiguration configuration,
+            String id,
+            ComplexMetadataMap metadataMap) {
 
-        ComplexMetadataAttribute<T> metadataModel = metadataMap.get(
-                getItemClass(configuration), 
-                configuration.getKey());
+        ComplexMetadataAttribute<T> metadataModel =
+                metadataMap.get(getItemClass(configuration), configuration.getKey());
         IModel<T> model = new ComplexMetadataAttributeModel<T>(metadataModel);
 
         return create(configuration, id, model, metadataMap.subMap(configuration.getKey()));
     }
 
     public <T extends Serializable> Component create(
-                            MetadataAttributeConfiguration configuration, String id,
-                            ComplexMetadataAttribute<T> metadataAttribute) {
+            MetadataAttributeConfiguration configuration,
+            String id,
+            ComplexMetadataAttribute<T> metadataAttribute) {
 
         IModel<T> model = new ComplexMetadataAttributeModel<T>(metadataAttribute);
-        return create(configuration, id, model, new ComplexMetadataMapImpl(new HashMap<String, Serializable>()));
+        return create(
+                configuration,
+                id,
+                model,
+                new ComplexMetadataMapImpl(new HashMap<String, Serializable>()));
     }
 
     @SuppressWarnings("unchecked")
-    private Component create(MetadataAttributeConfiguration configuration,
-                             String id,
-                             IModel<?> model,
-                             ComplexMetadataMap submap) {
+    private Component create(
+            MetadataAttributeConfiguration configuration,
+            String id,
+            IModel<?> model,
+            ComplexMetadataMap submap) {
 
         switch (configuration.getFieldType()) {
             case TEXT:
@@ -74,16 +80,19 @@ public class EditorFactory {
             case SUGGESTBOX:
                 return new AutoCompletePanel(id, (IModel<String>) model, configuration.getValues());
             case COMPLEX:
-                return new AttributesTablePanel(id, new AttributeDataProvider(configuration.getTypename()),
-                        new Model<ComplexMetadataMap>(submap), null);
+                return new AttributesTablePanel(
+                        id,
+                        new AttributeDataProvider(configuration.getTypename()),
+                        new Model<ComplexMetadataMap>(submap),
+                        null);
         }
         return null;
     }
 
-
     @SuppressWarnings("unchecked")
-    public <T extends Serializable> Class<T> getItemClass(MetadataAttributeConfiguration attributeConfiguration) {
-        switch (attributeConfiguration.getFieldType()){
+    public <T extends Serializable> Class<T> getItemClass(
+            MetadataAttributeConfiguration attributeConfiguration) {
+        switch (attributeConfiguration.getFieldType()) {
             case TEXT:
                 break;
             case NUMBER:
@@ -103,6 +112,4 @@ public class EditorFactory {
         }
         return (Class<T>) String.class;
     }
-
-
 }

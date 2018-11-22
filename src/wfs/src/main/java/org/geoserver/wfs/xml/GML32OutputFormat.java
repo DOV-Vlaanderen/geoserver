@@ -9,19 +9,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
-
 import net.opengis.wfs20.FeatureCollectionType;
-
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
@@ -39,16 +34,16 @@ import org.w3c.dom.Document;
 
 public class GML32OutputFormat extends GML3OutputFormat {
 
-    public static final String[] MIME_TYPES = new String[]{
-        "application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2"
-    };
-    
+    public static final String[] MIME_TYPES =
+            new String[] {"application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2"};
+
     public static final List<String> FORMATS = new ArrayList<String>();
+
     static {
         FORMATS.add("gml32");
         FORMATS.addAll(Arrays.asList(MIME_TYPES));
     }
-    
+
     GeoServer geoServer;
 
     protected static DOMSource xslt;
@@ -58,8 +53,12 @@ public class GML32OutputFormat extends GML3OutputFormat {
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument = docFactory.newDocumentBuilder().parse(
-                    GML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature32.xslt"));
+            xsdDocument =
+                    docFactory
+                            .newDocumentBuilder()
+                            .parse(
+                                    GML3OutputFormat.class.getResourceAsStream(
+                                            "/ChangeNumberOfFeature32.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {
             xslt = null;
@@ -78,18 +77,23 @@ public class GML32OutputFormat extends GML3OutputFormat {
     }
 
     @Override
-    protected Encoder createEncoder(Configuration configuration, 
-        Map<String, Set<ResourceInfo>> resources, Object request) {
-        
+    protected Encoder createEncoder(
+            Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
+
         FeatureTypeSchemaBuilder schemaBuilder = new FeatureTypeSchemaBuilder.GML32(geoServer);
-        
+
         ApplicationSchemaXSD2 xsd = new ApplicationSchemaXSD2(schemaBuilder);
         xsd.setBaseURL(GetFeatureRequest.adapt(request).getBaseURL());
         xsd.setResources(resources);
 
         org.geotools.wfs.v2_0.WFSConfiguration wfs = new org.geotools.wfs.v2_0.WFSConfiguration();
-        wfs.getDependency(GMLConfiguration.class).setSrsSyntax(
-            getInfo().getGML().get(WFSInfo.Version.V_20).getSrsNameStyle().toSrsSyntax());
+        wfs.getDependency(GMLConfiguration.class)
+                .setSrsSyntax(
+                        getInfo()
+                                .getGML()
+                                .get(WFSInfo.Version.V_20)
+                                .getSrsNameStyle()
+                                .toSrsSyntax());
         ApplicationSchemaConfiguration2 config = new ApplicationSchemaConfiguration2(xsd, wfs);
         // adding properties from original configuration to allow
         // hints handling
@@ -98,10 +102,13 @@ public class GML32OutputFormat extends GML3OutputFormat {
     }
 
     @Override
-    protected void setAdditionalSchemaLocations(Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
-        //since wfs 2.0 schema does not depend on gml 3.2 schema we register it manually
-        String loc = wfs.isCanonicalSchemaLocation() ? GML.CANONICAL_SCHEMA_LOCATION : 
-            ResponseUtils.buildSchemaURL(request.getBaseUrl(), "gml/3.2.1/gml.xsd");
+    protected void setAdditionalSchemaLocations(
+            Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
+        // since wfs 2.0 schema does not depend on gml 3.2 schema we register it manually
+        String loc =
+                wfs.isCanonicalSchemaLocation()
+                        ? GML.CANONICAL_SCHEMA_LOCATION
+                        : ResponseUtils.buildSchemaURL(request.getBaseUrl(), "gml/3.2.1/gml.xsd");
         encoder.setSchemaLocation(GML.NAMESPACE, loc);
     }
 
@@ -110,17 +117,17 @@ public class GML32OutputFormat extends GML3OutputFormat {
             throws IOException {
         encoder.encode(results.unadapt(FeatureCollectionType.class), WFS.FeatureCollection, output);
     }
-    
+
     @Override
     protected String getWfsNamespace() {
         return WFS.NAMESPACE;
     }
-    
+
     @Override
     protected String getCanonicalWfsSchemaLocation() {
         return WFS.CANONICAL_SCHEMA_LOCATION;
     }
-    
+
     @Override
     protected String getRelativeWfsSchemaLocation() {
         return "wfs/2.0/wfs.xsd";
@@ -137,5 +144,4 @@ public class GML32OutputFormat extends GML3OutputFormat {
             gml.setNumDecimals(numDecimals);
         }
     }
-
 }

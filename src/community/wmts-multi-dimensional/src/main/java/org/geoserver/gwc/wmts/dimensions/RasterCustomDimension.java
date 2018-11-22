@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import java.util.List;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.wmts.Tuple;
@@ -12,14 +13,11 @@ import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
-import java.util.List;
-
-/**
- * Represents a custom dimension of a raster.
- */
+/** Represents a custom dimension of a raster. */
 public class RasterCustomDimension extends Dimension {
 
-    public RasterCustomDimension(WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
+    public RasterCustomDimension(
+            WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
         super(wms, name, layerInfo, dimensionInfo);
     }
 
@@ -30,12 +28,15 @@ public class RasterCustomDimension extends Dimension {
 
     @Override
     public String getDefaultValueAsString() {
-        return getWms().getDefaultCustomDimensionValue(getDimensionName(), getResourceInfo(), String.class);
+        return getWms().getDefaultCustomDimensionValue(
+                        getDimensionName(), getResourceInfo(), String.class);
     }
 
     @Override
-    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
-        return getRasterDomainValues(filter, noDuplicates, DataType.CUSTOM, DimensionsUtils.CUSTOM_COMPARATOR);
+    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(
+            Filter filter, boolean noDuplicates) {
+        return getRasterDomainValues(
+                filter, noDuplicates, DataType.CUSTOM, DimensionsUtils.CUSTOM_COMPARATOR);
     }
 
     @Override

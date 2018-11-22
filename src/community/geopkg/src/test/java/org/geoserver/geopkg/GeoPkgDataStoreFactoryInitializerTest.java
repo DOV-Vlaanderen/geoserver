@@ -1,5 +1,10 @@
 package org.geoserver.geopkg;
 
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.classextension.EasyMock.*;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
 import org.geoserver.data.DataStoreFactoryInitializer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -7,12 +12,6 @@ import org.geotools.geopkg.GeoPkgDataStoreFactory;
 import org.junit.Test;
 import org.springframework.web.context.WebApplicationContext;
 import org.vfny.geoserver.util.DataStoreUtils;
-
-import java.io.File;
-
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.*;
-import static org.junit.Assert.assertNotNull;
 
 public class GeoPkgDataStoreFactoryInitializerTest {
 
@@ -27,8 +26,11 @@ public class GeoPkgDataStoreFactoryInitializerTest {
 
         WebApplicationContext appContext = createNiceMock(WebApplicationContext.class);
         expect(appContext.getBeanNamesForType(DataStoreFactoryInitializer.class))
-            .andReturn(new String[]{"geopkgDataStoreFactoryInitializer"}).anyTimes();
-        expect(appContext.getBean("geopkgDataStoreFactoryInitializer")).andReturn(initializer).anyTimes();
+                .andReturn(new String[] {"geopkgDataStoreFactoryInitializer"})
+                .anyTimes();
+        expect(appContext.getBean("geopkgDataStoreFactoryInitializer"))
+                .andReturn(initializer)
+                .anyTimes();
         replay(appContext);
 
         new GeoServerExtensions().setApplicationContext(appContext);
@@ -36,6 +38,4 @@ public class GeoPkgDataStoreFactoryInitializerTest {
 
         verify(resourceLoader);
     }
-
-
 }

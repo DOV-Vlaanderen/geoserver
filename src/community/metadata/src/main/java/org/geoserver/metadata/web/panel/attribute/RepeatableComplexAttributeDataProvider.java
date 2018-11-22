@@ -4,14 +4,13 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
-import org.apache.wicket.model.IModel;
-import org.geoserver.metadata.data.model.ComplexMetadataMap;
-import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.wicket.model.IModel;
+import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class RepeatableComplexAttributeDataProvider
         extends GeoServerDataProvider<ComplexMetadataMap> {
@@ -20,12 +19,10 @@ public class RepeatableComplexAttributeDataProvider
 
     public static String KEY_VALUE = "value";
 
-
     public static String KEY_REMOVE_ROW = "";
 
     public static final Property<ComplexMetadataMap> VALUE =
             new BeanProperty<ComplexMetadataMap>(KEY_VALUE, "value");
-
 
     private final GeoServerDataProvider.Property<ComplexMetadataMap> REMOVE_ROW =
             new GeoServerDataProvider.BeanProperty<ComplexMetadataMap>(KEY_REMOVE_ROW, "value");
@@ -36,14 +33,15 @@ public class RepeatableComplexAttributeDataProvider
 
     private List<ComplexMetadataMap> items = new ArrayList<>();
 
-    public RepeatableComplexAttributeDataProvider(MetadataAttributeConfiguration attributeConfiguration,
-                                                  IModel<ComplexMetadataMap> metadataModel) {
+    public RepeatableComplexAttributeDataProvider(
+            MetadataAttributeConfiguration attributeConfiguration,
+            IModel<ComplexMetadataMap> metadataModel) {
         this.metadataModel = metadataModel;
         this.attributeConfiguration = attributeConfiguration;
 
         reset();
     }
-    
+
     public void reset() {
         items = new ArrayList<ComplexMetadataMap>();
         for (int i = 0; i < metadataModel.getObject().size(attributeConfiguration.getKey()); i++) {
@@ -67,9 +65,9 @@ public class RepeatableComplexAttributeDataProvider
 
     public void removeField(ComplexMetadataMap attribute) {
         int index = items.indexOf(attribute);
-        //remove from model
+        // remove from model
         metadataModel.getObject().delete(attributeConfiguration.getKey(), index);
-        //remove from view
+        // remove from view
         items.remove(index);
     }
 

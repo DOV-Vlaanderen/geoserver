@@ -18,11 +18,10 @@ import org.vfny.geoserver.wfs.servlets.TestWfsPost;
 /**
  * An intermediate page used to submit a demo request to the {@link TestWfsPost /TestWfsPost}
  * servlet.
- * <p>
- * This page does not extend {@link GeoServerBasePage} since its just an intermediate form to submit
- * to the servlet.
- * </p>
- * 
+ *
+ * <p>This page does not extend {@link GeoServerBasePage} since its just an intermediate form to
+ * submit to the servlet.
+ *
  * @author Gabriel Roldan (TOPP)
  * @version $Id$
  * @since 2.0.x
@@ -30,12 +29,11 @@ import org.vfny.geoserver.wfs.servlets.TestWfsPost;
 public class DemoRequestResponse extends WebPage {
 
     /**
-     * Fills out the form to be submitted to {@code TestWfsPost} with the properties from the
-     * {@code DemoRequestModel} provided, and auto-submit the form on page load so the results get
-     * loaded in the page body.
-     * 
-     * @param model
-     *            the demo request parameters holder, as a model for {@link DemoRequest}
+     * Fills out the form to be submitted to {@code TestWfsPost} with the properties from the {@code
+     * DemoRequestModel} provided, and auto-submit the form on page load so the results get loaded
+     * in the page body.
+     *
+     * @param model the demo request parameters holder, as a model for {@link DemoRequest}
      */
     public DemoRequestResponse(final IModel model) {
         // this page being in an IFrame needs to grap its own PageMap
@@ -43,7 +41,7 @@ public class DemoRequestResponse extends WebPage {
         // marked as expired
         // JD: Couldn't find a replacement for PageMap, hopefully this is a non-issue
         // now, but won't know until we get things up and running with the new version
-        //super(PageMap.forName("demoRequestResponse"));
+        // super(PageMap.forName("demoRequestResponse"));
         super(model);
 
         Form form = new Form("form");
@@ -64,5 +62,4 @@ public class DemoRequestResponse extends WebPage {
         // finds out the form by id
         form.setMarkupId("form");
     }
-
 }

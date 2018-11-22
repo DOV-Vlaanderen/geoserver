@@ -4,16 +4,16 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
-import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
-import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.geoserver.metadata.data.dto.MetadataAttributeConfiguration;
+import org.geoserver.metadata.data.dto.MetadataAttributeTypeConfiguration;
 
 /**
  * Object that matches yaml structure.
  *
- * The part describes a complex object. The complex object contains a list of mappings that make the object.
+ * <p>The part describes a complex object. The complex object contains a list of mappings that make
+ * the object.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -24,18 +24,22 @@ public class MetadataAttributeTypeConfigurationImpl implements MetadataAttribute
     String typename;
 
     List<MetadataAttributeConfiguration> attributes = new ArrayList<>();
+
     @Override
     public List<MetadataAttributeConfiguration> getAttributes() {
         return attributes;
     }
+
     @Override
     public void setAttributes(List<MetadataAttributeConfiguration> attributes) {
         this.attributes = attributes;
     }
+
     @Override
     public String getTypename() {
         return typename;
     }
+
     @Override
     public void setTypename(String typename) {
         this.typename = typename;

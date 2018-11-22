@@ -23,6 +23,7 @@ public interface MetadataTemplate extends Serializable {
 
     /**
      * Lowest value has highest priority.
+     *
      * @return int
      */
     int getOrder();

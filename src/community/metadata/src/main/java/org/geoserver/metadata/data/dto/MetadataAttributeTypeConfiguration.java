@@ -5,15 +5,15 @@
 package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.geoserver.metadata.data.dto.impl.MetadataAttributeTypeConfigurationImpl;
-
 import java.io.Serializable;
 import java.util.List;
+import org.geoserver.metadata.data.dto.impl.MetadataAttributeTypeConfigurationImpl;
 
 /**
  * Object that matches yaml structure.
  *
- * The part describes a complex object. The complex object contains a list of mappings that make the object.
+ * <p>The part describes a complex object. The complex object contains a list of mappings that make
+ * the object.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

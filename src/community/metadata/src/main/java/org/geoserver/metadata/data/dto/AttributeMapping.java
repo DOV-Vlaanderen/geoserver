@@ -4,17 +4,15 @@
  */
 package org.geoserver.metadata.data.dto;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.geoserver.metadata.data.dto.impl.AttributeMappingImpl;
-
 import java.io.Serializable;
+import org.geoserver.metadata.data.dto.impl.AttributeMappingImpl;
 
 /**
  * Object that matches yaml structure.
  *
- * The part describes one mapping between the geoserver fields en the xml metadata from geonetwork.
- * The geonetwork field is described as an xpath expression.
+ * <p>The part describes one mapping between the geoserver fields en the xml metadata from
+ * geonetwork. The geonetwork field is described as an xpath expression.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

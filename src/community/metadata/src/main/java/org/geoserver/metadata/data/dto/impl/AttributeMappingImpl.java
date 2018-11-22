@@ -4,7 +4,6 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
-
 import org.geoserver.metadata.data.dto.AttributeMapping;
 import org.geoserver.metadata.data.dto.FieldTypeEnum;
 import org.geoserver.metadata.data.dto.OccurenceEnum;
@@ -12,8 +11,8 @@ import org.geoserver.metadata.data.dto.OccurenceEnum;
 /**
  * Object that matches yaml structure.
  *
- * The part describes one mapping between the geoserver fields en the xml metadata from geonetwork.
- * The geonetwork field is described as an xpath expression.
+ * <p>The part describes one mapping between the geoserver fields en the xml metadata from
+ * geonetwork. The geonetwork field is described as an xpath expression.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -31,8 +30,7 @@ public class AttributeMappingImpl implements AttributeMapping {
 
     String typename;
 
-    public AttributeMappingImpl() {
-    }
+    public AttributeMappingImpl() {}
 
     public AttributeMappingImpl(AttributeMapping other) {
         if (other != null) {
@@ -41,7 +39,6 @@ public class AttributeMappingImpl implements AttributeMapping {
             fieldType = other.getFieldType();
             occurrence = other.getOccurrence();
             typename = other.getTypename();
-
         }
     }
 

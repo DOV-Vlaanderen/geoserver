@@ -6,7 +6,6 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.security.WrapperPolicy;
@@ -15,7 +14,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * Wraps a {@link WMSLayerInfo} so that it will return secured layers and WMS stores
- * 
+ *
  * @author Andrea Aime - TOPP
  */
 public class SecuredWMSLayerInfo extends DecoratingWMSLayerInfo {
@@ -26,11 +25,11 @@ public class SecuredWMSLayerInfo extends DecoratingWMSLayerInfo {
         super(delegate);
         this.policy = policy;
     }
-    
+
     @Override
     public Layer getWMSLayer(ProgressListener listener) throws IOException {
         Layer layer = super.getWMSLayer(listener);
-        if(layer == null) {
+        if (layer == null) {
             return layer;
         } else {
             return new SecuredWMSLayer(layer, policy);

@@ -6,15 +6,15 @@ package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.geoserver.metadata.data.dto.impl.MetadataEditorConfigurationImpl;
-
 import java.util.List;
+import org.geoserver.metadata.data.dto.impl.MetadataEditorConfigurationImpl;
 
 /**
  * Toplevel Object that matches yaml structure.
  *
- * Contains the Gui description for the metadata and a list of geonetwork endpoints for importing geonetwork metadata.
- * The Gui is constructed from MetadataAttributeConfiguration and MetadataAttributeComplexTypeConfiguration.
+ * <p>Contains the Gui description for the metadata and a list of geonetwork endpoints for importing
+ * geonetwork metadata. The Gui is constructed from MetadataAttributeConfiguration and
+ * MetadataAttributeComplexTypeConfiguration.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

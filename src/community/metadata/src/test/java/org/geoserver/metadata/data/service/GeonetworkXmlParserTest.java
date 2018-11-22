@@ -4,6 +4,14 @@
  */
 package org.geoserver.metadata.data.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.metadata.AbstractMetadataTest;
@@ -15,16 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.util.List;
-
-
 /**
  * Test Import geonetwork. Test if the imported xml is mapped on the model in the correct way.
  *
@@ -32,37 +30,40 @@ import java.util.List;
  */
 public class GeonetworkXmlParserTest extends AbstractMetadataTest {
 
-    @Autowired
-    GeonetworkXmlParser xmlParser;
+    @Autowired GeonetworkXmlParser xmlParser;
 
-    @Autowired
-    private GeoServerDataDirectory dataDirectory;
+    @Autowired private GeoServerDataDirectory dataDirectory;
 
     @Test
     public void testMapping() throws IOException {
         MetadataMap metadataMap = new MetadataMap();
         ComplexMetadataMapImpl complexMetadataMap = new ComplexMetadataMapImpl(metadataMap);
 
-        Document fileAsResource = getDocument("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml");
+        Document fileAsResource =
+                getDocument("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml");
 
         xmlParser.parseMetadata(fileAsResource, complexMetadataMap);
 
-        //simple single
-        Assert.assertEquals("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("indentifier-single"));
-        //simple list
+        // simple single
+        Assert.assertEquals(
+                "1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("indentifier-single"));
+        // simple list
         Serializable actualList = metadataMap.get("refsystem-as-list");
         Assert.assertTrue(actualList instanceof List);
         Assert.assertEquals(3, ((List<?>) actualList).size());
         Assert.assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualList).get(0));
         Assert.assertEquals("TAW", ((List<?>) actualList).get(1));
-        Assert.assertEquals("http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualList).get(2));
+        Assert.assertEquals(
+                "http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualList).get(2));
 
-        //complex single
+        // complex single
         Assert.assertEquals("EPSG", metadataMap.get("referencesystem-object/codeSpace"));
-        Assert.assertEquals("Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
+        Assert.assertEquals(
+                "Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
 
-        //complex list
-        Serializable actualObjectCodeSpaceList = metadataMap.get("referencesystem-object-list/codeSpace");
+        // complex list
+        Serializable actualObjectCodeSpaceList =
+                metadataMap.get("referencesystem-object-list/codeSpace");
         Assert.assertTrue(actualObjectCodeSpaceList instanceof List);
         Assert.assertEquals(3, ((List<?>) actualObjectCodeSpaceList).size());
         Assert.assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(0));
@@ -74,8 +75,9 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
         Assert.assertEquals(3, ((List<?>) actualObjectCodeList).size());
         Assert.assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualObjectCodeList).get(0));
         Assert.assertEquals("TAW", ((List<?>) actualObjectCodeList).get(1));
-        Assert.assertEquals("http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualObjectCodeList).get(2));
-
+        Assert.assertEquals(
+                "http://www.opengis.net/def/crs/EPSG/0/3043",
+                ((List<?>) actualObjectCodeList).get(2));
     }
 
     private Document getDocument(String fileName) throws IOException {
@@ -98,7 +100,6 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                 }
-
             }
         }
         throw new IOException("Resource not found: " + fileName);
