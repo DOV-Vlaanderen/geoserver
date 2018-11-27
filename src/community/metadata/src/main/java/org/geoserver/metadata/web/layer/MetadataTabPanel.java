@@ -19,6 +19,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.GeonetworkXmlParser;
+import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
@@ -42,13 +43,14 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTabPanel.class);
 
-    private ImportTemplatePanel linkTemplatePanel;
-
-    private IModel<?> linkedTemplatesModel;
+    private IModel<List<MetadataTemplate>> linkedTemplatesModel;
 
     private HashMap<String, List<Integer>> derivedAtts;
 
-    public MetadataTabPanel(String id, IModel<LayerInfo> model, IModel<?> linkedTemplatesModel) {
+    public MetadataTabPanel(
+            String id,
+            IModel<LayerInfo> model,
+            IModel<List<MetadataTemplate>> linkedTemplatesModel) {
         super(id, model);
         this.linkedTemplatesModel = linkedTemplatesModel;
     }
@@ -80,7 +82,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         String workspace = resource.getStore().getWorkspace().getName();
 
         // Link with templates panel
-        linkTemplatePanel =
+        this.add(
                 new ImportTemplatePanel(
                         "importTemplatePanel",
                         workspace,
@@ -100,9 +102,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                                                         metadataModel,
                                                         derivedAtts)));
                     }
-                };
-
-        this.add(linkTemplatePanel);
+                });
 
         add(new MetadataPanel("metadataPanel", metadataModel, derivedAtts).setOutputMarkupId(true));
 
@@ -119,8 +119,9 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                     public void handleImport(String url, AjaxRequestTarget target) {
                         try {
                             // First unlink all templates
-                            linkTemplatePanel.unlinkTemplate(
-                                    target, linkTemplatePanel.getLinkedTemplates());
+                            importTemplatePanel()
+                                    .unlinkTemplate(
+                                            target, importTemplatePanel().getLinkedTemplates());
                             // Read the file
                             RemoteDocumentReader geonetworkReader =
                                     GeoServerApplication.get()
@@ -153,8 +154,22 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
         return (MetadataPanel) get("metadataPanel");
     }
 
+    protected ImportTemplatePanel importTemplatePanel() {
+        return (ImportTemplatePanel) get("importTemplatePanel");
+    }
+
     @Override
     public void save() throws IOException {
-        linkTemplatePanel.save();
+        MetadataTemplateService service =
+                GeoServerApplication.get()
+                        .getApplicationContext()
+                        .getBean(MetadataTemplateService.class);
+        try {
+            for (MetadataTemplate template : linkedTemplatesModel.getObject()) {
+                service.update(template);
+            }
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
     }
 }
