@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
@@ -24,6 +25,7 @@ import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.util.logging.Logging;
@@ -42,45 +44,40 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
     private ImportTemplatePanel linkTemplatePanel;
 
+    private IModel<?> linkedTemplatesModel;
+
     private HashMap<String, List<Integer>> derivedAtts;
 
-    @SuppressWarnings("unchecked")
     public MetadataTabPanel(String id, IModel<LayerInfo> model, IModel<?> linkedTemplatesModel) {
         super(id, model);
+        this.linkedTemplatesModel = linkedTemplatesModel;
+    }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void onInitialize() {
+        super.onInitialize();
+        ResourceInfo resource = findParent(ResourceConfigurationPage.class).getResourceInfo();
         derivedAtts =
                 (HashMap<String, List<Integer>>)
-                        model.getObject()
-                                .getResource()
-                                .getMetadata()
-                                .get(MetadataConstants.DERIVED_KEY);
+                        resource.getMetadata().get(MetadataConstants.DERIVED_KEY);
 
-        Serializable custom =
-                model.getObject()
-                        .getResource()
-                        .getMetadata()
-                        .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        Serializable custom = resource.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         if (!(custom instanceof HashMap<?, ?>)) {
             custom = new HashMap<String, Serializable>();
-            model.getObject()
-                    .getResource()
-                    .getMetadata()
-                    .put(MetadataConstants.CUSTOM_METADATA_KEY, custom);
+            resource.getMetadata().put(MetadataConstants.CUSTOM_METADATA_KEY, custom);
         }
         if (!(derivedAtts instanceof HashMap<?, ?>)) {
             derivedAtts = new HashMap<String, List<Integer>>();
-            model.getObject()
-                    .getResource()
-                    .getMetadata()
-                    .put(MetadataConstants.DERIVED_KEY, derivedAtts);
+            resource.getMetadata().put(MetadataConstants.DERIVED_KEY, derivedAtts);
         }
 
         IModel<ComplexMetadataMap> metadataModel =
                 new Model<ComplexMetadataMap>(
                         new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
 
-        String name = model.getObject().getResource().getNativeName();
-        String workspace = model.getObject().getResource().getStore().getWorkspace().getName();
+        String name = resource.getNativeName();
+        String workspace = resource.getStore().getWorkspace().getName();
 
         // Link with templates panel
         linkTemplatePanel =
