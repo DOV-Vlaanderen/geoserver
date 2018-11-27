@@ -116,7 +116,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
                 "Field 'Name' is required.",
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         tester.assertLabel(
-                "feedback:feedbackul:messages:0:message", "Field &#039;Name&#039; is required.");
+                "topFeedback:feedbackul:messages:0:message", "Field &#039;Name&#039; is required.");
 
         tester.assertRenderedPage(MetadataTemplatePage.class);
     }

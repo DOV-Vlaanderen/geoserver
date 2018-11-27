@@ -188,7 +188,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
                 "Template 'simple fields' is not deleted. Linked to layers: topp:mylayer",
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         tester.assertLabel(
-                "feedback:feedbackul:messages:0:message",
+                "topFeedback:feedbackul:messages:0:message",
                 "Template &#039;simple fields&#039; is not deleted. Linked to layers: topp:mylayer");
     }
 
