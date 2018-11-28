@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -173,8 +174,16 @@ public class ImportGeonetworkPanel extends Panel {
     }
 
     private DropDownChoice<String> createDropDown(final ArrayList<String> optionsGeonetwork) {
-        return new DropDownChoice<String>(
+        DropDownChoice<String> dropDownChoice = new DropDownChoice<>(
                 "geonetworkName", new Model<String>(""), optionsGeonetwork);
+        dropDownChoice.add(new OnChangeAjaxBehavior() {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget art) {
+                //just model update
+            }
+        });
+        return dropDownChoice;
     }
 
     public FeedbackPanel getFeedbackPanel() {

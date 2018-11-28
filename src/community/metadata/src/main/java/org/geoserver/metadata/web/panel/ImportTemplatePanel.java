@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
@@ -125,8 +126,16 @@ public abstract class ImportTemplatePanel extends Panel {
     private DropDownChoice<MetadataTemplate> createTemplatesDropDown() {
         IModel<MetadataTemplate> model = new Model<MetadataTemplate>();
         List<MetadataTemplate> unlinked = linkedTemplatesDataProvider.getUnlinkedItems();
-        return new DropDownChoice<MetadataTemplate>(
+        DropDownChoice<MetadataTemplate> dropDownChoice = new DropDownChoice<>(
                 "metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
+        dropDownChoice.add(new OnChangeAjaxBehavior() {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget art) {
+                //just model update
+            }
+        });
+        return dropDownChoice;
     }
 
     @SuppressWarnings("unchecked")
