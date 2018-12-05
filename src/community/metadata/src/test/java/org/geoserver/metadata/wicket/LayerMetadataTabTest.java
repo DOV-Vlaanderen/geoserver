@@ -4,10 +4,13 @@
  */
 package org.geoserver.metadata.wicket;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -15,11 +18,14 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
+import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -550,5 +556,62 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertLabel(
                 "publishedinfo:tabs:panel:geonetworkPanel:importFeedback:feedbackul:messages:1:message",
                 "A metadata UUID is required");
+    }
+
+    @Test
+    public void testGenerateFeatureCatalogueAndDomain() {
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:generate",
+                AjaxSubmitLink.class);
+
+        tester.clickLink(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:generate");
+
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:dialog",
+                GeoServerDialog.class);
+
+        tester.clickLink(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:dialog:dialog:content:form:submit");
+
+        @SuppressWarnings("unchecked")
+        GeoServerTablePanel<ComplexMetadataMap> panel =
+                (GeoServerTablePanel<ComplexMetadataMap>)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel");
+
+        assertEquals(23, panel.getDataProvider().size());
+
+        tester.assertModelValue(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:1:itemProperties:1:component",
+                "STATE_NAME");
+
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:generate",
+                AjaxSubmitLink.class);
+
+        tester.clickLink(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:generate");
+
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:dialog",
+                GeoServerDialog.class);
+
+        tester.clickLink(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:dialog:dialog:content:form:submit");
+
+        // print(tester.getLastRenderedPage(), true, true);
+
+        @SuppressWarnings("unchecked")
+        GeoServerTablePanel<ComplexMetadataMap> panel2 =
+                (GeoServerTablePanel<ComplexMetadataMap>)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel");
+
+        assertEquals(49, panel2.getDataProvider().size());
+
+        tester.assertModelValue(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component",
+                "Alabama");
     }
 }

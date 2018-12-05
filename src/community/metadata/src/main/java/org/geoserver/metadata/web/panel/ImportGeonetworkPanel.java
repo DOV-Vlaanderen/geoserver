@@ -174,15 +174,18 @@ public class ImportGeonetworkPanel extends Panel {
     }
 
     private DropDownChoice<String> createDropDown(final ArrayList<String> optionsGeonetwork) {
-        DropDownChoice<String> dropDownChoice = new DropDownChoice<>(
-                "geonetworkName", new Model<String>(""), optionsGeonetwork);
-        dropDownChoice.add(new OnChangeAjaxBehavior() {
+        DropDownChoice<String> dropDownChoice =
+                new DropDownChoice<>("geonetworkName", new Model<String>(""), optionsGeonetwork);
+        dropDownChoice.add(
+                new OnChangeAjaxBehavior() {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget art) {
-                //just model update
-            }
-        });
+                    private static final long serialVersionUID = 2966644157603893849L;
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget art) {
+                        // just model update
+                    }
+                });
         return dropDownChoice;
     }
 

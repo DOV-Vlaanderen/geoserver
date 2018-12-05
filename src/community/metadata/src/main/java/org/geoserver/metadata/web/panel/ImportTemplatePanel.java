@@ -126,15 +126,19 @@ public abstract class ImportTemplatePanel extends Panel {
     private DropDownChoice<MetadataTemplate> createTemplatesDropDown() {
         IModel<MetadataTemplate> model = new Model<MetadataTemplate>();
         List<MetadataTemplate> unlinked = linkedTemplatesDataProvider.getUnlinkedItems();
-        DropDownChoice<MetadataTemplate> dropDownChoice = new DropDownChoice<>(
-                "metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
-        dropDownChoice.add(new OnChangeAjaxBehavior() {
+        DropDownChoice<MetadataTemplate> dropDownChoice =
+                new DropDownChoice<>(
+                        "metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
+        dropDownChoice.add(
+                new OnChangeAjaxBehavior() {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget art) {
-                //just model update
-            }
-        });
+                    private static final long serialVersionUID = 2208064045807777479L;
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget art) {
+                        // just model update
+                    }
+                });
         return dropDownChoice;
     }
 
