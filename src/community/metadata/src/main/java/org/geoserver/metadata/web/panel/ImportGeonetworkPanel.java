@@ -57,6 +57,7 @@ public class ImportGeonetworkPanel extends Panel {
         super.onInitialize();
 
         GeoServerDialog dialog = new GeoServerDialog("importDialog");
+        dialog.setInitialHeight(100);
         add(dialog);
         add(
                 new FeedbackPanel("importFeedback", new ContainerFeedbackMessageFilter(this))

@@ -28,7 +28,6 @@ import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.publish.PublishedEditTabPanel;
-import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
@@ -105,10 +104,6 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                 });
 
         add(new MetadataPanel("metadataPanel", metadataModel, derivedAtts).setOutputMarkupId(true));
-
-        GeoServerDialog dialog = new GeoServerDialog("dialog");
-        dialog.setInitialHeight(100);
-        add(dialog);
 
         // Geonetwork import panel
         ImportGeonetworkPanel geonetworkPanel =

@@ -83,6 +83,7 @@ public abstract class ImportTemplatePanel extends Panel {
         setOutputMarkupId(true);
 
         GeoServerDialog dialog = new GeoServerDialog("importDialog");
+        dialog.setInitialHeight(100);
         add(dialog);
 
         // link action and dropdown
