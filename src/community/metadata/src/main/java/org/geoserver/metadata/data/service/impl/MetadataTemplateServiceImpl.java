@@ -148,8 +148,8 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
                         deletedLayers.add(key);
                     }
                 }
+                metadataTemplate.getLinkedLayers().removeAll(deletedLayers);
             }
-            metadataTemplate.getLinkedLayers().removeAll(deletedLayers);
             updateTemplates(templates);
         } else {
             throw new IOException(
