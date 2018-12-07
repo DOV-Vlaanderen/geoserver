@@ -322,7 +322,10 @@ public abstract class ImportTemplatePanel extends Panel {
         if (target != null) {
             target.add(noData);
             target.add(remove);
+            target.add(getFeedbackPanel());
             target.add(templatesPanel);
+            target.add(getDropDown());
+            target.add(ImportTemplatePanel.this);
         }
     }
 }
