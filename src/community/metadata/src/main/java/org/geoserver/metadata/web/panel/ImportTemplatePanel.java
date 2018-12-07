@@ -60,8 +60,6 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private AjaxLink<Object> remove;
 
-    private boolean suppressWarnings;
-
     public ImportTemplatePanel(
             String id,
             String layerId,
@@ -168,8 +166,7 @@ public abstract class ImportTemplatePanel extends Panel {
                     valid = false;
                 }
                 if (valid) {
-                    if (!suppressWarnings) {
-                        dialog.setTitle(
+                    dialog.setTitle(
                                 new ParamResourceModel(
                                         "confirmImportDialog.title", ImportTemplatePanel.this));
                         dialog.showOkCancel(
@@ -195,9 +192,6 @@ public abstract class ImportTemplatePanel extends Panel {
                                         return true;
                                     }
                                 });
-                    } else {
-                        performLink(target);
-                    }
                 }
                 target.add(getFeedbackPanel());
             }
@@ -205,6 +199,7 @@ public abstract class ImportTemplatePanel extends Panel {
             private void performLink(AjaxRequestTarget target) {
                 try {
                     linkTemplate(dropDown.getModelObject());
+                    dropDown.setModelObject(null);
                     dropDown.setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
                 } catch (IOException e) {
                     error(
@@ -341,7 +336,4 @@ public abstract class ImportTemplatePanel extends Panel {
         noData.setVisible(isEmpty);
     }
 
-    public void suppressWarnings(boolean suppressWarnings) {
-        this.suppressWarnings = suppressWarnings;
-    }
 }
