@@ -11,6 +11,7 @@ import org.geoserver.csw.records.AbstractRecordDescriptor;
 import org.geoserver.csw.records.GenericRecordBuilder;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.platform.ServiceException;
+import org.geotools.data.complex.ComplexFeatureConstants;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.transform.Translator;
@@ -62,6 +63,19 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                         MetaDataDescriptor.NAMESPACES.getPrefix(p.getName().getNamespaceURI());
 
                 AttributesImpl atts = new AttributesImpl();
+                if (p.isNillable()) {
+                    Property prop =
+                            ((ComplexAttribute) p)
+                                    .getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                    boolean nil = prop == null || prop.getValue() == null;
+                    atts.addAttribute(
+                            "http://www.w3.org/2001/XMLSchema-instance",
+                            "nil",
+                            "xsi:nil",
+                            "",
+                            nil ? "true" : "false");
+                }
+
                 for (Property p2 : ((ComplexAttribute) p).getProperties()) {
                     if (p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         String name = p2.getName().getLocalPart().substring(1);
@@ -72,7 +86,9 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                 start(prefix + ":" + p.getName().getLocalPart(), atts);
 
                 for (Property p2 : ((ComplexAttribute) p).getProperties()) {
-                    if (!p2.getName().getLocalPart().substring(0, 1).equals("@")) {
+                    if (p2.getName().equals(ComplexFeatureConstants.SIMPLE_CONTENT)) {
+                        chars(p2.getValue().toString());
+                    } else if (!p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         encodeProperty(f, p2);
                     }
                 }
@@ -122,6 +138,14 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
             String name = dn.getLocalPart();
             String prefix = MetaDataDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
             AttributesImpl attributes = new AttributesImpl();
+            if (p.isNillable()) {
+                attributes.addAttribute(
+                        "http://www.w3.org/2001/XMLSchema-instance",
+                        "nil",
+                        "nil",
+                        "",
+                        value == null ? "true" : "false");
+            }
             element(prefix + ":" + name, value, attributes);
         }
     }
