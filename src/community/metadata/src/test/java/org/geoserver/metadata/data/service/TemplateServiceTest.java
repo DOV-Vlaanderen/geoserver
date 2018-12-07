@@ -164,6 +164,14 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     }
 
     @Test
+    public void testUpdateShouldRemoveDeletedLayers() throws IOException {
+        MetadataTemplate template = service.load("template-nested-object");
+        Assert.assertEquals(2, template.getLinkedLayers().size());
+        service.update(template);
+        Assert.assertEquals(0, template.getLinkedLayers().size());
+    }
+
+    @Test
     public void testIncreasePriority() throws IOException {
         MetadataTemplate initial = service.load("allData");
         Assert.assertEquals("allData", service.list().get(5).getName());

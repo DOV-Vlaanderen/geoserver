@@ -13,7 +13,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
@@ -111,7 +113,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             templates.remove(index);
             templates.add(index, metadataTemplate);
 
-            updateTemplates(templates);
+            Set<String> deletedLayers = new HashSet<>();
             // update layers
             if (metadataTemplate.getLinkedLayers() != null) {
                 for (String key : metadataTemplate.getLinkedLayers()) {
@@ -142,10 +144,13 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
                         geoServer.getCatalog().save(resource);
                     } else {
-                        LOGGER.severe("Update metadata for linked layer failed: " + key);
+                        // remove the link because the layer cannot be found.
+                        deletedLayers.add(key);
                     }
                 }
             }
+            metadataTemplate.getLinkedLayers().removeAll(deletedLayers);
+            updateTemplates(templates);
         } else {
             throw new IOException(
                     "The template "
