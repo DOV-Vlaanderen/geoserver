@@ -113,7 +113,7 @@ public abstract class ImportTemplatePanel extends Panel {
         // the no data links label
         noData = new Label("noData", new ResourceModel("noData"));
         add(noData);
-        updateTableState(linkedTemplatesDataProvider);
+        updateTableState(null, linkedTemplatesDataProvider);
     }
 
     public FeedbackPanel getFeedbackPanel() {
@@ -205,7 +205,7 @@ public abstract class ImportTemplatePanel extends Panel {
                                             "errorSelectGeonetwork", ImportTemplatePanel.this)
                                     .getString());
                 }
-                updateTableState(linkedTemplatesDataProvider);
+                updateTableState(target, linkedTemplatesDataProvider);
                 target.add(templatesPanel);
                 target.add(dropDown);
                 handleUpdate(target);
@@ -279,7 +279,7 @@ public abstract class ImportTemplatePanel extends Panel {
         templatesPanel.clearSelection();
 
         getDropDown().setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
-        updateTableState(linkedTemplatesDataProvider);
+        updateTableState(target, linkedTemplatesDataProvider);
 
         target.add(getFeedbackPanel());
         target.add(templatesPanel);
@@ -327,10 +327,16 @@ public abstract class ImportTemplatePanel extends Panel {
         }
     }
 
-    private void updateTableState(ImportTemplateDataProvider dataProvider) {
+    private void updateTableState(
+            AjaxRequestTarget target, ImportTemplateDataProvider dataProvider) {
         boolean isEmpty = dataProvider.getItems().isEmpty();
         templatesPanel.setVisible(!isEmpty);
         remove.setVisible(!isEmpty);
         noData.setVisible(isEmpty);
+
+        if (target != null) {
+            target.add(noData);
+            target.add(remove);
+        }
     }
 }

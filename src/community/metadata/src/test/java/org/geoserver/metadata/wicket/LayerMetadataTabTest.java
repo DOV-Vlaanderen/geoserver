@@ -378,7 +378,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testLinkAndUnlinkDeleteRowBuTemplates() {
+    public void testLinkAndUnlinkDeleteRowTemplatesBug() {
         // add link
         DropDownChoice<?> selectTemplate =
                 (DropDownChoice<?>)
@@ -445,6 +445,59 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component",
                 "template-object list");
+    }
+
+    /**
+     * When there are no links 'No data to display.' is shown. Adding a template does not show the
+     * table with linked templates.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testLinkRowTemplatesBug() {
+        Assert.assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+        // remove the current links
+        Component checkbox01 =
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:selectItemContainer:selectItem");
+        ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
+        tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
+                .setEnabled(true);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
+
+        // assert no data to display
+        Assert.assertNotNull(
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+        Assert.assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:itemProperties:0:component"));
+        tester.assertLabel(
+                "publishedinfo:tabs:panel:importTemplatePanel:noData", "No data to display.");
+        tester.assertContainsNot("'simple fields'");
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        // add template
+        DropDownChoice<?> selectTemplate =
+                (DropDownChoice<?>)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
+        ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
+        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+
+        // check table is visible
+        Assert.assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+        tester.assertLabel(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component",
+                "simple fields");
     }
 
     @SuppressWarnings("unchecked")
