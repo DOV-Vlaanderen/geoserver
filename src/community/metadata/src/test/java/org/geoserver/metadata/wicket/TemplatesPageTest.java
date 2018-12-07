@@ -37,6 +37,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         restoreTemplates();
         restoreLayers();
 
+        // Make sure the catalog is loaded
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
         login();
         new ResourceConfigurationPage(layer, false);
@@ -157,7 +158,6 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
                 "allData");
     }
 
-    // TODO
     @SuppressWarnings("unchecked")
     @Test
     public void testDeleteWarning() throws Exception {

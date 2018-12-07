@@ -17,6 +17,8 @@ public interface MetadataTemplateService {
 
     void update(MetadataTemplate metadataTemplate) throws IOException;
 
+    void updateLinkLayers(MetadataTemplate metadataTemplate) throws IOException;
+
     MetadataTemplate load(String templateName);
 
     void delete(MetadataTemplate metadataTemplate) throws IOException;

@@ -164,7 +164,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                         .getBean(MetadataTemplateService.class);
         try {
             for (MetadataTemplate template : linkedTemplatesModel.getObject()) {
-                service.update(template);
+                service.updateLinkLayers(template);
             }
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());

@@ -155,6 +155,24 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
     }
 
     @Override
+    public void updateLinkLayers(MetadataTemplate metadataTemplate) throws IOException {
+        List<MetadataTemplate> templates = list();
+
+        int index = -1;
+        for (MetadataTemplate template : templates) {
+            if (template.getName().equals(metadataTemplate.getName())) {
+                index = templates.indexOf(template);
+            }
+        }
+        if (index != -1) {
+            templates.remove(index);
+            templates.add(index, metadataTemplate);
+
+            updateTemplates(templates);
+        }
+    }
+
+    @Override
     public MetadataTemplate load(String templateName) {
         List<MetadataTemplate> tempates = list();
         for (MetadataTemplate tempate : tempates) {

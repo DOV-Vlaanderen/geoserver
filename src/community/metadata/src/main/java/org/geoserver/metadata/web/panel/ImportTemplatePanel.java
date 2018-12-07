@@ -29,7 +29,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
-import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -112,6 +111,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
         // the no data links label
         noData = new Label("noData", new ResourceModel("noData"));
+        noData.setOutputMarkupId(true);
         add(noData);
         updateTableState(null, linkedTemplatesDataProvider);
     }
@@ -311,21 +311,6 @@ public abstract class ImportTemplatePanel extends Panel {
     }
 
     protected abstract void handleUpdate(AjaxRequestTarget target);
-
-    /** Store the changes in the links. */
-    public void save() {
-        MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
-        try {
-            for (MetadataTemplate template : templatesModel.getObject()) {
-                service.update(template);
-            }
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-        }
-    }
 
     private void updateTableState(
             AjaxRequestTarget target, ImportTemplateDataProvider dataProvider) {
