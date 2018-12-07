@@ -92,18 +92,24 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         }
     }
 
+    /**
+     * Test if:
+     * 1) the template data is updated
+     * 2) the metadata for linked layers is updated.
+     * @throws IOException
+     */
     @Test
     public void testUpdate() throws IOException {
         MetadataTemplate initial = service.load("simple fields");
         Assert.assertEquals(
                 "template-identifier",
                 initial.getMetadata().get(String.class, "indentifier-single").getValue());
-        Assert.assertTrue(initial.getLinkedLayers().contains("topp:mylayer"));
+        Assert.assertTrue(initial.getLinkedLayers().contains("myLayerId"));
 
         initial.getMetadata().get(String.class, "indentifier-single").setValue("updated value");
 
         // check if the linked metadata is updated.
-        LayerInfo initialMyLayer = geoServer.getCatalog().getLayerByName("mylayer");
+        LayerInfo initialMyLayer = geoServer.getCatalog().getLayer("myLayerId");
         Serializable initialCustom = initialMyLayer.getResource().getMetadata().get("custom");
         @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> initialMetadataModel =
@@ -119,7 +125,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
                 actual.getMetadata().get(String.class, "indentifier-single").getValue());
 
         // check if the linked metadata is updated.
-        LayerInfo myLayer = geoServer.getCatalog().getLayerByName("mylayer");
+        LayerInfo myLayer = geoServer.getCatalog().getLayer("myLayerId");
         Serializable custom = myLayer.getResource().getMetadata().get("custom");
         @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> metadataModel =

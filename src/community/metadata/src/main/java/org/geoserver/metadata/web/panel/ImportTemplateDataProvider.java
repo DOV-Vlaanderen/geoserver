@@ -31,24 +31,21 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public static final Property<MetadataTemplate> DESCRIPTION =
             new BeanProperty<MetadataTemplate>("description", "description");
 
-    private final String workspace;
 
-    private final String layerName;
+    private final String layerId;
 
     private List<MetadataTemplate> allTemplates = new ArrayList<>();
 
     private List<MetadataTemplate> linkedTemplates = new ArrayList<>();
 
-    public ImportTemplateDataProvider(
-            String workspace, String layerName, IModel<List<MetadataTemplate>> templatesModel) {
-        this.workspace = workspace;
-        this.layerName = layerName;
+    public ImportTemplateDataProvider(String layerId, IModel<List<MetadataTemplate>> templatesModel) {
+        this.layerId = layerId;
 
         allTemplates = templatesModel.getObject();
 
         for (MetadataTemplate template : allTemplates) {
             if (template.getLinkedLayers() != null
-                    && template.getLinkedLayers().contains(getKey(workspace, layerName))) {
+                    && template.getLinkedLayers().contains(layerId)) {
                 linkedTemplates.add(template);
             }
         }
@@ -61,7 +58,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     @Override
     protected List<MetadataTemplate> getItems() {
-        Collections.sort(linkedTemplates, new MetadataTemplateComparator());
+        linkedTemplates.sort(new MetadataTemplateComparator());
         return linkedTemplates;
     }
 
@@ -69,7 +66,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         if (modelObject.getLinkedLayers() == null) {
             modelObject.setLinkedLayers(new HashSet<>());
         }
-        modelObject.getLinkedLayers().add(getKey(workspace, layerName));
+        modelObject.getLinkedLayers().add(layerId);
         linkedTemplates.add(modelObject);
     }
 
@@ -81,7 +78,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
             if (modelObject.getLinkedLayers() == null) {
                 modelObject.setLinkedLayers(new HashSet<>());
             }
-            modelObject.getLinkedLayers().remove(getKey(workspace, layerName));
+            modelObject.getLinkedLayers().remove(layerId);
             linkedTemplates.remove(modelObject);
         }
     }
@@ -98,7 +95,4 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         return result;
     }
 
-    private String getKey(String workspace, String layerName) {
-        return workspace + ":" + layerName;
-    }
 }

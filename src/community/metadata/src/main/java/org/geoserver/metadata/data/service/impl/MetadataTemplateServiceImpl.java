@@ -45,7 +45,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplateServiceImpl.class);
 
-    XStreamPersister persister;
+    private XStreamPersister persister;
 
     private static String FILE_NAME = "templates.xml";
 
@@ -115,7 +115,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             // update layers
             if (metadataTemplate.getLinkedLayers() != null) {
                 for (String key : metadataTemplate.getLinkedLayers()) {
-                    LayerInfo layer = geoServer.getCatalog().getLayerByName(key);
+                    LayerInfo layer = geoServer.getCatalog().getLayer(key);
 
                     if (layer != null) {
                         @SuppressWarnings("unchecked")

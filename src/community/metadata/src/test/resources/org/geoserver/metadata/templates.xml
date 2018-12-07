@@ -108,7 +108,7 @@
       </indexes>
     </metadata>
     <linkedLayers>
-      <string>topp:mylayer</string>
+      <string>myLayerId</string>
     </linkedLayers>
   </MetadataTemplate>
   <MetadataTemplate>
@@ -755,8 +755,8 @@
       </indexes>
     </metadata>
     <linkedLayers>
-      <string>gs:other</string>
-      <string>gs:layer</string>
+      <string>other</string>
+      <string>layer</string>
     </linkedLayers>
   </MetadataTemplate>
   <MetadataTemplate>

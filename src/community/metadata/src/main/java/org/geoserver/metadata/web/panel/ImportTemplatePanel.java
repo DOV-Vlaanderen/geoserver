@@ -64,8 +64,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
     public ImportTemplatePanel(
             String id,
-            String workspace,
-            String layerName,
+            String layerId,
             IModel<ComplexMetadataMap> metadataModel,
             IModel<List<MetadataTemplate>> templatesModel,
             HashMap<String, List<Integer>> derivedAtts) {
@@ -73,7 +72,7 @@ public abstract class ImportTemplatePanel extends Panel {
         this.templatesModel = templatesModel;
         this.derivedAtts = derivedAtts;
         linkedTemplatesDataProvider =
-                new ImportTemplateDataProvider(workspace, layerName, templatesModel);
+                new ImportTemplateDataProvider(layerId, templatesModel);
     }
 
     @Override
