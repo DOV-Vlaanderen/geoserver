@@ -15,6 +15,8 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.web.panel.TemplatesPositionPanel;
@@ -83,13 +85,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                                 LOGGER.log(Level.WARNING, e.getMessage(), e);
                                 if (template.getLinkedLayers() != null
                                         && !template.getLinkedLayers().isEmpty()) {
-                                    StringBuilder layers = new StringBuilder();
-                                    for (String layer : template.getLinkedLayers()) {
-                                        if (layers.length() > 0) {
-                                            layers.append(",\n");
-                                        }
-                                        layers.append(layer);
-                                    }
+                                    StringBuilder layers = generatateLayerNames(template);
                                     StringResourceModel msg =
                                             new StringResourceModel("errorIsLinked", templatesPanel)
                                                     .setParameters(template.getName(), layers);
@@ -147,6 +143,23 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                 };
         templatesPanel.setOutputMarkupId(true);
         add(templatesPanel);
+    }
+
+    private StringBuilder generatateLayerNames(MetadataTemplate template) {
+        StringBuilder layers = new StringBuilder();
+        for (String resourceId : template.getLinkedLayers()) {
+            if (layers.length() > 0) {
+                layers.append(",\n");
+            }
+            Catalog catalog = GeoServerApplication.get().getGeoServer().getCatalog();
+            ResourceInfo resource = catalog.getResource(resourceId, ResourceInfo.class);
+            if (resource != null) {
+                layers.append(resource.getName());
+            } else {
+                layers.append(resourceId);
+            }
+        }
+        return layers;
     }
 
     @Override

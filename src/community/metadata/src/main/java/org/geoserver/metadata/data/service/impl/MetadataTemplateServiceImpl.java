@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.XStreamPersister;
@@ -115,20 +115,17 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
             // update layers
             if (metadataTemplate.getLinkedLayers() != null) {
                 for (String key : metadataTemplate.getLinkedLayers()) {
-                    LayerInfo layer = geoServer.getCatalog().getLayer(key);
+                    ResourceInfo resource =
+                            geoServer.getCatalog().getResource(key, ResourceInfo.class);
 
-                    if (layer != null) {
+                    if (resource != null) {
                         @SuppressWarnings("unchecked")
                         HashMap<String, List<Integer>> derivedAtts =
                                 (HashMap<String, List<Integer>>)
-                                        layer.getResource()
-                                                .getMetadata()
-                                                .get(MetadataConstants.DERIVED_KEY);
+                                        resource.getMetadata().get(MetadataConstants.DERIVED_KEY);
 
                         Serializable custom =
-                                layer.getResource()
-                                        .getMetadata()
-                                        .get(MetadataConstants.CUSTOM_METADATA_KEY);
+                                resource.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                         @SuppressWarnings("unchecked")
                         ComplexMetadataMapImpl model =
                                 new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
@@ -143,7 +140,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService {
 
                         metadataService.merge(model, sources, derivedAtts);
 
-                        geoServer.getCatalog().save(layer);
+                        geoServer.getCatalog().save(resource);
                     } else {
                         LOGGER.severe("Update metadata for linked layer failed: " + key);
                     }

@@ -108,7 +108,7 @@
       </indexes>
     </metadata>
     <linkedLayers>
-      <string>myLayerId</string>
+      <string>mylayerFeatureId</string>
     </linkedLayers>
   </MetadataTemplate>
   <MetadataTemplate>

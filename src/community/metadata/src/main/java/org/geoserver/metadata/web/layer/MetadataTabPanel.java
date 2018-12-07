@@ -77,19 +77,18 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                 new Model<ComplexMetadataMap>(
                         new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
 
-        String layerId = null;
-        if (getDefaultModelObject() instanceof LayerInfo) {
+        String resourceId = resource.getId();
+        /*if (getDefaultModelObject() instanceof LayerInfo) {
             layerId = ((LayerInfo) getDefaultModelObject()).getId();
         } else {
             LOGGER.severe("Could not find layer id for:" + resource.getName());
-        }
-
+        }*/
 
         // Link with templates panel
         this.add(
                 new ImportTemplatePanel(
                         "importTemplatePanel",
-                        layerId,
+                        resourceId,
                         metadataModel,
                         (IModel<List<MetadataTemplate>>) linkedTemplatesModel,
                         derivedAtts) {

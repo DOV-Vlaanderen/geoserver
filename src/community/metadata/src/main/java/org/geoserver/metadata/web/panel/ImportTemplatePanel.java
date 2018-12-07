@@ -62,15 +62,14 @@ public abstract class ImportTemplatePanel extends Panel {
 
     public ImportTemplatePanel(
             String id,
-            String layerId,
+            String resourceId,
             IModel<ComplexMetadataMap> metadataModel,
             IModel<List<MetadataTemplate>> templatesModel,
             HashMap<String, List<Integer>> derivedAtts) {
         super(id, metadataModel);
         this.templatesModel = templatesModel;
         this.derivedAtts = derivedAtts;
-        linkedTemplatesDataProvider =
-                new ImportTemplateDataProvider(layerId, templatesModel);
+        linkedTemplatesDataProvider = new ImportTemplateDataProvider(resourceId, templatesModel);
     }
 
     @Override
@@ -167,31 +166,30 @@ public abstract class ImportTemplatePanel extends Panel {
                 }
                 if (valid) {
                     dialog.setTitle(
-                                new ParamResourceModel(
-                                        "confirmImportDialog.title", ImportTemplatePanel.this));
-                        dialog.showOkCancel(
-                                target,
-                                new GeoServerDialog.DialogDelegate() {
+                            new ParamResourceModel(
+                                    "confirmImportDialog.title", ImportTemplatePanel.this));
+                    dialog.showOkCancel(
+                            target,
+                            new GeoServerDialog.DialogDelegate() {
 
-                                    private static final long serialVersionUID =
-                                            -5552087037163833563L;
+                                private static final long serialVersionUID = -5552087037163833563L;
 
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        ParamResourceModel resource =
-                                                new ParamResourceModel(
-                                                        "confirmImportDialog.content",
-                                                        ImportTemplatePanel.this);
-                                        return new MultiLineLabel(id, resource.getString());
-                                    }
+                                @Override
+                                protected Component getContents(String id) {
+                                    ParamResourceModel resource =
+                                            new ParamResourceModel(
+                                                    "confirmImportDialog.content",
+                                                    ImportTemplatePanel.this);
+                                    return new MultiLineLabel(id, resource.getString());
+                                }
 
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        performLink(target);
-                                        return true;
-                                    }
-                                });
+                                @Override
+                                protected boolean onSubmit(
+                                        AjaxRequestTarget target, Component contents) {
+                                    performLink(target);
+                                    return true;
+                                }
+                            });
                 }
                 target.add(getFeedbackPanel());
             }
@@ -335,5 +333,4 @@ public abstract class ImportTemplatePanel extends Panel {
         remove.setVisible(!isEmpty);
         noData.setVisible(isEmpty);
     }
-
 }

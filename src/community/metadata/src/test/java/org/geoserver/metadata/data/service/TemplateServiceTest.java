@@ -93,9 +93,8 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     }
 
     /**
-     * Test if:
-     * 1) the template data is updated
-     * 2) the metadata for linked layers is updated.
+     * Test if: 1) the template data is updated 2) the metadata for linked layers is updated.
+     *
      * @throws IOException
      */
     @Test
@@ -104,7 +103,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(
                 "template-identifier",
                 initial.getMetadata().get(String.class, "indentifier-single").getValue());
-        Assert.assertTrue(initial.getLinkedLayers().contains("myLayerId"));
+        Assert.assertTrue(initial.getLinkedLayers().contains("mylayerFeatureId"));
 
         initial.getMetadata().get(String.class, "indentifier-single").setValue("updated value");
 

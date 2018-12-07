@@ -31,21 +31,21 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public static final Property<MetadataTemplate> DESCRIPTION =
             new BeanProperty<MetadataTemplate>("description", "description");
 
-
-    private final String layerId;
+    private final String resourceId;
 
     private List<MetadataTemplate> allTemplates = new ArrayList<>();
 
     private List<MetadataTemplate> linkedTemplates = new ArrayList<>();
 
-    public ImportTemplateDataProvider(String layerId, IModel<List<MetadataTemplate>> templatesModel) {
-        this.layerId = layerId;
+    public ImportTemplateDataProvider(
+            String resourceId, IModel<List<MetadataTemplate>> templatesModel) {
+        this.resourceId = resourceId;
 
         allTemplates = templatesModel.getObject();
 
         for (MetadataTemplate template : allTemplates) {
             if (template.getLinkedLayers() != null
-                    && template.getLinkedLayers().contains(layerId)) {
+                    && template.getLinkedLayers().contains(this.resourceId)) {
                 linkedTemplates.add(template);
             }
         }
@@ -66,7 +66,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         if (modelObject.getLinkedLayers() == null) {
             modelObject.setLinkedLayers(new HashSet<>());
         }
-        modelObject.getLinkedLayers().add(layerId);
+        modelObject.getLinkedLayers().add(resourceId);
         linkedTemplates.add(modelObject);
     }
 
@@ -78,7 +78,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
             if (modelObject.getLinkedLayers() == null) {
                 modelObject.setLinkedLayers(new HashSet<>());
             }
-            modelObject.getLinkedLayers().remove(layerId);
+            modelObject.getLinkedLayers().remove(resourceId);
             linkedTemplates.remove(modelObject);
         }
     }
@@ -94,5 +94,4 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         Collections.sort(result, new MetadataTemplateComparator());
         return result;
     }
-
 }

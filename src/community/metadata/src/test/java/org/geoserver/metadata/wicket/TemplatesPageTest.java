@@ -5,14 +5,18 @@
 package org.geoserver.metadata.wicket;
 
 import java.io.IOException;
+import java.util.Locale;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
 import org.geoserver.metadata.web.MetadataTemplatePage;
 import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.geoserver.metadata.web.panel.MetadataPanel;
+import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,6 +33,14 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
     @Before
     public void before() throws IOException {
         // Load the page
+        Session.get().setLocale(new Locale("nl"));
+        restoreTemplates();
+        restoreLayers();
+
+        LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
+        login();
+        new ResourceConfigurationPage(layer, false);
+
         MetadataTemplatesPage page = new MetadataTemplatesPage();
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatesPage.class);
@@ -36,6 +48,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
     @After
     public void after() throws IOException {
+        restoreLayers();
         restoreTemplates();
     }
 
@@ -185,11 +198,11 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
         Assert.assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
         Assert.assertEquals(
-                "Template 'simple fields' is not deleted. Linked to layers: myLayerId",
+                "Template 'simple fields' is not deleted. Linked to layers: mylayer",
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         tester.assertLabel(
                 "topFeedback:feedbackul:messages:0:message",
-                "Template &#039;simple fields&#039; is not deleted. Linked to layers: myLayerId");
+                "Template &#039;simple fields&#039; is not deleted. Linked to layers: mylayer");
     }
 
     @Test

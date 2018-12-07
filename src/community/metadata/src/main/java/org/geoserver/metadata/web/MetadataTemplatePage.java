@@ -128,7 +128,6 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                     if (message != null) {
                         form.error(message);
                     }
-                    // TODO use the new syntax
                     addFeedbackPanels(target);
                 }
             }

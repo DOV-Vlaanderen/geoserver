@@ -208,7 +208,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         Assert.assertEquals("template-list-simple", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
         // test list of linked templates
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component",
@@ -257,7 +258,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         Assert.assertEquals("template-object list", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:itemProperties:0:component",
@@ -312,11 +314,13 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
 
         // check the link
         tester.assertLabel(
@@ -383,7 +387,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component",
                 "simple fields");
@@ -417,7 +422,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(1);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:5:itemProperties:0:component",
@@ -452,7 +458,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(4);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
 
         selectTemplate =
                 (DropDownChoice<?>)
@@ -461,7 +468,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(1);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:4:itemProperties:0:component",
@@ -496,7 +504,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<String>) uuid.getDefaultModel()).setObject("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1");
 
         tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:link");
-        tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:importDialog:dialog:content:form:submit");
+        tester.clickLink(
+                "publishedinfo:tabs:panel:geonetworkPanel:importDialog:dialog:content:form:submit");
 
         // Check content
         tester.assertModelValue(
