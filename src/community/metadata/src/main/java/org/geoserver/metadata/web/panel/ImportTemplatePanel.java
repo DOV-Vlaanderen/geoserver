@@ -191,6 +191,7 @@ public abstract class ImportTemplatePanel extends Panel {
                                 }
                             });
                 }
+                target.add(ImportTemplatePanel.this);
                 target.add(getFeedbackPanel());
             }
 
@@ -320,9 +321,9 @@ public abstract class ImportTemplatePanel extends Panel {
         noData.setVisible(isEmpty);
 
         if (target != null) {
+            target.add(getFeedbackPanel());
             target.add(noData);
             target.add(remove);
-            target.add(getFeedbackPanel());
             target.add(templatesPanel);
             target.add(getDropDown());
             target.add(ImportTemplatePanel.this);
