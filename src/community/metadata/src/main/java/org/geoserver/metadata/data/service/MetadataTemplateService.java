@@ -17,6 +17,7 @@ public interface MetadataTemplateService {
 
     /**
      * Update the current template and cascade the changes to all linked layers.
+     *
      * @param metadataTemplate
      * @throws IOException
      */
@@ -24,6 +25,7 @@ public interface MetadataTemplateService {
 
     /**
      * Update the template and linked layers. Without cascading the changes.
+     *
      * @param metadataTemplate
      * @throws IOException
      */

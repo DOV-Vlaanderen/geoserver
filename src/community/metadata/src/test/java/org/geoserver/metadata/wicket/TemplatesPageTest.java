@@ -145,7 +145,6 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertLabel("dialog:dialog:content:form:userPanel", "Are you sure?");
         tester.clickLink("dialog:dialog:content:form:submit");
 
-
         // Check update content of the table
         tester.assertLabel(
                 "templatesPanel:listContainer:items:7:itemProperties:1:component:link:label",
@@ -183,7 +182,6 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertLabel("dialog:dialog:content:form:userPanel", "Are you sure?");
         tester.clickLink("dialog:dialog:content:form:submit");
 
-
         // Check update content of the table
         tester.assertLabel(
                 "templatesPanel:listContainer:items:7:itemProperties:1:component:link:label",
@@ -200,7 +198,6 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertLabel(
                 "templatesPanel:listContainer:items:11:itemProperties:1:component:link:label",
                 "allData");
-
 
         print(tester.getLastRenderedPage(), true, true);
         Assert.assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());

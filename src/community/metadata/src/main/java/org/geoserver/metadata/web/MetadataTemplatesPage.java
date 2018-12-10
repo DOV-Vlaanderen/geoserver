@@ -78,7 +78,8 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                                 target,
                                 new GeoServerDialog.DialogDelegate() {
 
-                                    private static final long serialVersionUID = -5552087037163833563L;
+                                    private static final long serialVersionUID =
+                                            -5552087037163833563L;
 
                                     @Override
                                     protected Component getContents(String id) {
@@ -154,8 +155,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                 service.delete(template);
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, e.getMessage(), e);
-                if (template.getLinkedLayers() != null
-                        && !template.getLinkedLayers().isEmpty()) {
+                if (template.getLinkedLayers() != null && !template.getLinkedLayers().isEmpty()) {
                     StringBuilder layers = generatateLayerNames(template);
                     StringResourceModel msg =
                             new StringResourceModel("errorIsLinked", templatesPanel)
