@@ -15,8 +15,18 @@ public interface MetadataTemplateService {
 
     void save(MetadataTemplate metadataTemplate) throws IOException;
 
+    /**
+     * Update the current template and cascade the changes to all linked layers.
+     * @param metadataTemplate
+     * @throws IOException
+     */
     void update(MetadataTemplate metadataTemplate) throws IOException;
 
+    /**
+     * Update the template and linked layers. Without cascading the changes.
+     * @param metadataTemplate
+     * @throws IOException
+     */
     void updateLinkLayers(MetadataTemplate metadataTemplate) throws IOException;
 
     MetadataTemplate load(String templateName);

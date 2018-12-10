@@ -12,6 +12,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -23,10 +24,7 @@ import org.geoserver.metadata.web.panel.TemplatesPositionPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDialog;
-import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.SimpleAjaxLink;
+import org.geoserver.web.wicket.*;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -73,31 +71,31 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        MetadataTemplateService service =
-                                GeoServerApplication.get()
-                                        .getApplicationContext()
-                                        .getBean(MetadataTemplateService.class);
-                        for (MetadataTemplate template : templatesPanel.getSelection()) {
+                        dialog.setTitle(
+                                new ParamResourceModel(
+                                        "deleteDialog.title", MetadataTemplatesPage.this));
+                        dialog.showOkCancel(
+                                target,
+                                new GeoServerDialog.DialogDelegate() {
 
-                            try {
-                                service.delete(template);
-                            } catch (IOException e) {
-                                LOGGER.log(Level.WARNING, e.getMessage(), e);
-                                if (template.getLinkedLayers() != null
-                                        && !template.getLinkedLayers().isEmpty()) {
-                                    StringBuilder layers = generatateLayerNames(template);
-                                    StringResourceModel msg =
-                                            new StringResourceModel("errorIsLinked", templatesPanel)
-                                                    .setParameters(template.getName(), layers);
-                                    error(msg.getString());
-                                    ;
-                                } else {
-                                    error(e.getMessage());
-                                }
-                                addFeedbackPanels(target);
-                            }
-                        }
-                        target.add(templatesPanel);
+                                    private static final long serialVersionUID = -5552087037163833563L;
+
+                                    @Override
+                                    protected Component getContents(String id) {
+                                        ParamResourceModel resource =
+                                                new ParamResourceModel(
+                                                        "deleteDialog.content",
+                                                        MetadataTemplatesPage.this);
+                                        return new Label(id, resource.getString());
+                                    }
+
+                                    @Override
+                                    protected boolean onSubmit(
+                                            AjaxRequestTarget target, Component contents) {
+                                        performDelete(target);
+                                        return true;
+                                    }
+                                });
                     }
                 };
         remove.setOutputMarkupId(true);
@@ -143,6 +141,34 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                 };
         templatesPanel.setOutputMarkupId(true);
         add(templatesPanel);
+    }
+
+    private void performDelete(AjaxRequestTarget target) {
+        MetadataTemplateService service =
+                GeoServerApplication.get()
+                        .getApplicationContext()
+                        .getBean(MetadataTemplateService.class);
+        for (MetadataTemplate template : templatesPanel.getSelection()) {
+
+            try {
+                service.delete(template);
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
+                if (template.getLinkedLayers() != null
+                        && !template.getLinkedLayers().isEmpty()) {
+                    StringBuilder layers = generatateLayerNames(template);
+                    StringResourceModel msg =
+                            new StringResourceModel("errorIsLinked", templatesPanel)
+                                    .setParameters(template.getName(), layers);
+                    error(msg.getString());
+                    ;
+                } else {
+                    error(e.getMessage());
+                }
+                addFeedbackPanels(target);
+            }
+        }
+        target.add(templatesPanel);
     }
 
     private StringBuilder generatateLayerNames(MetadataTemplate template) {
