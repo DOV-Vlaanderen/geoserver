@@ -27,11 +27,17 @@ import java.util.Collection;
 import org.easymock.Capture;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -299,6 +305,45 @@ public class ConfigDatabaseTest {
         testSaved(resourceInfo);
         layer = database.getById(layer.getId(), LayerInfo.class);
         assertEquals("rs2", layer.getResource().getName());
+    }
+
+    @Test
+    public void testCacheResourceLayerLocked() throws Exception {
+        // check that saving a resource updates the layer cache
+        LayerInfo layer = addLayer();
+        ResourceInfo resourceInfo =
+                database.getById(layer.getResource().getId(), ResourceInfo.class);
+        resourceInfo.setName("rs2");
+        testSupport
+                .getCatalog()
+                .addListener(
+                        new CatalogListener() {
+
+                            @Override
+                            public void handleAddEvent(CatalogAddEvent event)
+                                    throws CatalogException {}
+
+                            @Override
+                            public void handleRemoveEvent(CatalogRemoveEvent event)
+                                    throws CatalogException {}
+
+                            @Override
+                            public void handleModifyEvent(CatalogModifyEvent event)
+                                    throws CatalogException {
+                                // this shouldn't cause re-caching because of lock
+                                database.getById(layer.getId(), LayerInfo.class);
+                            }
+
+                            @Override
+                            public void handlePostModifyEvent(CatalogPostModifyEvent event)
+                                    throws CatalogException {}
+
+                            @Override
+                            public void reloaded() {}
+                        });
+        testSupport.getFacade().save(resourceInfo);
+        LayerInfo layer2 = database.getById(layer.getId(), LayerInfo.class);
+        assertEquals("rs2", layer2.getResource().getName());
     }
 
     @Test

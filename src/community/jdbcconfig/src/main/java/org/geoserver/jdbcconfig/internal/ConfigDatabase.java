@@ -49,7 +49,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -146,7 +145,7 @@ public class ConfigDatabase {
 
     private ConfigClearingListener configListener;
 
-    private ConcurrentMap<String, Lock> locks;
+    private ConcurrentMap<String, ReentrantLock> locks;
 
     /** Protected default constructor needed by spring-jdbc instrumentation */
     protected ConfigDatabase() {
@@ -1008,7 +1007,7 @@ public class ConfigDatabase {
                 valueLoader = new ConfigLoader(id);
             }
 
-            Lock lock = locks.get(id);
+            ReentrantLock lock = locks.get(id);
             if (lock == null) {
                 lock = new ReentrantLock();
                 locks.put(id, lock);
@@ -1017,7 +1016,7 @@ public class ConfigDatabase {
             info = cache.getIfPresent(id);
             if (info == null) {
                 // we try the write lock
-                if (lock.tryLock()) {
+                if (!lock.isHeldByCurrentThread() && lock.tryLock()) {
                     try {
                         info = cache.get(id, valueLoader);
                     } finally {
@@ -1522,7 +1521,7 @@ public class ConfigDatabase {
     }
 
     private void acquireWriteLock(String id) {
-        Lock lock = locks.get(id);
+        ReentrantLock lock = locks.get(id);
         if (lock == null) {
             lock = new ReentrantLock();
             locks.put(id, lock);

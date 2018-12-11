@@ -222,6 +222,8 @@ public class JDBCConfigTestSupport {
 
     private ConfigDatabase configDb;
 
+    private JDBCCatalogFacade facade;
+
     public JDBCConfigTestSupport(DBConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
@@ -262,7 +264,7 @@ public class JDBCConfigTestSupport {
         configDb = context.getBean(ConfigDatabase.class);
 
         catalog = new CatalogImpl();
-        catalog.setFacade(new JDBCCatalogFacade(configDb));
+        catalog.setFacade(facade = new JDBCCatalogFacade(configDb));
         configDb.setCatalog(catalog);
         configDb.initDb(null);
     }
@@ -376,6 +378,10 @@ public class JDBCConfigTestSupport {
 
     public CatalogImpl getCatalog() {
         return catalog;
+    }
+
+    public JDBCCatalogFacade getFacade() {
+        return facade;
     }
 
     @Configuration
