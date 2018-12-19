@@ -100,4 +100,9 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
             }
         }
     }
+
+    public void reset() {
+        attributes.clear();
+        getItems();
+    }
 }
