@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,9 +48,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.resource.FileSystemResourceReference;
+import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.util.io.IOUtils;
+import org.apache.wicket.util.resource.AbstractResourceStream;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -114,37 +113,26 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     new DropDownChoice<String>(
                             "image", imageModel, new ArrayList<String>(imageSet));
 
-            URI stylesDir = dd.getStyles(ws).dir().toURI();
-
             Image display =
                     new Image(
                             "display",
-                            new IModel<ResourceReference>() {
-
-                                @Override
-                                public ResourceReference getObject() {
-                                    if (imageModel.getObject() != null) {
-                                        try {
-                                            return new FileSystemResourceReference(
-                                                    imageModel.getObject(),
-                                                    FileSystemResourceReference.getPath(
-                                                            stylesDir.resolve(
-                                                                    imageModel.getObject())));
-                                        } catch (IOException | URISyntaxException e) {
-                                            LOGGER.log(Level.WARNING, e.getMessage(), e);
-                                            return null;
+                            new ResourceStreamResource(
+                                    new AbstractResourceStream() {
+                                        @Override
+                                        public InputStream getInputStream()
+                                                throws ResourceStreamNotFoundException {
+                                            GeoServerDataDirectory dd =
+                                                    GeoServerApplication.get()
+                                                            .getBeanOfType(
+                                                                    GeoServerDataDirectory.class);
+                                            return dd.getStyles(ws)
+                                                    .get(imageModel.getObject())
+                                                    .in();
                                         }
-                                    } else {
-                                        return null;
-                                    }
-                                }
 
-                                @Override
-                                public void setObject(ResourceReference object) {}
-
-                                @Override
-                                public void detach() {}
-                            });
+                                        @Override
+                                        public void close() throws IOException {}
+                                    }));
             display.setOutputMarkupPlaceholderTag(true).setVisible(false);
 
             image.setNullValid(true)
