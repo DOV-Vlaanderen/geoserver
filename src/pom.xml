@@ -1860,7 +1860,7 @@
 
  <properties>
   <gs.version>${project.parent.version}</gs.version>
-  <gt.version>18.2-dov-0.4</gt.version>
+  <gt.version>18.2-dov-0.5-SNAPSHOT</gt.version>
   <gwc.version>1.12.2-dov-0.1</gwc.version>
   <spring.version>4.3.7.RELEASE</spring.version>
   <spring.security.version>4.0.4.RELEASE</spring.security.version> 
