@@ -469,6 +469,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 new CodeMirrorEditor.CustomButtonAction() {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
+                        String input = editor.getInput();
+
                         dialog.setTitle(new ParamResourceModel("insertImage", getPage()));
                         dialog.setInitialWidth(385);
                         dialog.setInitialHeight(175);
@@ -528,7 +530,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                         target.appendJavaScript(
                                                 "replaceSelection('"
                                                         + styleHandler()
-                                                                .insertImageCode(imageFileName)
+                                                                .insertImageCode(
+                                                                        imageFileName, input)
                                                         + "');");
                                         return true;
                                     }

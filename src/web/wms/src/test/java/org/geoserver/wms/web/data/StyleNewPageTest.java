@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -459,7 +458,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                 .setVisible(true);
 
         tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
+                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1",
+                GeoServerAjaxFormLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         tester.assertComponent(
                 "dialog:dialog:content:form:userPanel", AbstractStylePage.ChooseImagePanel.class);
@@ -487,7 +487,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         // we can at least test that the right javascript code is there
         Pattern pattern =
                 Pattern.compile(
-                        "replaceSelection\\('<ExternalGraphic>\\\\n"
+                        "replaceSelection\\('<ExternalGraphic "
+                                + "xmlns=\"http://www.opengis.net/sld\" "
+                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
                                 + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
                                 + "(.*)\" />\\\\n"
                                 + "<Format>(.*)</Format>\\\\n"
@@ -512,6 +514,12 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         assertTrue(matcher.find());
         assertEquals("GeoServer_75.png", matcher.group(1));
         assertEquals("image/png", matcher.group(2));
+
+        // clean
+        dd.getStyles().get("somepicture.png").delete();
+        dd.getStyles().get("otherpicture.jpg").delete();
+        dd.getStyles().get("vector.svg").delete();
+        dd.getStyles().get("GeoServer_75.png").delete();
     }
 
     //    Cannot make this one to work, the sld text area is not filled in the test

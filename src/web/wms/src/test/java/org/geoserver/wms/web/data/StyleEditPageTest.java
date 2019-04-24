@@ -21,7 +21,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -42,6 +41,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -208,7 +208,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                 .setVisible(true);
 
         tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
+                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1",
+                GeoServerAjaxFormLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         tester.assertComponent(
                 "dialog:dialog:content:form:userPanel", AbstractStylePage.ChooseImagePanel.class);
@@ -236,7 +237,9 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         // we can at least test that the right javascript code is there
         Pattern pattern =
                 Pattern.compile(
-                        "replaceSelection\\('<ExternalGraphic>\\\\n"
+                        "replaceSelection\\('<ExternalGraphic "
+                                + "xmlns=\"http://www.opengis.net/sld\" "
+                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
                                 + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
                                 + "(.*)\" />\\\\n"
                                 + "<Format>(.*)</Format>\\\\n"
@@ -261,6 +264,79 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertTrue(matcher.find());
         assertEquals("GeoServer_75.png", matcher.group(1));
         assertEquals("image/png", matcher.group(2));
+
+        // clean
+        dd.getStyles().get("somepicture.png").delete();
+        dd.getStyles().get("otherpicture.jpg").delete();
+        dd.getStyles().get("vector.svg").delete();
+        dd.getStyles().get("GeoServer_75.png").delete();
+    }
+
+    @Test
+    public void testInsertImageSLD11() throws Exception {
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
+                        + "xmlns:se=\"http://www.opengis.net/se\">\n"
+                        + "  <NamedLayer>\n"
+                        + "    <se:Name>justaname</se:Name>\n"
+                        + "    <UserStyle>\n"
+                        + "      <se:Name>justaname</se:Name>\n"
+                        + "      <se:FeatureTypeStyle>\n"
+                        + "        <se:Rule>\n"
+                        + "          <se:PointSymbolizer>\n"
+                        + "             <se:Graphic>\n"
+                        + "            </se:Graphic>\\n"
+                        + "          </se:PointSymbolizer>\n"
+                        + "        </se:Rule>\n"
+                        + "      </se:FeatureTypeStyle>\n"
+                        + "    </UserStyle>\n"
+                        + "  </NamedLayer>\n"
+                        + "</StyledLayerDescriptor>";
+
+        tester.newFormTester("styleForm")
+                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+
+        // create some fake images
+        GeoServerDataDirectory dd =
+                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        dd.getStyles().get("somepicture.png").out().close();
+
+        // since we don't have code mirror available in the test environment, we are kind of limited
+        // we'll make the tool bar visible to test the dialog anyway
+        tester.getComponentFromLastRenderedPage(
+                        "styleForm:styleEditor:editorContainer:toolbar", false)
+                .setVisible(true);
+
+        tester.assertComponent(
+                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1",
+                GeoServerAjaxFormLink.class);
+        tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
+        tester.assertComponent(
+                "dialog:dialog:content:form:userPanel", AbstractStylePage.ChooseImagePanel.class);
+        tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
+
+        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        formTester.select("userPanel:image", 0);
+        formTester.submit("submit");
+
+        // we can at least test that the right javascript code is there
+        Pattern pattern =
+                Pattern.compile(
+                        "replaceSelection\\('<ExternalGraphic "
+                                + "xmlns=\"http://www.opengis.net/se\" "
+                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
+                                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
+                                + "(.*)\" />\\\\n"
+                                + "<Format>(.*)</Format>\\\\n"
+                                + "</ExternalGraphic>\\\\n'\\)");
+        Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
+        assertTrue(matcher.find());
+        assertEquals("somepicture.png", matcher.group(1));
+        assertEquals("image/png", matcher.group(2));
+
+        // clean
+        dd.getStyles().get("somepicture.png").delete();
     }
 
     @Test

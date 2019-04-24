@@ -362,8 +362,20 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
-    public String insertImageCode(String imageFileName) {
-        return new StringBuffer("<ExternalGraphic>\\n")
+    public String insertImageCode(String imageFileName, String input) {
+        boolean version11 = false; // by default, we'll assume version 1.0;
+        if (input != null) {
+            try {
+                version11 = VERSION_11.compareTo(version(input)) == 0;
+            } catch (IOException e) {
+            }
+        }
+        return new StringBuffer("<ExternalGraphic ")
+                .append(
+                        version11
+                                ? "xmlns=\"http://www.opengis.net/se\" "
+                                : "xmlns=\"http://www.opengis.net/sld\" ")
+                .append("xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\n")
                 .append("<OnlineResource xlink:type=\"simple\" xlink:href=\"")
                 .append(imageFileName)
                 .append("\" />\\n")
