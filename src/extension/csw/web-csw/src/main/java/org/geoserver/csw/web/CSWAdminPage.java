@@ -41,9 +41,8 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void build(final IModel info, Form form) {
 
-        CSWInfo model = (CSWInfo) info.getObject();
         final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "metadata");
+                new PropertyModel<MetadataMap>(info, "metadata");
         if (metadata.getObject() == null) {
             metadata.setObject(new MetadataMap());
         }
