@@ -118,6 +118,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             "display",
                             new ResourceStreamResource(
                                     new AbstractResourceStream() {
+                                        InputStream is;
+
                                         @Override
                                         public InputStream getInputStream()
                                                 throws ResourceStreamNotFoundException {
@@ -125,13 +127,16 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                                     GeoServerApplication.get()
                                                             .getBeanOfType(
                                                                     GeoServerDataDirectory.class);
-                                            return dd.getStyles(ws)
-                                                    .get(imageModel.getObject())
-                                                    .in();
+                                            is = dd.getStyles(ws).get(imageModel.getObject()).in();
+                                            return is;
                                         }
 
                                         @Override
-                                        public void close() throws IOException {}
+                                        public void close() throws IOException {
+                                            if (is != null) {
+                                                is.close();
+                                            }
+                                        }
                                     }));
             display.setOutputMarkupPlaceholderTag(true).setVisible(false);
 
