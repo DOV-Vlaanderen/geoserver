@@ -88,9 +88,9 @@ types:
 
 geonetworks:
   - name: geonetwork url
-    url: https://www.dov.vlaanderen.be/geonetwork/
+    url: https://www.dov.vlaanderen.be/geonetwork/xml_iso19139_save?uuid=${UUID}
   - name: geonetwork oefen url
-    url: https://oefen.dov.vlaanderen.be/geonetwork/
+    url: https://oefen.dov.vlaanderen.be/geonetwork/xml_iso19139_save?uuid=${UUID}
 
 geonetworkmapping:
     -  geoserver: identifier-other

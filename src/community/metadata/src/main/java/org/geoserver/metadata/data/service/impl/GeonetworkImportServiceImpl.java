@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.service.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.metadata.data.dto.GeonetworkConfiguration;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
@@ -50,14 +51,6 @@ public class GeonetworkImportServiceImpl implements GeonetworkImportService {
             throw new IllegalArgumentException("Unknown geonetwork: " + geonetworkName);
         }
 
-        if (!url.contains("xml_iso19139_save?uuid=")) {
-            // assume we got the base url.
-            if (!url.endsWith("/")) {
-                url = url + "/";
-            }
-            url = url + "srv/xml_iso19139_save?uuid=";
-        }
-        url = url + uuid;
-        return url;
+        return PlaceHolderUtil.replacePlaceHolders(url, Collections.singletonMap("UUID", uuid));
     }
 }
