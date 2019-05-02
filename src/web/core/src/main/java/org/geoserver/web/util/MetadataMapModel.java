@@ -29,7 +29,7 @@ public class MetadataMapModel<T> implements IModel<T> {
 
     protected Class<?> target;
 
-    protected Serializable value;
+    protected transient Serializable value;
 
     public MetadataMapModel(IModel<MetadataMap> model, String expression, Class<?> target) {
         this.model = model;
