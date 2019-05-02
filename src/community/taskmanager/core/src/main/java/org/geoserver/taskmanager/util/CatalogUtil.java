@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.wicket.util.io.IOUtils;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -51,6 +52,10 @@ import org.springframework.stereotype.Service;
 public class CatalogUtil {
 
     private static final Logger LOGGER = Logging.getLogger(CatalogUtil.class);
+
+    private static final String[] IGNORE_METADATA = {
+        "custom-derived-attributes" // metadata module
+    };
 
     @Autowired protected GeoServerDataDirectory geoServerDataDirectory;
 
@@ -96,15 +101,17 @@ public class CatalogUtil {
             re.addMetadataLinkInfo(mdli.getType(), mdli.getMetadataType(), mdli.getContent());
         }
         for (Map.Entry<String, Serializable> entry : resource.getMetadata().entrySet()) {
-            if (entry.getValue() instanceof String) {
-                re.addMetadataString(entry.getKey(), (String) entry.getValue());
-            } else if (entry.getValue() != null) {
-                JDomWriter writer = new JDomWriter();
-                persisterFactory
-                        .createXMLPersister()
-                        .getXStream()
-                        .marshal(entry.getValue(), writer);
-                re.addMetadata(entry.getKey(), (Element) writer.getTopLevelNodes().get(0));
+            if (!ArrayUtils.contains(IGNORE_METADATA, entry.getKey())) {
+                if (entry.getValue() instanceof String) {
+                    re.addMetadataString(entry.getKey(), (String) entry.getValue());
+                } else if (entry.getValue() != null) {
+                    JDomWriter writer = new JDomWriter();
+                    persisterFactory
+                            .createXMLPersister()
+                            .getXStream()
+                            .marshal(entry.getValue(), writer);
+                    re.addMetadata(entry.getKey(), (Element) writer.getTopLevelNodes().get(0));
+                }
             }
         }
         re.setProjectionPolicy(
