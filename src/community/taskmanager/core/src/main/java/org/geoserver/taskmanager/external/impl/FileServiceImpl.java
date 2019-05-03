@@ -7,8 +7,10 @@ package org.geoserver.taskmanager.external.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -207,14 +209,20 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
 
     @Override
     public URI getURI(String filePath) {
-        if (dataDirectory == null) {
-            return getAbsolutePath(filePath).toUri();
+        Path absolutePath = getAbsolutePath(filePath);
+        if (dataDirectory != null && absolutePath.startsWith(dataDirectory)) {
+            return toURI(dataDirectory.relativize(absolutePath));
         } else {
-            try {
-                return new URI("file:" + dataDirectory.relativize(getAbsolutePath(filePath)));
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
-            }
+            return absolutePath.toUri();
+        }
+    }
+
+    private static URI toURI(Path path) {
+        try {
+            return new URI(
+                    "file:" + URLEncoder.encode(path.toString(), "UTF-8").replaceAll("%2F", "/"));
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
+            throw new IllegalStateException(e);
         }
     }
 
