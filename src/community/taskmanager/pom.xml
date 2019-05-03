@@ -21,7 +21,7 @@
         <dependency>
             <groupId>it.geosolutions</groupId>
             <artifactId>geoserver-manager</artifactId>
-            <version>1.8-dov-0.8</version>
+            <version>1.8-dov-0.9-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
