@@ -9,11 +9,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import javax.servlet.ServletContext;
 import org.easymock.EasyMock;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -157,5 +161,23 @@ public class GeoServerResourceLoaderTest {
         loader.setBaseDirectory(tempDir);
         assertEquals(tempDir, loader.getBaseDirectory());
         assertEquals(mockStore, loader.getResourceStore());
+    }
+
+    @Test
+    public void fromRelativeURLTest() throws IOException {
+        GeoServerResourceLoader loader = new GeoServerResourceLoader();
+        tempFolder.create();
+        File tempDir = tempFolder.getRoot();
+        loader.setBaseDirectory(tempDir);
+
+        Resource res = loader.fromURL("file:relative/with/special+characters%22");
+        assertEquals("relative/with/special characters\"", res.path());
+
+        // test it is writeable
+        try (OutputStream out = res.out()) {
+            out.write("someText".getBytes());
+        }
+
+        assertEquals("someText", Files.toString(res.file(), Charset.defaultCharset()));
     }
 }
