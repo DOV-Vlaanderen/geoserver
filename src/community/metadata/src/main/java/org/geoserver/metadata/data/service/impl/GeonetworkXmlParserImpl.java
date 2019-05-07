@@ -187,7 +187,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         }
     }
 
-    private NodeList findNode(Document doc, String geonetwork, Node node) {
+    private NodeList findNode(Document doc, String geonetwork, Node node) throws IOException {
         try {
             XPathFactory factory = XPathFactory.newInstance();
             XPath xpath = factory.newXPath();
@@ -202,9 +202,8 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
             NodeList nodes = (NodeList) result;
             return nodes;
         } catch (XPathExpressionException e) {
-
+            throw new IOException(e);
         }
-        return null;
     }
 
     public class NamespaceResolver implements NamespaceContext {
