@@ -95,6 +95,7 @@
           <descriptor>release/ext-qos.xml</descriptor>
           <descriptor>release/ext-web-resource.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
+          <descriptor>release/ext-metadata.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
