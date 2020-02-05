@@ -6,8 +6,12 @@ package org.geoserver.taskmanager.schedule.impl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
@@ -19,13 +23,16 @@ import org.geotools.util.logging.Logging;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.Trigger.CompletedExecutionInstruction;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
+import org.quartz.TriggerListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -39,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("batchJobService")
 public class BatchJobServiceImpl
-        implements BatchJobService, ApplicationListener<ContextRefreshedEvent> {
+        implements BatchJobService, ApplicationListener<ContextRefreshedEvent>, TriggerListener {
 
     private static final Logger LOGGER = Logging.getLogger(BatchJobServiceImpl.class);
 
@@ -50,6 +57,8 @@ public class BatchJobServiceImpl
     @Autowired private Scheduler scheduler;
 
     private boolean init = true;
+
+    private Map<TriggerKey, Consumer<Batch>> callbacks = new HashMap<>();
 
     @Transactional("tmTransactionManager")
     protected void schedule(Batch batch) throws SchedulerException {
@@ -207,6 +216,11 @@ public class BatchJobServiceImpl
         this.init = init;
     }
 
+    @PostConstruct
+    public void initialize() throws SchedulerException {
+        scheduler.getListenerManager().addTriggerListener(this);
+    }
+
     @Transactional("tmTransactionManager")
     public void onApplicationEvent(ContextRefreshedEvent event) {
         // call only once at start-up, so not for child contexts.
@@ -246,7 +260,11 @@ public class BatchJobServiceImpl
 
     @Override
     @Transactional("tmTransactionManager")
-    public void scheduleNow(Collection<Batch> batches, int waitInSeconds, int intervalInSeconds) {
+    public void scheduleNow(
+            Collection<Batch> batches,
+            int waitInSeconds,
+            int intervalInSeconds,
+            Consumer<Batch> callback) {
         long time = System.currentTimeMillis() + waitInSeconds * 1000;
         for (Batch batch : batches) {
             batch = dao.reload(batch);
@@ -260,6 +278,9 @@ public class BatchJobServiceImpl
                             .forJob(batch.getId().toString())
                             .startAt(new Date(time))
                             .build();
+            if (callback != null) {
+                callbacks.put(trigger.getKey(), callback);
+            }
             try {
                 scheduler.scheduleJob(trigger);
             } catch (SchedulerException e) {
@@ -296,6 +317,40 @@ public class BatchJobServiceImpl
             }
             batchRun.setInterruptMe(true);
             dao.save(batchRun);
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "batchJobService";
+    }
+
+    @Override
+    public void triggerFired(Trigger trigger, JobExecutionContext context) {}
+
+    @Override
+    public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
+        return false;
+    }
+
+    @Override
+    public void triggerMisfired(Trigger trigger) {}
+
+    @Override
+    public void triggerComplete(
+            Trigger trigger,
+            JobExecutionContext context,
+            CompletedExecutionInstruction triggerInstructionCode) {
+        Consumer<Batch> callback = callbacks.remove(trigger.getKey());
+        if (callback != null) {
+            try {
+                Integer batchId =
+                        Integer.parseInt((String) context.getJobDetail().getKey().getName());
+                callback.accept(dao.getBatch(batchId));
+            } catch (NumberFormatException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                return;
+            }
         }
     }
 }

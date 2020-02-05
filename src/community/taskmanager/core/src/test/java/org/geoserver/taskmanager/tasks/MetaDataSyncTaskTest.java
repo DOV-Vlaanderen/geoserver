@@ -14,7 +14,6 @@ import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.decoder.RESTCoverage;
 import it.geosolutions.geoserver.rest.decoder.RESTLayer;
 import it.geosolutions.geoserver.rest.decoder.RESTStyle;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -268,7 +267,7 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
         RESTStyle style = restManager.getStyleManager().getStyle(STYLE);
         assertEquals("1.1", style.getVersion());
-        
+
         String sld = restManager.getStyleManager().getSLD(STYLE);
         assertTrue(sld.indexOf("CHANGED VERSION") > 0);
 

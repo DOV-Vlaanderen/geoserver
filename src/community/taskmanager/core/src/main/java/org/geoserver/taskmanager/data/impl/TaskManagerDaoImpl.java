@@ -17,6 +17,7 @@ import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.SoftRemove;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
+import org.geoserver.taskmanager.util.InitConfigUtil;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
@@ -328,7 +329,8 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                     .add(Restrictions.like("name", namePattern))
                     .add(Restrictions.eq("configuration.removeStamp", 0L))
                     .add(Restrictions.eq("configuration.template", false))
-                    .add(Restrictions.eq("configuration.validated", true));
+                    .add(Restrictions.eq("configuration.validated", true))
+                    .add(Restrictions.not(Restrictions.like("name", "@%")));
             if (workspacePattern == null) {
                 criteria.add(Restrictions.isNull("configuration.workspace"));
             } else if (!"%".equals(workspacePattern)) {
@@ -342,6 +344,28 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
             } else if (!"%".equals(workspacePattern)) {
                 criteria.add(Restrictions.like("workspace", workspacePattern));
             }
+        }
+
+        return (List<Batch>) criteria.list();
+    }
+
+    @Override
+    public List<Batch> findInitBatches(String workspacePattern, String configNamePattern) {
+        Criteria criteria =
+                getSession()
+                        .createCriteria(BatchImpl.class)
+                        .add(Restrictions.eq("removeStamp", 0L));
+
+        criteria.createAlias("configuration", "configuration")
+                .add(Restrictions.like("configuration.name", configNamePattern))
+                .add(Restrictions.like("name", InitConfigUtil.INIT_BATCH))
+                .add(Restrictions.eq("configuration.removeStamp", 0L))
+                .add(Restrictions.eq("configuration.template", false))
+                .add(Restrictions.eq("configuration.validated", false));
+        if (workspacePattern == null) {
+            criteria.add(Restrictions.isNull("configuration.workspace"));
+        } else if (!"%".equals(workspacePattern)) {
+            criteria.add(Restrictions.like("configuration.workspace", workspacePattern));
         }
 
         return (List<Batch>) criteria.list();

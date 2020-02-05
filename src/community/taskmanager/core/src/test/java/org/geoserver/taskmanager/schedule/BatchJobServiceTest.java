@@ -11,7 +11,10 @@ import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 import org.apache.commons.lang3.time.DateUtils;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
@@ -28,6 +31,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -154,5 +158,32 @@ public class BatchJobServiceTest extends AbstractTaskManagerTest {
         assertEquals(
                 triggers.get(0).getStartTime().getTime() + 10000,
                 otherTriggers.get(0).getStartTime().getTime());
+    }
+
+    @Test
+    public void testBulkScheduleWithCallback() throws SchedulerException {
+        Set<String> calledbackBatches = new HashSet<>();
+        bjService.scheduleNow(
+                Lists.newArrayList(batch, otherBatch),
+                0,
+                0,
+                new Consumer<Batch>() {
+                    @Override
+                    public void accept(Batch batch) {
+                        calledbackBatches.add(batch.getName());
+                    }
+                });
+
+        JobKey jobKey = new JobKey(batch.getId().toString());
+        JobKey otherJobKey = new JobKey(otherBatch.getId().toString());
+        List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+        assertEquals(1, triggers.size());
+        List<? extends Trigger> otherTriggers = scheduler.getTriggersOfJob(otherJobKey);
+        assertEquals(1, otherTriggers.size());
+
+        while (scheduler.getTriggerState(triggers.get(0).getKey()) != TriggerState.NONE) {}
+        while (scheduler.getTriggerState(otherTriggers.get(0).getKey()) != TriggerState.NONE) {}
+
+        assertEquals(2, calledbackBatches.size());
     }
 }

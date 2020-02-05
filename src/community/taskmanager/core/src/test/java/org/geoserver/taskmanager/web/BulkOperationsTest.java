@@ -145,4 +145,69 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
 
         dao.delete(temp);
     }
+
+    @Test
+    public void testInitializeConfigurations() throws IOException {
+
+        Configuration config1 = fac.createConfiguration();
+        config1.setName("Q-CONFIG");
+        Batch batch1 = fac.createBatch();
+        batch1.setName("@Initialize");
+        batch1 = dao.save(batch1);
+        TaskManagerBeans.get().getDataUtil().addBatchToConfiguration(config1, batch1);
+        config1 = dao.save(config1);
+
+        Configuration config2 = fac.createConfiguration();
+        config2.setName("Z-CONFIG");
+        Batch batch2 = fac.createBatch();
+        batch2.setName("@Initialize");
+        batch2 = dao.save(batch2);
+        TaskManagerBeans.get().getDataUtil().addBatchToConfiguration(config2, batch2);
+        config2 = dao.save(config2);
+
+        tester.startPage(BulkOperationsPage.class);
+
+        tester.clickLink("form:tabs:tabs-container:tabs:2:link");
+
+        tester.assertComponent("form:tabs:panel:workspace", TextField.class);
+
+        tester.assertComponent("form:tabs:panel:configuration", TextField.class);
+
+        tester.assertComponent("form:tabs:panel:startDelay", NumberTextField.class);
+
+        tester.assertComponent("form:tabs:panel:betweenDelay", NumberTextField.class);
+
+        tester.assertComponent("form:tabs:panel:configsFound", Label.class);
+
+        tester.assertModelValue(
+                "form:tabs:panel:configsFound",
+                "Found 2 configurations that match the specified criteria");
+
+        FormTester formTester = tester.newFormTester("form");
+
+        formTester.setValue("tabs:panel:configuration", "Q%");
+
+        formTester.setValue("tabs:panel:betweenDelay", "60");
+
+        tester.executeAjaxEvent("form:tabs:panel:configuration", "change");
+
+        tester.assertModelValue(
+                "form:tabs:panel:configsFound",
+                "Found 1 configurations that match the specified criteria");
+
+        formTester.setValue("tabs:panel:configuration", "%");
+
+        tester.executeAjaxEvent("form:tabs:panel:configuration", "change");
+
+        formTester.submit("tabs:panel:run");
+
+        tester.assertModelValue(
+                "form:tabs:panel:dialog:dialog:content:form:userPanel",
+                "Are you sure you want to initialize 2 configurations? This will take at least 1 minutes.");
+
+        dao.delete(batch1);
+        dao.delete(batch2);
+        dao.delete(config1);
+        dao.delete(config2);
+    }
 }

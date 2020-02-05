@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.taskmanager.web.panel.bulk.BulkImportPanel;
+import org.geoserver.taskmanager.web.panel.bulk.BulkInitPanel;
 import org.geoserver.taskmanager.web.panel.bulk.BulkRunPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -41,6 +42,14 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
 
                     public Panel getPanel(String panelId) {
                         return new BulkImportPanel(panelId);
+                    }
+                });
+        tabs.add(
+                new AbstractTab(new ResourceModel("bulkInitialize")) {
+                    private static final long serialVersionUID = 4375160438369461475L;
+
+                    public Panel getPanel(String panelId) {
+                        return new BulkInitPanel(panelId);
                     }
                 });
         form.add(new TabbedPanel<ITab>("tabs", tabs));

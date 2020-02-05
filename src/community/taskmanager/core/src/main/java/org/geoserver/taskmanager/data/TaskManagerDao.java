@@ -231,4 +231,6 @@ public interface TaskManagerDao {
     List<BatchRun> getCurrentBatchRuns();
 
     List<Batch> findBatches(String workspacePattern, String configNamePattern, String namePattern);
+
+    List<Batch> findInitBatches(String workspacePattern, String configNamePattern);
 }
