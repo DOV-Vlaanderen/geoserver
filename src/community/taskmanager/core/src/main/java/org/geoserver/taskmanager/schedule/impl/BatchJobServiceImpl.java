@@ -260,6 +260,12 @@ public class BatchJobServiceImpl
 
     @Override
     @Transactional("tmTransactionManager")
+    public void scheduleNow(Collection<Batch> batches, int waitInSeconds, int intervalInSeconds) {
+        scheduleNow(batches, waitInSeconds, intervalInSeconds, null);
+    }
+
+    @Override
+    @Transactional("tmTransactionManager")
     public void scheduleNow(
             Collection<Batch> batches,
             int waitInSeconds,

@@ -74,9 +74,7 @@ public interface BatchJobService {
      * @param intervalInSeconds number of seconds to wait between batches, may be be zero to
      *     schedule all at once.
      */
-    default void scheduleNow(Collection<Batch> batches, int waitInSeconds, int intervalInSeconds) {
-        scheduleNow(batches, waitInSeconds, intervalInSeconds, null);
-    }
+    void scheduleNow(Collection<Batch> batches, int waitInSeconds, int intervalInSeconds);
 
     /**
      * Start a collection of batches right now.
