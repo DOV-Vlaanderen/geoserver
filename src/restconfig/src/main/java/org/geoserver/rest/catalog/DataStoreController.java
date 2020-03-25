@@ -191,20 +191,12 @@ public class DataStoreController extends AbstractCatalogController {
             @PathVariable String storeName) {
 
         DataStoreInfo original = getExistingDataStore(workspaceName, storeName);
-
-        if (!original.getName().equalsIgnoreCase(info.getName())) {
-            throw new RestException("can not change name of a datastore", HttpStatus.FORBIDDEN);
-        }
-
-        if (!original.getWorkspace().getName().equalsIgnoreCase(info.getWorkspace().getName())) {
-            throw new RestException("can not change name of a workspace", HttpStatus.FORBIDDEN);
-        }
-
+        
         new CatalogBuilder(catalog).updateDataStore(original, info);
         catalog.validate(original, false).throwIfInvalid();
         catalog.save(original);
         clear(original);
-
+        
         LOGGER.info("PUT datastore " + workspaceName + "," + storeName);
     }
 
