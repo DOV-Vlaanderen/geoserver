@@ -149,6 +149,8 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
             url = null;
         }
         final boolean isShapeFile = url != null && url.getFile().toUpperCase().endsWith(".SHP");
+        final boolean isAppSchema = url != null && url.getFile().toUpperCase().endsWith(".XML");
+        final boolean isDatastore = isShapeFile || isAppSchema;
 
         if (createLayer) {
             final StoreInfo _store =
@@ -159,13 +161,16 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
 
             if (createStore) {
                 store =
-                        isShapeFile
+                        isDatastore
                                 ? catalogFac.createDataStore()
                                 : catalogFac.createCoverageStore();
                 store.setWorkspace(ws);
                 store.setName(layerName.getLocalPart());
-                if (isShapeFile) {
+                if (isDatastore) {
                     store.getConnectionParameters().put("url", url);
+                    if (isAppSchema) {
+                        store.getConnectionParameters().put("dbtype", "app-schema");
+                    }
                 } else {
                     if (url == null) {
                         ((CoverageStoreInfo) store)
@@ -201,6 +206,13 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                                         ((ShapefileDataStore)
                                                         ((DataStoreInfo) store).getDataStore(null))
                                                 .getFeatureSource());
+                        builder.setupBounds(resource);
+                    } else if (isDatastore) {
+                        resource =
+                                builder.buildFeatureType(
+                                        ((DataStoreInfo) store)
+                                                .getDataStore(null)
+                                                .getFeatureSource(layerName));
                         builder.setupBounds(resource);
                     } else {
                         resource = builder.buildCoverage();
