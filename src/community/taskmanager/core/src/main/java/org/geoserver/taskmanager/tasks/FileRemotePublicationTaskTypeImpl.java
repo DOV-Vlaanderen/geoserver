@@ -7,19 +7,25 @@ package org.geoserver.taskmanager.tasks;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.StoreType;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.UploadMethod;
+import it.geosolutions.geoserver.rest.decoder.RESTDataStore;
 import it.geosolutions.geoserver.rest.encoder.GSGenericStoreEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
-import java.io.File;
+import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.external.FileReference;
@@ -42,6 +48,9 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
 
     public static final String PARAM_AUTO_VERSIONED = "auto-versioned";
 
+    private static final String REMOTE_DIR = "uploaded-stores/";
+    private static final SimpleDateFormat TIME_FMT = new SimpleDateFormat("yyMMddhhmmssMs");
+
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();
@@ -56,6 +65,17 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 new ParameterInfo(PARAM_FILE, extTypes.file(true, false), false)
                         .dependsOn(fileService)
                         .dependsOn(autoVersioned));
+    }
+
+    private static String remotePath(StoreInfo store, URI uri) throws MalformedURLException {
+        return REMOTE_DIR
+                + store.getWorkspace().getName()
+                + "."
+                + store.getName()
+                + "."
+                + TIME_FMT.format(new Date())
+                + "."
+                + FilenameUtils.getExtension(uri.toURL().getPath());
     }
 
     @Override
@@ -101,6 +121,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                                                                                 .getName(),
                                                                         store.getType(),
                                                                         store.getName(),
+                                                                        store
+                                                                                .getConnectionParameters(),
                                                                         uri.toString(),
                                                                         true));
                                             }
@@ -109,13 +131,16 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
         if (uri == null) {
             try {
                 uri = new URI(getLocation(store));
-                upload = uri.getScheme() == null || uri.getScheme().toLowerCase().equals("file");
             } catch (URISyntaxException e) {
                 throw new IOException(e);
             }
         }
-        if (upload) {
-            final File file = Resources.fromURL(uri.toString()).file();
+        upload =
+                uri.getScheme() == null
+                        || uri.getScheme().toLowerCase().equals("file")
+                        || uri.getScheme().toLowerCase().equals("resource");
+        Resource resource = Resources.fromPath(uri.toURL().getPath());
+        if (upload && store.getType() != null) {
             return restManager
                     .getPublisher()
                     .createStore(
@@ -124,10 +149,22 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                             name,
                             UploadMethod.FILE,
                             store.getType().toLowerCase(),
-                            Files.probeContentType(file.toPath()),
-                            file.toURI(),
+                            Files.probeContentType(resource.file().toPath()),
+                            resource.file().toURI(),
                             null);
         } else {
+            String targetUri;
+            if (upload) {
+                String path = remotePath(store, resource.file().toURI());
+                try (InputStream is = resource.in()) {
+                    if (!restManager.getResourceManager().upload(path, is)) {
+                        throw new TaskException("Failed to upload store file " + uri);
+                    }
+                }
+                targetUri = "file:" + path;
+            } else {
+                targetUri = uri.toString();
+            }
             return restManager
                     .getStoreManager()
                     .create(
@@ -137,7 +174,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                                     store.getWorkspace().getName(),
                                     store.getType(),
                                     name,
-                                    uri.toString(),
+                                    store.getConnectionParameters(),
+                                    targetUri,
                                     true));
         }
     }
@@ -146,8 +184,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
         if (storeInfo instanceof CoverageStoreInfo) {
             return ((CoverageStoreInfo) storeInfo).getURL();
         } else {
-            // this will work for shapefiles, which I believe is the only purely file-based
-            // (non-database) vector store
+            // this will work for shapefiles and app-schemas
+            // which I believe are the only file-based vector stores
             return ((DataStoreInfo) storeInfo).getConnectionParameters().get("url").toString();
         }
     }
@@ -174,16 +212,50 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                                                 String nativeName =
                                                         FilenameUtils.getBaseName(
                                                                 fileRef.getLatestVersion());
-                                                GSCoverageEncoder re = new GSCoverageEncoder(false);
-                                                re.setNativeName(nativeName);
-                                                re.setNativeCoverageName(nativeName);
-                                                update.run(re);
+                                                GSResourceEncoder updateRe;
+                                                if (re instanceof GSCoverageEncoder) {
+                                                    updateRe = new GSCoverageEncoder(false);
+                                                    ((GSCoverageEncoder) updateRe)
+                                                            .setNativeCoverageName(nativeName);
+                                                } else {
+                                                    updateRe = new GSFeatureTypeEncoder(false);
+                                                }
+                                                updateRe.setNativeName(nativeName);
+                                                update.run(updateRe);
                                             }
                                         });
         if (fileRef != null) {
             String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
-            ((GSCoverageEncoder) re).setNativeName(nativeName);
-            ((GSCoverageEncoder) re).setNativeCoverageName(nativeName);
+            re.setNativeName(nativeName);
+            if (re instanceof GSCoverageEncoder) {
+                ((GSCoverageEncoder) re).setNativeCoverageName(nativeName);
+            }
+        }
+    }
+
+    protected void cleanStore(
+            GeoServerRESTManager restManager, StoreInfo store, String storeName, TaskContext ctx)
+            throws TaskException {
+        FileReference fileRef = (FileReference) ctx.getParameterValues().get(PARAM_FILE);
+        URI uri = fileRef == null ? null : fileRef.getService().getURI(fileRef.getLatestVersion());
+        if (uri == null) {
+            try {
+                uri = new URI(getLocation(store));
+            } catch (URISyntaxException e) {
+                throw new TaskException(e);
+            }
+        }
+        boolean upload =
+                uri.getScheme() == null
+                        || uri.getScheme().toLowerCase().equals("file")
+                        || uri.getScheme().toLowerCase().equals("resource");
+        if (upload && store.getType() == null) {
+            RESTDataStore restStore =
+                    restManager.getReader().getDatastore(store.getWorkspace().getName(), storeName);
+            String url = restStore.getConnectionParameters().get("url");
+            if (!restManager.getResourceManager().delete(url.replaceAll("file:", ""))) {
+                throw new TaskException("Failed to delete uploaded store file " + uri);
+            }
         }
     }
 
