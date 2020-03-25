@@ -238,7 +238,7 @@ public class FeatureTypeController extends AbstractCatalogController {
         // attempt to fill in metadata from underlying feature source
         try {
             FeatureSource featureSource =
-                    dataAccess.getFeatureSource(new NameImpl(ftInfo.getNativeName()));
+                    dataAccess.getFeatureSource(ftInfo.getQualifiedNativeName());
             if (featureSource != null) {
                 cb.setupMetadata(ftInfo, featureSource);
             }
