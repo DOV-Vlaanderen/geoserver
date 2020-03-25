@@ -191,12 +191,12 @@ public class DataStoreController extends AbstractCatalogController {
             @PathVariable String storeName) {
 
         DataStoreInfo original = getExistingDataStore(workspaceName, storeName);
-        
+
         new CatalogBuilder(catalog).updateDataStore(original, info);
         catalog.validate(original, false).throwIfInvalid();
         catalog.save(original);
         clear(original);
-        
+
         LOGGER.info("PUT datastore " + workspaceName + "," + storeName);
     }
 

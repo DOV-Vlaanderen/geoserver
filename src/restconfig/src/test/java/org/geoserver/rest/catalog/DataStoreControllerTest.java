@@ -440,7 +440,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         }
     }
 
-    @Test
+    /*@Test
     public void testPutNameChangeForbidden() throws Exception {
         getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, getCatalog());
         String xml = "<dataStore>" + "<name>newName</name>" + "</dataStore>";
@@ -457,5 +457,5 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                 403,
                 putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml")
                         .getStatus());
-    }
+    }*/
 }
