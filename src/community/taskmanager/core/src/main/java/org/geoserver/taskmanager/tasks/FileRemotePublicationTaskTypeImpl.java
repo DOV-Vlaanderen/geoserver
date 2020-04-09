@@ -91,8 +91,6 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                         ? StoreType.COVERAGESTORES
                         : StoreType.DATASTORES;
 
-        boolean upload = false;
-
         FileReference fileRef =
                 (FileReference)
                         ctx.getBatchContext()
@@ -111,20 +109,23 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                                                 URI uri =
                                                         fileRef.getService()
                                                                 .getURI(fileRef.getLatestVersion());
-                                                restManager
-                                                        .getStoreManager()
-                                                        .update(
-                                                                store.getWorkspace().getName(),
-                                                                new GSGenericStoreEncoder(
-                                                                        storeType,
-                                                                        store.getWorkspace()
-                                                                                .getName(),
-                                                                        store.getType(),
-                                                                        store.getName(),
-                                                                        store
-                                                                                .getConnectionParameters(),
-                                                                        uri.toString(),
-                                                                        true));
+
+                                                if (!isUpload(uri)) {
+                                                    restManager
+                                                            .getStoreManager()
+                                                            .update(
+                                                                    store.getWorkspace().getName(),
+                                                                    new GSGenericStoreEncoder(
+                                                                            storeType,
+                                                                            store.getWorkspace()
+                                                                                    .getName(),
+                                                                            store.getType(),
+                                                                            store.getName(),
+                                                                            store
+                                                                                    .getConnectionParameters(),
+                                                                            uri.toString(),
+                                                                            true));
+                                                }
                                             }
                                         });
         URI uri = fileRef == null ? null : fileRef.getService().getURI(fileRef.getLatestVersion());
@@ -135,11 +136,16 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 throw new IOException(e);
             }
         }
-        upload =
-                uri.getScheme() == null
-                        || uri.getScheme().toLowerCase().equals("file")
-                        || uri.getScheme().toLowerCase().equals("resource");
-        Resource resource = Resources.fromPath(uri.toURL().getPath());
+        boolean upload = isUpload(uri);
+        Resource resource = null;
+        if (upload) {
+            if (uri.getScheme().toLowerCase().equals("resource")) {
+                resource = Resources.fromURL(uri.toString());
+            } else {
+                resource = Resources.fromPath(uri.toURL().getPath());
+            }
+        }
+        resource = process(resource, ctx);
         if (upload && store.getType() != null) {
             return restManager
                     .getPublisher()
@@ -245,11 +251,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 throw new TaskException(e);
             }
         }
-        boolean upload =
-                uri.getScheme() == null
-                        || uri.getScheme().toLowerCase().equals("file")
-                        || uri.getScheme().toLowerCase().equals("resource");
-        if (upload && store.getType() == null) {
+
+        if (isUpload(uri) && store.getType() == null) {
             RESTDataStore restStore =
                     restManager.getReader().getDatastore(store.getWorkspace().getName(), storeName);
             String url = restStore.getConnectionParameters().get("url");
@@ -257,6 +260,17 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 throw new TaskException("Failed to delete uploaded store file " + uri);
             }
         }
+    }
+
+    private boolean isUpload(URI uri) {
+        return uri.getScheme() == null
+                || uri.getScheme().toLowerCase().equals("file")
+                || uri.getScheme().toLowerCase().equals("resource");
+    }
+
+    protected Resource process(Resource res, TaskContext ctx) throws TaskException {
+        // hook for subclasses
+        return res;
     }
 
     @Override

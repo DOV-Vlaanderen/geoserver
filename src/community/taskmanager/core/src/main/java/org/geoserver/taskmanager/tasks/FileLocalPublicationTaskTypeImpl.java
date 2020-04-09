@@ -116,8 +116,12 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                                                                                         .get(
                                                                                                 PARAM_FILE));
                                                 final URI uri =
-                                                        fileRef.getService()
-                                                                .getURI(fileRef.getLatestVersion());
+                                                        process(
+                                                                fileRef.getService()
+                                                                        .getURI(
+                                                                                fileRef
+                                                                                        .getLatestVersion()),
+                                                                ctx);
                                                 if (store instanceof CoverageStoreInfo) {
                                                     ((CoverageStoreInfo) store)
                                                             .setURL(uri.toString());
@@ -132,7 +136,7 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                                                 catalog.save(store);
                                             }
                                         });
-        final URI uri = fileRef.getService().getURI(fileRef.getLatestVersion());
+        final URI uri = process(fileRef.getService().getURI(fileRef.getLatestVersion()), ctx);
 
         final boolean createLayer = catalog.getLayerByName(layerName) == null;
         final boolean createStore;
@@ -145,7 +149,7 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
         URL url;
         try {
             url = uri.toURL();
-        } catch (MalformedURLException e1) {
+        } catch (MalformedURLException e) {
             url = null;
         }
         final boolean isShapeFile = url != null && url.getFile().toUpperCase().endsWith(".SHP");
@@ -167,7 +171,7 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                 store.setWorkspace(ws);
                 store.setName(layerName.getLocalPart());
                 if (isDatastore) {
-                    store.getConnectionParameters().put("url", url);
+                    store.getConnectionParameters().put("url", uri.toString());
                     if (isAppSchema) {
                         store.getConnectionParameters().put("dbtype", "app-schema");
                     }
@@ -176,7 +180,8 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                         ((CoverageStoreInfo) store)
                                 .setType(determineFormatFromScheme(uri.getScheme()));
                     } else {
-                        if (url.getProtocol().equalsIgnoreCase("file")) {
+                        if (uri.getScheme().equalsIgnoreCase("file")
+                                || uri.getScheme().equalsIgnoreCase("resource")) {
                             ((CoverageStoreInfo) store)
                                     .setType(
                                             GridFormatFinder.findFormat(
@@ -185,7 +190,7 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
                                                     .getName());
                         } else {
                             ((CoverageStoreInfo) store)
-                                    .setType(GridFormatFinder.findFormat(url).getName());
+                                    .setType(GridFormatFinder.findFormat(uri).getName());
                         }
                     }
                     ((CoverageStoreInfo) store).setURL(uri.toString());
@@ -284,6 +289,11 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
         catalog.remove(layer);
         catalog.remove(resource);
         catalog.remove(store);
+    }
+
+    protected URI process(URI uri, TaskContext ctx) throws TaskException {
+        // hook for subclasses
+        return uri;
     }
 
     private static <T> T unwrap(T o, Class<T> clazz) {

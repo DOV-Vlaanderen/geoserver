@@ -1,0 +1,65 @@
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.taskmanager.tasks;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import javax.annotation.PostConstruct;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.taskmanager.external.DbSource;
+import org.geoserver.taskmanager.schedule.ParameterInfo;
+import org.geoserver.taskmanager.schedule.TaskContext;
+import org.geoserver.taskmanager.schedule.TaskException;
+import org.geoserver.taskmanager.util.PlaceHolderUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicationTaskTypeImpl {
+
+    public static final String NAME = "RemoteAppSchemaPublication";
+
+    public static final String PARAM_DB = "database";
+
+    @Autowired private GeoServerDataDirectory dataDirectory;
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    @PostConstruct
+    public void initParamInfo() {
+        super.initParamInfo();
+        paramInfo.put(PARAM_DB, new ParameterInfo(PARAM_DB, extTypes.dbName, true));
+    }
+
+    @Override
+    protected Resource process(Resource res, TaskContext ctx) throws TaskException {
+        final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
+
+        String path = res.path();
+        String newPath = path.substring(0, path.lastIndexOf(".")) + ".pub.xml";
+        Resource newRes = dataDirectory.get(newPath);
+
+        try (InputStream is = res.in()) {
+            String template = IOUtils.toString(is, "UTF-8");
+            String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters());
+
+            try (OutputStream os = newRes.out()) {
+                os.write(pub.getBytes());
+            }
+
+        } catch (IOException e) {
+            throw new TaskException(e);
+        }
+
+        return newRes;
+    }
+}
