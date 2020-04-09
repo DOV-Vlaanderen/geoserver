@@ -145,7 +145,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 resource = Resources.fromPath(uri.toURL().getPath());
             }
         }
-        resource = process(resource, ctx);
+        resource = process(resource, extGS, ctx);
         if (upload && store.getType() != null) {
             return restManager
                     .getPublisher()
@@ -268,7 +268,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 || uri.getScheme().toLowerCase().equals("resource");
     }
 
-    protected Resource process(Resource res, TaskContext ctx) throws TaskException {
+    protected Resource process(Resource res, ExternalGS extGS, TaskContext ctx)
+            throws TaskException {
         // hook for subclasses
         return res;
     }

@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.taskmanager.external.DbSource;
+import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
@@ -41,7 +42,8 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
     }
 
     @Override
-    protected Resource process(Resource res, TaskContext ctx) throws TaskException {
+    protected Resource process(Resource res, ExternalGS extGS, TaskContext ctx)
+            throws TaskException {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
 
         String path = res.path();
@@ -50,7 +52,7 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
 
         try (InputStream is = res.in()) {
             String template = IOUtils.toString(is, "UTF-8");
-            String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters());
+            String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters(extGS));
 
             try (OutputStream os = newRes.out()) {
                 os.write(pub.getBytes());

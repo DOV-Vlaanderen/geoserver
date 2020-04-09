@@ -30,7 +30,7 @@ public interface DbSource extends Secured {
      * Get a geoserver store encoder from this source.
      *
      * @param name name for the source
-     * @param extGs TODO
+     * @param extGs the external geoserver
      * @return the geoserver store encoder
      */
     GSAbstractStoreEncoder getStoreEncoder(String name, ExternalGS extGs);
@@ -41,6 +41,16 @@ public interface DbSource extends Secured {
      * @return the parameters for GeoServer datastore
      */
     Map<String, Serializable> getParameters();
+
+    /**
+     * Generate parameters for GeoServer datastore on remote geoserver
+     *
+     * @param extGs the external geoserver
+     * @return the parameters for GeoServer datastore
+     */
+    default Map<String, Serializable> getParameters(ExternalGS extGs) {
+        return getParameters();
+    }
 
     /**
      * schema
