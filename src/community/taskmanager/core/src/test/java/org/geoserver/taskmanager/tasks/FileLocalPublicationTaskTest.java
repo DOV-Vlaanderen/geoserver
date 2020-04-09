@@ -97,6 +97,8 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
                     getClass().getResource("appschema/MappedFeature.xml").openStream()) {
                 fileService.create(VECTOR_LOCATION, in);
             }
+        }
+        if (!fileService.checkFileExists("appschema/MappedFeature.properties")) {
             try (InputStream in =
                     getClass().getResource("appschema/MappedFeature.properties").openStream()) {
                 fileService.create("appschema/MappedFeature.properties", in);

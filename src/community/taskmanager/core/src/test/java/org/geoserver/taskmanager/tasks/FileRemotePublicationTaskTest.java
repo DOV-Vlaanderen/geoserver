@@ -92,6 +92,8 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
                     getClass().getResource("appschema/MappedFeature.xml").openStream()) {
                 fileService.create("MappedFeature.xml", in);
             }
+        }
+        if (!fileService.checkFileExists("appschema/MappedFeature.properties")) {
             try (InputStream in =
                     getClass().getResource("appschema/MappedFeature.properties").openStream()) {
                 fileService.create("MappedFeature.properties", in);

@@ -169,7 +169,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
         assertFeedback("dialog:dialog:content:form:userPanel:feedback", "required");
-        formTester.select("userPanel:type", 9);
+        formTester.select("userPanel:type", 10);
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
         assertEquals(3, configModel.getObject().getTasks().size());
