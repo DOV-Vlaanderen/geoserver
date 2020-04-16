@@ -31,8 +31,8 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
     NamespaceSupport namespaceSupport;
 
     public PropertyNameTypeBinding(
-            FilterFactory filterFactory, NamespaceSupport namespaceSupport, Catalog catalog) {
-        super(filterFactory);
+            FilterFactory2 filterFactory, NamespaceSupport namespaceSupport, Catalog catalog) {
+        super(filterFactory, namespaceSupport);
         this.namespaceSupport = namespaceSupport;
         this.catalog = catalog;
     }
