@@ -4,11 +4,15 @@
  */
 package org.geoserver.taskmanager;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -63,6 +67,26 @@ public abstract class AbstractTaskManagerTest {
         if (setupDataDirectory()) {
             DATA_DIRECTORY.setUp();
             geoServer.reload();
+        }
+    }
+
+    @After
+    public void cleanDataDirectory() throws Exception {
+        for (File file :
+                DATA_DIRECTORY
+                        .getDataDirectoryRoot()
+                        .listFiles(
+                                new FilenameFilter() {
+                                    @Override
+                                    public boolean accept(java.io.File dir, String name) {
+                                        return !name.equals("taskmanager");
+                                    }
+                                })) {
+            if (file.isDirectory()) {
+                FileUtils.cleanDirectory(file);
+            } else {
+                file.delete();
+            }
         }
     }
 
