@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -93,18 +94,21 @@ public class JDBCResourceStore implements ResourceStore {
             DataSource ds, JDBCResourceStoreProperties config, ResourceStore oldResourceStore) {
         this(ds, config);
         this.oldResourceStore = oldResourceStore;
+    }
 
-        if (config.isImport()) {
+    @PostConstruct
+    public void init() {
+        if (dir.getConfig().isImport()) {
             if (oldResourceStore != null) {
                 try {
                     Resource root = oldResourceStore.get("");
                     for (Resource child : root.list()) {
-                        if (!ArrayUtils.contains(config.getIgnoreDirs(), child.name())) {
+                        if (!ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), child.name())) {
                             Resources.copy(child, get(child.name()));
                         }
                     }
-                    config.setImport(false);
-                    config.save();
+                    dir.getConfig().setImport(false);
+                    dir.getConfig().save();
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
@@ -113,7 +117,7 @@ public class JDBCResourceStore implements ResourceStore {
             }
         } else {
             for (Resource child : get("").list()) {
-                if (ArrayUtils.contains(config.getCachedDirs(), child.name())) {
+                if (ArrayUtils.contains(dir.getConfig().getCachedDirs(), child.name())) {
                     child.dir();
                 }
             }
