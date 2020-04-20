@@ -111,6 +111,12 @@ public class JDBCResourceStore implements ResourceStore {
             } else {
                 LOGGER.warning("Cannot import resources: no old resource store available.");
             }
+        } else {
+            for (Resource child : get("").list()) {
+                if (ArrayUtils.contains(config.getCachedDirs(), child.name())) {
+                    child.dir();
+                }
+            }
         }
     }
 
@@ -379,6 +385,10 @@ public class JDBCResourceStore implements ResourceStore {
                                     JDBCResource.this, ResourceNotification.Kind.ENTRY_MODIFY);
 
                     entry.setContent(new FileInputStream(tempFile));
+
+                    if (entry.isPermantentlyCached()) {
+                        file();
+                    }
 
                     resourceNotificationDispatcher.changed(
                             new ResourceNotification(
