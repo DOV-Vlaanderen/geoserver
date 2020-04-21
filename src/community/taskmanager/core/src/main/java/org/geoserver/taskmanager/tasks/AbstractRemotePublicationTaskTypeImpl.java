@@ -187,6 +187,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             re.setNativeName(resource.getNativeName());
             re.setAdvertised(false);
             postProcess(
+                    storeType,
                     re,
                     ctx,
                     new TaskRunnable<GSResourceEncoder>() {
@@ -472,6 +473,9 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             throws TaskException {}
 
     protected void postProcess(
-            GSResourceEncoder re, TaskContext ctx, TaskRunnable<GSResourceEncoder> update)
+            StoreType storeType,
+            GSResourceEncoder re,
+            TaskContext ctx,
+            TaskRunnable<GSResourceEncoder> update)
             throws TaskException {}
 }

@@ -198,43 +198,48 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
 
     @Override
     protected void postProcess(
-            GSResourceEncoder re, TaskContext ctx, TaskRunnable<GSResourceEncoder> update)
+            StoreType storeType,
+            GSResourceEncoder re,
+            TaskContext ctx,
+            TaskRunnable<GSResourceEncoder> update)
             throws TaskException {
-        FileReference fileRef =
-                (FileReference)
-                        ctx.getBatchContext()
-                                .get(
-                                        ctx.getParameterValues().get(PARAM_FILE),
-                                        new BatchContext.Dependency() {
-                                            @Override
-                                            public void revert() throws TaskException {
-                                                FileReference fileRef =
-                                                        (FileReference)
-                                                                ctx.getBatchContext()
-                                                                        .get(
-                                                                                ctx.getParameterValues()
-                                                                                        .get(
-                                                                                                PARAM_FILE));
-                                                String nativeName =
-                                                        FilenameUtils.getBaseName(
-                                                                fileRef.getLatestVersion());
-                                                GSResourceEncoder updateRe;
-                                                if (re instanceof GSCoverageEncoder) {
-                                                    updateRe = new GSCoverageEncoder(false);
-                                                    ((GSCoverageEncoder) updateRe)
-                                                            .setNativeCoverageName(nativeName);
-                                                } else {
-                                                    updateRe = new GSFeatureTypeEncoder(false);
+        if (storeType == StoreType.COVERAGESTORES) {
+            FileReference fileRef =
+                    (FileReference)
+                            ctx.getBatchContext()
+                                    .get(
+                                            ctx.getParameterValues().get(PARAM_FILE),
+                                            new BatchContext.Dependency() {
+                                                @Override
+                                                public void revert() throws TaskException {
+                                                    FileReference fileRef =
+                                                            (FileReference)
+                                                                    ctx.getBatchContext()
+                                                                            .get(
+                                                                                    ctx.getParameterValues()
+                                                                                            .get(
+                                                                                                    PARAM_FILE));
+                                                    String nativeName =
+                                                            FilenameUtils.getBaseName(
+                                                                    fileRef.getLatestVersion());
+                                                    GSResourceEncoder updateRe;
+                                                    if (re instanceof GSCoverageEncoder) {
+                                                        updateRe = new GSCoverageEncoder(false);
+                                                        ((GSCoverageEncoder) updateRe)
+                                                                .setNativeCoverageName(nativeName);
+                                                    } else {
+                                                        updateRe = new GSFeatureTypeEncoder(false);
+                                                    }
+                                                    updateRe.setNativeName(nativeName);
+                                                    update.run(updateRe);
                                                 }
-                                                updateRe.setNativeName(nativeName);
-                                                update.run(updateRe);
-                                            }
-                                        });
-        if (fileRef != null) {
-            String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
-            re.setNativeName(nativeName);
-            if (re instanceof GSCoverageEncoder) {
-                ((GSCoverageEncoder) re).setNativeCoverageName(nativeName);
+                                            });
+            if (fileRef != null) {
+                String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
+                re.setNativeName(nativeName);
+                if (re instanceof GSCoverageEncoder) {
+                    ((GSCoverageEncoder) re).setNativeCoverageName(nativeName);
+                }
             }
         }
     }
