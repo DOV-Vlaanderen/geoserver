@@ -122,7 +122,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
                     int columnCount = 0;
                     for (Dialect.Column column :
                             sourcedb.getDialect().getColumns(sourceConn, sourceTableName, rs)) {
-                        sb.append(column.getName())
+                        sb.append(targetdb.getDialect().quote(column.getName()))
                                 .append(" ")
                                 .append(column.getTypeEtc())
                                 .append(", ");
