@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.Collections;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
@@ -67,6 +68,10 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
 
     @Override
     public boolean setupDataDirectory() throws Exception {
+        GWCConfig config = GWC.get().getConfig();
+        config.setCacheLayersByDefault(false);
+        GWC.get().saveConfig(config);
+
         DATA_DIRECTORY.addWcs11Coverages();
 
         return true;
