@@ -166,7 +166,8 @@ public class ResourceFileServiceImpl extends SecuredImpl implements FileService 
         try {
             return new URI(
                     "resource:"
-                            + URLEncoder.encode(path.toString(), "UTF-8").replaceAll("%2F", "/"));
+                            + URLEncoder.encode(rootFolder.get(path).path(), "UTF-8")
+                                    .replaceAll("%2F", "/"));
         } catch (UnsupportedEncodingException | URISyntaxException e) {
             throw new IllegalStateException(e);
         }
