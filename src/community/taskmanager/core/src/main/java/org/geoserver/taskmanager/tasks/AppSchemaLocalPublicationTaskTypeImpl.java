@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -17,7 +16,6 @@ import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.taskmanager.external.DbSource;
@@ -25,7 +23,6 @@ import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.util.PlaceHolderUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,8 +31,6 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
     public static final String NAME = "LocalAppSchemaPublication";
 
     public static final String PARAM_DB = "database";
-
-    @Autowired private GeoServerDataDirectory dataDirectory;
 
     @Override
     public String getName() {
@@ -53,13 +48,10 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
     protected URI process(URI uri, TaskContext ctx) throws TaskException {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
 
-        String path;
-        try {
-            path = uri.toURL().getPath();
-        } catch (MalformedURLException e) {
-            throw new TaskException(e);
+        if (!"file".equals(uri.getScheme()) && !"resource".equals(uri.getScheme())) {
+            throw new TaskException("Mapping files must be local!");
         }
-
+        String path = uri.getSchemeSpecificPart();
         String newPath;
         try {
             if (path.toUpperCase().endsWith("ZIP")) {
@@ -86,7 +78,7 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
                 String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
 
                 Resource res =
-                        dataDirectory.get(
+                        Resources.fromPath(
                                 path.substring(0, path.lastIndexOf("/")) + "/" + entry.getName());
 
                 try (OutputStream os = res.out()) {
@@ -96,7 +88,7 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
         }
         String newPath = FilenameUtils.removeExtension(path) + ".xml";
 
-        if (!Resources.exists(dataDirectory.get(newPath))) {
+        if (!Resources.exists(Resources.fromPath(newPath))) {
             throw new TaskException("Zip file must include xml file with same name.");
         }
 
@@ -106,7 +98,7 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
     private String processSingle(String path, Map<String, Serializable> parameters)
             throws IOException {
         String newPath = FilenameUtils.removeExtension(path) + "_local.xml";
-        Resource res = dataDirectory.get(newPath);
+        Resource res = Resources.fromPath(newPath);
 
         try (InputStream is = Resources.fromPath(path).in()) {
             String template = IOUtils.toString(is, "UTF-8");
