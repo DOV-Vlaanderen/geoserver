@@ -52,6 +52,9 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
             throw new TaskException("Mapping files must be local!");
         }
         String path = uri.getSchemeSpecificPart();
+        if ("resource".equals(uri.getScheme()) && path.startsWith("/")) {
+            path = path.substring(1);
+        }
         String newPath;
         try {
             if (path.toUpperCase().endsWith("ZIP")) {
