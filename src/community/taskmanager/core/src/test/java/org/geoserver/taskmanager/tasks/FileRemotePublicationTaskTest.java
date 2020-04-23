@@ -93,12 +93,6 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
                 fileService.create("MappedFeature.xml", in);
             }
         }
-        if (!fileService.checkFileExists("appschema/MappedFeature.properties")) {
-            try (InputStream in =
-                    getClass().getResource("appschema/MappedFeature.properties").openStream()) {
-                fileService.create("MappedFeature.properties", in);
-            }
-        }
         try (InputStream in =
                 getClass().getResource("appschema/MappedFeature.properties").openStream()) {
             externalGS

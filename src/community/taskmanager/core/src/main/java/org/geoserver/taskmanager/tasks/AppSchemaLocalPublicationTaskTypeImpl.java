@@ -7,10 +7,15 @@ package org.geoserver.taskmanager.tasks;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
@@ -54,17 +59,14 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
         } catch (MalformedURLException e) {
             throw new TaskException(e);
         }
-        String newPath = path.substring(0, path.lastIndexOf(".")) + ".pub.xml";
-        Resource res = dataDirectory.get(newPath);
 
-        try (InputStream is = Resources.fromPath(path).in()) {
-            String template = IOUtils.toString(is, "UTF-8");
-            String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters());
-
-            try (OutputStream os = res.out()) {
-                os.write(pub.getBytes());
+        String newPath;
+        try {
+            if (path.toUpperCase().endsWith("ZIP")) {
+                newPath = processZip(path, db.getParameters());
+            } else {
+                newPath = processSingle(path, db.getParameters());
             }
-
         } catch (IOException e) {
             throw new TaskException(e);
         }
@@ -74,5 +76,47 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
         } catch (URISyntaxException e) {
             throw new TaskException(e);
         }
+    }
+
+    private String processZip(String path, Map<String, Serializable> parameters)
+            throws IOException, TaskException {
+        try (ZipInputStream is = new ZipInputStream(Resources.fromPath(path).in())) {
+            for (ZipEntry entry = is.getNextEntry(); entry != null; entry = is.getNextEntry()) {
+                String template = IOUtils.toString(is, "UTF-8");
+                String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
+
+                Resource res =
+                        dataDirectory.get(
+                                path.substring(0, path.lastIndexOf("/")) + "/" + entry.getName());
+
+                try (OutputStream os = res.out()) {
+                    os.write(pub.getBytes());
+                }
+            }
+        }
+        String newPath = FilenameUtils.removeExtension(path) + ".xml";
+
+        if (!Resources.exists(dataDirectory.get(newPath))) {
+            throw new TaskException("Zip file must include xml file with same name.");
+        }
+
+        return newPath;
+    }
+
+    private String processSingle(String path, Map<String, Serializable> parameters)
+            throws IOException {
+        String newPath = FilenameUtils.removeExtension(path) + "_local.xml";
+        Resource res = dataDirectory.get(newPath);
+
+        try (InputStream is = Resources.fromPath(path).in()) {
+            String template = IOUtils.toString(is, "UTF-8");
+            String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
+
+            try (OutputStream os = res.out()) {
+                os.write(pub.getBytes());
+            }
+        }
+
+        return newPath;
     }
 }

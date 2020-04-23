@@ -44,10 +44,14 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
 
     // configure these constants
     private static final String VECTOR_LOCATION = "appschema/MappedFeature2.xml";
-    private static final String VECTOR_LOCATION_PUB = "appschema/MappedFeature2.pub.xml";
+    private static final String VECTOR_LOCATION_PUB = "appschema/MappedFeature2_local.xml";
+    private static final String ZIP_LOCATION = "appschema/GeologicUnit.zip";
+    private static final String ZIP_LOCATION_PUB = "appschema/GeologicUnit.xml";
+    private static final String ZIP_LOCATION_PUB_2 = "appschema/MappedFeature.xml";
     private static final String FILE_SERVICE = "data-directory";
     private static final String VECTOR_WS = "gsml";
     private static final String VECTOR_NAME = "MappedFeature";
+    private static final String ZIP_NAME = "GeologicUnit";
     private static final String DB_NAME = "myjndidb";
 
     // attributes
@@ -97,6 +101,12 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
             try (InputStream in =
                     getClass().getResource("appschema/MappedFeature.properties").openStream()) {
                 fileService.create("appschema/MappedFeature.properties", in);
+            }
+        }
+        if (!fileService.checkFileExists("appschema/GeologicUnit.zip")) {
+            try (InputStream in =
+                    getClass().getResource("appschema/GeologicUnit.zip").openStream()) {
+                fileService.create("appschema/GeologicUnit.zip", in);
             }
         }
         // add gsml namespace
@@ -170,7 +180,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         DataStoreInfo csi = catalog.getStoreByName(VECTOR_WS, VECTOR_NAME, DataStoreInfo.class);
         assertNotNull(csi);
         assertEquals(
-                "file:data/appschema/MappedFeature2.pub.xml",
+                "file:data/appschema/MappedFeature2_local.xml",
                 csi.getConnectionParameters().get("url").toString());
         assertNotNull(catalog.getResourceByName(VECTOR_NAME, FeatureTypeInfo.class));
 
@@ -187,6 +197,50 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         assertNull(catalog.getLayerByName(VECTOR_NAME));
         assertNull(catalog.getStoreByName(VECTOR_WS, VECTOR_NAME, DataStoreInfo.class));
         assertNull(catalog.getResourceByName(VECTOR_NAME, FeatureTypeInfo.class));
+    }
+
+    @Test
+    public void testZipSuccessAndCleanup() throws SchedulerException, IOException {
+        dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, FILE_SERVICE);
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, ZIP_LOCATION);
+        dataUtil.setConfigurationAttribute(config, ATT_WORKSPACE, VECTOR_WS);
+        dataUtil.setConfigurationAttribute(config, ATT_LAYER, ZIP_NAME);
+        dataUtil.setConfigurationAttribute(config, ATT_DATABASE, DB_NAME);
+        config = dao.save(config);
+
+        Trigger trigger =
+                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        scheduler.scheduleJob(trigger);
+
+        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
+
+        assertNotNull(catalog.getLayerByName(ZIP_NAME));
+        DataStoreInfo csi = catalog.getStoreByName(VECTOR_WS, ZIP_NAME, DataStoreInfo.class);
+        assertNotNull(csi);
+        assertEquals(
+                "file:data/appschema/GeologicUnit.xml",
+                csi.getConnectionParameters().get("url").toString());
+        assertNotNull(catalog.getResourceByName(ZIP_NAME, FeatureTypeInfo.class));
+
+        FileService fileService = fileServices.get(FILE_SERVICE);
+        assertTrue(fileService.checkFileExists(ZIP_LOCATION_PUB));
+        try (InputStream is = fileService.read(ZIP_LOCATION_PUB)) {
+            String pubStr = IOUtils.toString(is, "UTF-8");
+            assertTrue(pubStr.indexOf("<value>myjndi</value>") > 0);
+            assertTrue(pubStr.indexOf("<value>gw_beleid</value>") > 0);
+        }
+        assertTrue(fileService.checkFileExists(ZIP_LOCATION_PUB_2));
+        try (InputStream is = fileService.read(ZIP_LOCATION_PUB_2)) {
+            String pubStr = IOUtils.toString(is, "UTF-8");
+            assertTrue(pubStr.indexOf("<value>myjndi</value>") > 0);
+            assertTrue(pubStr.indexOf("<value>gw_beleid</value>") > 0);
+        }
+
+        taskUtil.cleanup(config);
+
+        assertNull(catalog.getLayerByName(ZIP_NAME));
+        assertNull(catalog.getStoreByName(VECTOR_WS, ZIP_NAME, DataStoreInfo.class));
+        assertNull(catalog.getResourceByName(ZIP_NAME, FeatureTypeInfo.class));
     }
 
     @Test

@@ -45,7 +45,7 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
 
     // configure these constants
     private static final String RASTER_LOCATION = "test/the world.tiff";
-    private static final String VECTOR_LOCATION = "appschema/MappedFeature.xml";
+    private static final String VECTOR_LOCATION = "appschema/store/MappedFeature.xml";
     private static final String FILE_SERVICE = "data-directory";
     private static final String RASTER_WS = "gs";
     private static final String VECTOR_WS = "gsml";

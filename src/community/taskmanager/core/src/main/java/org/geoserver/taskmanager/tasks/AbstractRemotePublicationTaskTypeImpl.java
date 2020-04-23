@@ -318,10 +318,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 if (!actualStoreName.equals(storeName)) {
                     // remove old store if exists
                     if (existsStore) {
-                        cleanStore(restManager, store, storeName, ctx);
-                        if (!restManager
-                                .getPublisher()
-                                .removeStore(ws, storeName, storeType, true, Purge.NONE)) {
+                        if (!cleanStore(restManager, store, storeType, storeName, ctx)) {
                             throw new TaskException(
                                     "Failed to remove old store " + ws + ":" + storeName);
                         }
@@ -378,9 +375,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 }
 
                 if (createStore) {
-                    if (!restManager
-                            .getPublisher()
-                            .removeStore(ws, actualStoreName, storeType, true, Purge.NONE)) {
+                    if (!cleanStore(restManager, store, storeType, actualStoreName, ctx)) {
                         throw new TaskException(
                                 "Failed to remove store " + ws + ":" + actualStoreName);
                     }
@@ -441,10 +436,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                             .removeResource(ws, storeType, storeName, resource.getName())) {
                 throw new TaskException("Failed to remove layer " + ws + ":" + resource.getName());
             }
-            cleanStore(restManager, store, storeName, ctx);
-            if (!restManager
-                    .getPublisher()
-                    .removeStore(ws, storeName, storeType, false, Purge.NONE)) {
+            if (!cleanStore(restManager, store, storeType, storeName, ctx)) {
                 if (neverReuseStore()) {
                     throw new TaskException("Failed to remove store " + ws + ":" + storeName);
                 } // else store is still in use
@@ -468,9 +460,18 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
         return store.getName();
     }
 
-    protected void cleanStore(
-            GeoServerRESTManager restManager, StoreInfo store, String storeName, TaskContext ctx)
-            throws TaskException {}
+    protected boolean cleanStore(
+            GeoServerRESTManager restManager,
+            StoreInfo store,
+            StoreType storeType,
+            String storeName,
+            TaskContext ctx)
+            throws TaskException {
+        return restManager
+                .getPublisher()
+                .removeStore(
+                        store.getWorkspace().getName(), storeName, storeType, false, Purge.NONE);
+    }
 
     protected void postProcess(
             StoreType storeType,

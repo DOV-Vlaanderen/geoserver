@@ -54,6 +54,7 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
     private static final String ATT_LAYER = "layer";
     private static final String ATT_EXT_GS = "geoserver";
     private static final String ATT_FAIL = "fail";
+    private static final String ATT_FILE_SERVICE = "fileService";
     private static final String ATT_FILE = "file";
     private static final String ATT_DATABASE = "database";
 
@@ -73,8 +74,6 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
 
     @Autowired private LookupService<FileService> fileServices;
 
-    @Autowired private ExternalGS externalGS;
-
     private Configuration config;
 
     private Batch batch;
@@ -84,30 +83,22 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
         Map<String, Serializable> params = new HashMap<>();
 
         FileService fileService = fileServices.get("data-directory");
-        if (!fileService.checkFileExists("MappedFeature2.xml")) {
+        if (!fileService.checkFileExists("appschema/GeologicUnit.zip")) {
             try (InputStream in =
-                    getClass().getResource("appschema/MappedFeature2.xml").openStream()) {
-                fileService.create("MappedFeature2.xml", in);
+                    getClass().getResource("appschema/GeologicUnit.zip").openStream()) {
+                fileService.create("appschema/GeologicUnit.zip", in);
             }
-        }
-        if (!fileService.checkFileExists("appschema/MappedFeature.properties")) {
-            try (InputStream in =
-                    getClass().getResource("appschema/MappedFeature.properties").openStream()) {
-                fileService.create("appschema/MappedFeature.properties", in);
-            }
-        }
-        try (InputStream in =
-                getClass().getResource("appschema/MappedFeature.properties").openStream()) {
-            externalGS
-                    .getRESTManager()
-                    .getResourceManager()
-                    .upload("uploaded-stores/MappedFeature.properties", in);
         }
 
-        params.put(AppSchemaDataAccessFactory.URL.key, "file:data/MappedFeature2.xml");
+        params.put(AppSchemaDataAccessFactory.URL.key, "file:data/MappedFeature.xml");
         params.put(AppSchemaDataAccessFactory.DBTYPE.key, AppSchemaDataAccessFactory.DBTYPE_STRING);
         DATA_DIRECTORY.addCustomType(
                 new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "MappedFeature", "gsml"), params);
+
+        params.put(AppSchemaDataAccessFactory.URL.key, "file:data/GeologicUnit.xml");
+        params.put(AppSchemaDataAccessFactory.DBTYPE.key, AppSchemaDataAccessFactory.DBTYPE_STRING);
+        DATA_DIRECTORY.addCustomType(
+                new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "GeologicUnit", "gsml"), params);
 
         return true;
     }
@@ -127,6 +118,8 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
                 task1, AppSchemaRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.setTaskParameterToAttribute(
                 task1, AppSchemaRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(
+                task1, AppSchemaRemotePublicationTaskTypeImpl.PARAM_FILE_SERVICE, ATT_FILE_SERVICE);
         dataUtil.setTaskParameterToAttribute(
                 task1, AppSchemaRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
         dataUtil.setTaskParameterToAttribute(
@@ -161,14 +154,16 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
     public void testSuccessAndCleanup()
             throws SchedulerException, SQLException, MalformedURLException {
         // set some metadata
-        FeatureTypeInfo fi = geoServer.getCatalog().getFeatureTypeByName("MappedFeature");
+        FeatureTypeInfo fi = geoServer.getCatalog().getFeatureTypeByName("GeologicUnit");
         fi.setTitle("my title ë");
         fi.setAbstract("my abstract ë");
         geoServer.getCatalog().save(fi);
 
-        dataUtil.setConfigurationAttribute(config, ATT_LAYER, "MappedFeature");
+        dataUtil.setConfigurationAttribute(config, ATT_LAYER, "GeologicUnit");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         dataUtil.setConfigurationAttribute(config, ATT_DATABASE, "myjndidb");
+        dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, "data-directory");
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, "appschema/GeologicUnit.zip");
         config = dao.save(config);
 
         Trigger trigger =
@@ -180,10 +175,10 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
         GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
 
         assertTrue(restManager.getReader().existsDatastore("gsml", "gsml"));
-        assertTrue(restManager.getReader().existsFeatureType("gsml", "gsml", "MappedFeature"));
-        assertTrue(restManager.getReader().existsLayer("gsml", "MappedFeature", true));
+        assertTrue(restManager.getReader().existsFeatureType("gsml", "gsml", "GeologicUnit"));
+        assertTrue(restManager.getReader().existsLayer("gsml", "GeologicUnit", true));
 
-        RESTLayer layer = restManager.getReader().getLayer("gsml", "MappedFeature");
+        RESTLayer layer = restManager.getReader().getLayer("gsml", "GeologicUnit");
         RESTFeatureType ft = restManager.getReader().getFeatureType(layer);
         assertEquals(fi.getTitle(), ft.getTitle());
         assertEquals(fi.getAbstract(), ft.getAbstract());
@@ -191,8 +186,8 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
         assertTrue(taskUtil.cleanup(config));
 
         assertFalse(restManager.getReader().existsDatastore("gsml", "gsml"));
-        assertFalse(restManager.getReader().existsFeatureType("gsml", "gsml", "MappedFeature"));
-        assertFalse(restManager.getReader().existsLayer("gsml", "MappedFeature", true));
+        assertFalse(restManager.getReader().existsFeatureType("gsml", "gsml", "GeologicUnit"));
+        assertFalse(restManager.getReader().existsLayer("gsml", "GeologicUnit", true));
     }
 
     @Test

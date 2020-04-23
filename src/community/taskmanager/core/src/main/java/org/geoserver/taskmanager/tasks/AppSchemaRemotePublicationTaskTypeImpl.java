@@ -7,7 +7,15 @@ package org.geoserver.taskmanager.tasks;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
@@ -42,26 +50,62 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
     }
 
     @Override
-    protected Resource process(Resource res, ExternalGS extGS, TaskContext ctx)
+    protected List<Resource> process(Resource res, ExternalGS extGS, TaskContext ctx)
             throws TaskException {
+
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
 
-        String path = res.path();
-        String newPath = path.substring(0, path.lastIndexOf(".")) + ".pub.xml";
-        Resource newRes = dataDirectory.get(newPath);
+        try {
+            if (res.name().toUpperCase().endsWith(".ZIP")) {
+                return processZip(res, db.getParameters(extGS));
+            } else {
+                return Collections.singletonList(processSingle(res, db.getParameters(extGS)));
+            }
+        } catch (IOException e) {
+            throw new TaskException(e);
+        }
+    }
+
+    private Resource processSingle(Resource res, Map<String, Serializable> parameters)
+            throws IOException {
+        Resource newRes = dataDirectory.get("/tmp").get(res.name());
 
         try (InputStream is = res.in()) {
             String template = IOUtils.toString(is, "UTF-8");
-            String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters(extGS));
+            String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
 
             try (OutputStream os = newRes.out()) {
                 os.write(pub.getBytes());
             }
-
-        } catch (IOException e) {
-            throw new TaskException(e);
         }
 
         return newRes;
+    }
+
+    private List<Resource> processZip(Resource res, Map<String, Serializable> parameters)
+            throws IOException {
+        List<Resource> resources = new ArrayList<>();
+
+        try (ZipInputStream is = new ZipInputStream(res.in())) {
+            for (ZipEntry entry = is.getNextEntry(); entry != null; entry = is.getNextEntry()) {
+                String template = IOUtils.toString(is, "UTF-8");
+                String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
+
+                Resource newRes = dataDirectory.get("/tmp").get(entry.getName());
+
+                try (OutputStream os = newRes.out()) {
+                    os.write(pub.getBytes());
+                }
+
+                if (newRes.name().equals(FilenameUtils.removeExtension(res.name()) + ".xml")) {
+                    // put main file first
+                    resources.add(0, newRes);
+                } else {
+                    resources.add(newRes);
+                }
+            }
+        }
+
+        return resources;
     }
 }
