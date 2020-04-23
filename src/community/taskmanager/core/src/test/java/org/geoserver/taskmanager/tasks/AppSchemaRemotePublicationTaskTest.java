@@ -198,9 +198,11 @@ public class AppSchemaRemotePublicationTaskTest extends AbstractTaskManagerTest 
         dataUtil.setTaskParameterToAttribute(task2, TestTaskTypeImpl.PARAM_FAIL, ATT_FAIL);
         dataUtil.addTaskToConfiguration(config, task2);
 
-        dataUtil.setConfigurationAttribute(config, ATT_LAYER, "MappedFeature");
+        dataUtil.setConfigurationAttribute(config, ATT_LAYER, "GeologicUnit");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         dataUtil.setConfigurationAttribute(config, ATT_DATABASE, "myjndidb");
+        dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, "data-directory");
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, "appschema/GeologicUnit.zip");
         dataUtil.setConfigurationAttribute(config, ATT_FAIL, Boolean.TRUE.toString());
         config = dao.save(config);
         task2 = config.getTasks().get("task2");
