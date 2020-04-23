@@ -19,18 +19,24 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geotools.feature.NameImpl;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ExtTypesTest extends AbstractTaskManagerTest {
 
     @Autowired ExtTypes extTypes;
+
+    @Autowired private Catalog catalog;
 
     protected boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addWcs11Coverages();
@@ -41,6 +47,21 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
                 "tiff",
                 "raster");
         return true;
+    }
+
+    @Before
+    public void setup() {
+        // add gsml namespace
+        if (catalog.getWorkspaceByName("gsml") == null) {
+            CatalogFactory factory = catalog.getFactory();
+            NamespaceInfo ns = factory.createNamespace();
+            ns.setPrefix("gsml");
+            ns.setURI("urn:cgi:xmlns:CGI:GeoSciML:2.0");
+            catalog.add(ns);
+            WorkspaceInfo ws = factory.createWorkspace();
+            ws.setName(ns.getName());
+            catalog.add(ws);
+        }
     }
 
     @Test
@@ -123,9 +144,10 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
     @Test
     public void testWorkspace() {
         List<String> domain = extTypes.workspace.getDomain(Collections.emptyList());
-        assertEquals(2, domain.size());
+        assertEquals(3, domain.size());
         assertEquals("gs", domain.get(0));
-        assertEquals("wcs", domain.get(1));
+        assertEquals("gsml", domain.get(1));
+        assertEquals("wcs", domain.get(2));
         assertTrue(extTypes.workspace.validate("gs", Collections.emptyList()));
         assertTrue(extTypes.workspace.validate("wcs", Collections.emptyList()));
         assertFalse(extTypes.workspace.validate("doesntexist", Collections.emptyList()));
