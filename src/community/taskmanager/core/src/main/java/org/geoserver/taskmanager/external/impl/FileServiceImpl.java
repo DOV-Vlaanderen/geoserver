@@ -135,7 +135,7 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
             File file = new File(getAbsolutePath(filePath).toUri());
             return FileUtils.openInputStream(file);
         } else {
-            throw new IOException("The file does not exit:" + filePath.toString());
+            throw new IOException("The file does not exist:" + filePath);
         }
     }
 

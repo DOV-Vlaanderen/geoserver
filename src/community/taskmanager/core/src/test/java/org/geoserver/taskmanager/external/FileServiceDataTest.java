@@ -130,6 +130,18 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     }
 
     @Test
+    public void testFileServiceGetVersioned() throws IOException {
+        new FileOutputStream(new File(FileUtils.getTempDirectoryPath(), "test.6.txt")).close();
+
+        FileServiceImpl service = new FileServiceImpl();
+        service.setRootFolder(FileUtils.getTempDirectoryPath());
+
+        FileReference ref = service.getVersioned("test.###.txt");
+        assertEquals("test.6.txt", ref.getLatestVersion());
+        assertEquals("test.7.txt", ref.getNextVersion());
+    }
+
+    @Test
     public void testListSubFolders() throws IOException {
         FileServiceImpl service = new FileServiceImpl();
         service.setRootFolder(
