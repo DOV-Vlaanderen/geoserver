@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -99,7 +98,24 @@ public class JDBCResourceStore implements ResourceStore {
         this.oldResourceStore = oldResourceStore;
     }
 
-    @PostConstruct
+    public void addCachingEvent(Resource resource) {
+        if (resource.getType() == Type.DIRECTORY) {
+            for (Resource child : resource.list()) {
+                addCachingEvent(child);
+            }
+        } else if (resource.getType() == Type.RESOURCE) {
+            resource.addListener(
+                    new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            if (notify.getKind() == Kind.ENTRY_MODIFY) {
+                                resource.file();
+                            }
+                        }
+                    });
+        }
+    }
+
     public void init() {
         if (dir.getConfig().isImport()) {
             if (oldResourceStore != null) {
@@ -124,6 +140,7 @@ public class JDBCResourceStore implements ResourceStore {
                 if (child.getType() == Type.DIRECTORY) {
                     // cache whole dir at beginning
                     child.dir();
+                    addCachingEvent(child);
                 }
                 child.addListener(
                         new ResourceListener() {
@@ -137,17 +154,7 @@ public class JDBCResourceStore implements ResourceStore {
                                             // cache individual modified files
                                             if (resource.entry.isPermantentlyCached()
                                                     && resource.getType() == Type.RESOURCE) {
-                                                resource.addListener(
-                                                        new ResourceListener() {
-                                                            @Override
-                                                            public void changed(
-                                                                    ResourceNotification notify) {
-                                                                if (notify.getKind()
-                                                                        == Kind.ENTRY_MODIFY) {
-                                                                    resource.file();
-                                                                }
-                                                            }
-                                                        });
+                                                addCachingEvent(resource);
                                             }
                                         }
                                     }
