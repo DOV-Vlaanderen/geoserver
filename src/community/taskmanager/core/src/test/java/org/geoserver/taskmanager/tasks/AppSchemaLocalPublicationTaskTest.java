@@ -44,10 +44,10 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
 
     // configure these constants
     private static final String VECTOR_LOCATION = "appschema/MappedFeature2.xml";
-    private static final String VECTOR_LOCATION_PUB = "appschema/MappedFeature2_local.xml";
+    private static final String VECTOR_LOCATION_PUB = "appschema/local/MappedFeature2.xml";
     private static final String ZIP_LOCATION = "appschema/GeologicUnit.zip";
-    private static final String ZIP_LOCATION_PUB = "appschema/GeologicUnit.xml";
-    private static final String ZIP_LOCATION_PUB_2 = "appschema/MappedFeature.xml";
+    private static final String ZIP_LOCATION_PUB = "appschema/local/GeologicUnit.xml";
+    private static final String ZIP_LOCATION_PUB_2 = "appschema/local/MappedFeature.xml";
     private static final String FILE_SERVICE = "data-directory";
     private static final String VECTOR_WS = "gsml";
     private static final String VECTOR_NAME = "MappedFeature";
@@ -97,10 +97,10 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
                 fileService.create(VECTOR_LOCATION, in);
             }
         }
-        if (!fileService.checkFileExists("appschema/MappedFeature.properties")) {
+        if (!fileService.checkFileExists("appschema/local/MappedFeature.properties")) {
             try (InputStream in =
                     getClass().getResource("appschema/MappedFeature.properties").openStream()) {
-                fileService.create("appschema/MappedFeature.properties", in);
+                fileService.create("appschema/local/MappedFeature.properties", in);
             }
         }
         if (!fileService.checkFileExists("appschema/GeologicUnit.zip")) {
@@ -180,7 +180,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         DataStoreInfo csi = catalog.getStoreByName(VECTOR_WS, VECTOR_NAME, DataStoreInfo.class);
         assertNotNull(csi);
         assertEquals(
-                "file:data/appschema/MappedFeature2_local.xml",
+                "file:data/appschema/local/MappedFeature2.xml",
                 csi.getConnectionParameters().get("url").toString());
         assertNotNull(catalog.getResourceByName(VECTOR_NAME, FeatureTypeInfo.class));
 
@@ -218,7 +218,7 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         DataStoreInfo csi = catalog.getStoreByName(VECTOR_WS, ZIP_NAME, DataStoreInfo.class);
         assertNotNull(csi);
         assertEquals(
-                "file:data/appschema/GeologicUnit.xml",
+                "file:data/appschema/local/GeologicUnit.xml",
                 csi.getConnectionParameters().get("url").toString());
         assertNotNull(catalog.getResourceByName(ZIP_NAME, FeatureTypeInfo.class));
 

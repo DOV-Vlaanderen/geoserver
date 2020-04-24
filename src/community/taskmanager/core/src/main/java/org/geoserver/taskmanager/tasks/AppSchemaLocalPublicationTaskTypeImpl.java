@@ -82,14 +82,15 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
 
                 Resource res =
                         Resources.fromPath(
-                                path.substring(0, path.lastIndexOf("/")) + "/" + entry.getName());
+                                FilenameUtils.getPath(path) + "local/" + entry.getName());
 
                 try (OutputStream os = res.out()) {
                     os.write(pub.getBytes());
                 }
             }
         }
-        String newPath = FilenameUtils.removeExtension(path) + ".xml";
+        String newPath =
+                FilenameUtils.getPath(path) + "local/" + FilenameUtils.getBaseName(path) + ".xml";
 
         if (!Resources.exists(Resources.fromPath(newPath))) {
             throw new TaskException("Zip file must include xml file with same name.");
@@ -100,7 +101,7 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
 
     private String processSingle(String path, Map<String, Serializable> parameters)
             throws IOException {
-        String newPath = FilenameUtils.removeExtension(path) + "_local.xml";
+        String newPath = FilenameUtils.getPath(path) + "local/" + FilenameUtils.getName(path);
         Resource res = Resources.fromPath(newPath);
 
         try (InputStream is = Resources.fromPath(path).in()) {
