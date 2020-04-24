@@ -26,8 +26,11 @@ import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.ResourceNotification.Event;
+import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
@@ -116,10 +119,41 @@ public class JDBCResourceStore implements ResourceStore {
                 LOGGER.warning("Cannot import resources: no old resource store available.");
             }
         } else {
-            for (Resource child : get("").list()) {
-                if (ArrayUtils.contains(dir.getConfig().getCachedDirs(), child.name())) {
+            for (String cachedDir : dir.getConfig().getCachedDirs()) {
+                Resource child = get(cachedDir);
+                if (child.getType() == Type.DIRECTORY) {
+                    // cache whole dir at beginning
                     child.dir();
                 }
+                child.addListener(
+                        new ResourceListener() {
+                            @Override
+                            public void changed(ResourceNotification notify) {
+                                if (notify.getKind() == Kind.ENTRY_CREATE) {
+                                    for (Event event : notify.events()) {
+                                        if (notify.getKind() == Kind.ENTRY_CREATE) {
+                                            JDBCResource resource =
+                                                    (JDBCResource) child.get(event.getPath());
+                                            // cache individual modified files
+                                            if (resource.entry.isPermantentlyCached()
+                                                    && resource.getType() == Type.RESOURCE) {
+                                                resource.addListener(
+                                                        new ResourceListener() {
+                                                            @Override
+                                                            public void changed(
+                                                                    ResourceNotification notify) {
+                                                                if (notify.getKind()
+                                                                        == Kind.ENTRY_MODIFY) {
+                                                                    resource.file();
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
             }
         }
     }
@@ -389,10 +423,6 @@ public class JDBCResourceStore implements ResourceStore {
                                     JDBCResource.this, ResourceNotification.Kind.ENTRY_MODIFY);
 
                     entry.setContent(new FileInputStream(tempFile));
-
-                    if (entry.isPermantentlyCached()) {
-                        file();
-                    }
 
                     resourceNotificationDispatcher.changed(
                             new ResourceNotification(

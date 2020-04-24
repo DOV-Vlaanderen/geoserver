@@ -36,5 +36,6 @@ public class H2JDBCResourceTheoryTest extends AbstractJDBCResourceTheoryTest {
         store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         store.setCache(new SimpleResourceCache(folder.getRoot()));
+        store.init();
     }
 }
