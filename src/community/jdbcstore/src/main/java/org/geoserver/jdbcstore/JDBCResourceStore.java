@@ -146,9 +146,10 @@ public class JDBCResourceStore implements ResourceStore {
                         new ResourceListener() {
                             @Override
                             public void changed(ResourceNotification notify) {
-                                if (notify.getKind() == Kind.ENTRY_CREATE) {
+                                if (notify.getKind() == Kind.ENTRY_CREATE
+                                        || notify.getKind() == Kind.ENTRY_MODIFY) {
                                     for (Event event : notify.events()) {
-                                        if (notify.getKind() == Kind.ENTRY_CREATE) {
+                                        if (event.getKind() == Kind.ENTRY_CREATE) {
                                             JDBCResource resource =
                                                     (JDBCResource) child.get(event.getPath());
                                             // cache individual modified files
