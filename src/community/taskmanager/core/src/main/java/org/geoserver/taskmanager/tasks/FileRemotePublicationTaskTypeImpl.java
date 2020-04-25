@@ -69,13 +69,14 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                         .dependsOn(autoVersioned));
     }
 
-    private static String remotePath(StoreInfo store, URI uri) throws MalformedURLException {
+    private static String remotePath(Date date, StoreInfo store, URI uri)
+            throws MalformedURLException {
         return REMOTE_DIR
                 + store.getWorkspace().getName()
                 + "_"
                 + store.getName()
                 + "_"
-                + TIME_FMT.format(new Date())
+                + TIME_FMT.format(date)
                 + "/"
                 + FilenameUtils.getName(uri.toURL().getPath());
     }
@@ -164,15 +165,17 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
         } else {
             String targetUri;
             if (upload) {
+                Date now = new Date();
                 for (Resource processedResource : processedResources) {
-                    String path = remotePath(store, processedResource.file().toURI());
+                    String path = remotePath(now, store, processedResource.file().toURI());
                     try (InputStream is = processedResource.in()) {
                         if (!restManager.getResourceManager().upload(path, is)) {
                             throw new TaskException("Failed to upload store file " + uri);
                         }
                     }
                 }
-                targetUri = "file:" + remotePath(store, processedResources.get(0).file().toURI());
+                targetUri =
+                        "file:" + remotePath(now, store, processedResources.get(0).file().toURI());
             } else {
                 targetUri = uri.toString();
             }
