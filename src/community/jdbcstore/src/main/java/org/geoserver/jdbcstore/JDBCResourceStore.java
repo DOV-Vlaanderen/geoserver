@@ -98,21 +98,33 @@ public class JDBCResourceStore implements ResourceStore {
         this.oldResourceStore = oldResourceStore;
     }
 
-    public void addCachingEvent(Resource resource) {
-        if (resource.getType() == Type.DIRECTORY) {
-            for (Resource child : resource.list()) {
-                addCachingEvent(child);
-            }
-        } else if (resource.getType() == Type.RESOURCE) {
-            resource.addListener(
-                    new ResourceListener() {
-                        @Override
-                        public void changed(ResourceNotification notify) {
-                            if (notify.getKind() == Kind.ENTRY_MODIFY) {
-                                resource.file();
+    public void addCachingEvents(Resource resource, boolean forceAsDir) {
+        if (forceAsDir || resource.getType() == Type.DIRECTORY) {
+            resource.addListener(new ResourceListener() {
+                @Override
+                public void changed(ResourceNotification notify) {
+                    if (notify.getKind() == Kind.ENTRY_MODIFY || 
+                            notify.getKind() == Kind.ENTRY_CREATE) {
+                        for (Event event : notify.events()) {
+                            if (event.getKind() == Kind.ENTRY_CREATE) {
+                                addCachingEvents((JDBCResource) resource.get(event.getPath()), false);
                             }
                         }
-                    });
+                    }
+                }
+            });
+            for (Resource child : resource.list()) {
+                addCachingEvents(child, false);
+            }
+        } else if (resource.getType() == Type.RESOURCE) {
+            resource.addListener(new ResourceListener() {
+                @Override
+                public void changed(ResourceNotification notify) {
+                    if (notify.getKind() == Kind.ENTRY_MODIFY) {
+                        resource.file();
+                    }
+                }
+            });
         }
     }
 
@@ -140,28 +152,8 @@ public class JDBCResourceStore implements ResourceStore {
                 if (child.getType() == Type.DIRECTORY) {
                     // cache whole dir at beginning
                     child.dir();
-                    addCachingEvent(child);
                 }
-                child.addListener(
-                        new ResourceListener() {
-                            @Override
-                            public void changed(ResourceNotification notify) {
-                                if (notify.getKind() == Kind.ENTRY_CREATE
-                                        || notify.getKind() == Kind.ENTRY_MODIFY) {
-                                    for (Event event : notify.events()) {
-                                        if (event.getKind() == Kind.ENTRY_CREATE) {
-                                            JDBCResource resource =
-                                                    (JDBCResource) child.get(event.getPath());
-                                            // cache individual modified files
-                                            if (resource.entry.isPermantentlyCached()
-                                                    && resource.getType() == Type.RESOURCE) {
-                                                addCachingEvent(resource);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
+                addCachingEvents(child, true);
             }
         }
     }
