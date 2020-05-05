@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -117,8 +118,9 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         tester.startPage(BulkOperationsPage.class);
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
-
-        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:tabs"))
+            .setSelectedTab(1);
 
         tester.assertComponent("form:tabs:panel:template", DropDownChoice.class);
 
@@ -166,8 +168,13 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         config2 = dao.save(config2);
 
         tester.startPage(BulkOperationsPage.class);
-
-        tester.clickLink("form:tabs:tabs-container:tabs:2:link");
+        
+        tester.assertRenderedPage(BulkOperationsPage.class);
+        
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:tabs"))
+            .setSelectedTab(2);
+        
+        tester.assertRenderedPage(BulkOperationsPage.class);
 
         tester.assertComponent("form:tabs:panel:workspace", TextField.class);
 
