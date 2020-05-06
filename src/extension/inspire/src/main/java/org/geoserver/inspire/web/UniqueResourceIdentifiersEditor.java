@@ -167,6 +167,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
                         UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
                         identifiers.add(new UniqueResourceIdentifier());
+                        identifiersModel.setObject(identifiers);
 
                         target.add(container);
                     }
