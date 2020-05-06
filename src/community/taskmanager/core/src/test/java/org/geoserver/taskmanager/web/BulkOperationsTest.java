@@ -118,9 +118,8 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         tester.startPage(BulkOperationsPage.class);
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
-        
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:tabs"))
-            .setSelectedTab(1);
+
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:tabs")).setSelectedTab(1);
 
         tester.assertComponent("form:tabs:panel:template", DropDownChoice.class);
 
@@ -168,12 +167,11 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         config2 = dao.save(config2);
 
         tester.startPage(BulkOperationsPage.class);
-        
+
         tester.assertRenderedPage(BulkOperationsPage.class);
-        
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:tabs"))
-            .setSelectedTab(2);
-        
+
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:tabs")).setSelectedTab(2);
+
         tester.assertRenderedPage(BulkOperationsPage.class);
 
         tester.assertComponent("form:tabs:panel:workspace", TextField.class);

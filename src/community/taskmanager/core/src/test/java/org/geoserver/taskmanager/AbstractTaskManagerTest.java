@@ -4,8 +4,6 @@
  */
 package org.geoserver.taskmanager;
 
-import static org.geoserver.web.GeoServerApplication.GEOSERVER_CSRF_DISABLED;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
@@ -48,8 +46,8 @@ public abstract class AbstractTaskManagerTest {
     @BeforeClass
     public static void init() throws Exception {
         // Disable CSRF protection for tests, since the test framework doesn't set the Referer
-        System.setProperty(GEOSERVER_CSRF_DISABLED, "true");
-        
+        // System.setProperty(GEOSERVER_CSRF_DISABLED, "true");
+
         URL s3propertiesFile = AbstractTaskManagerTest.class.getResource("s3.properties");
         if (s3propertiesFile != null) {
             System.setProperty("s3.properties.location", s3propertiesFile.getFile());
