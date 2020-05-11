@@ -416,13 +416,22 @@ In the example the featureCatalog object has two attributes. A unique identifier
           occurrence: REPEAT
 
 
-The ``Generate`` action will check the database metadata for that layer and generate a feature type for each column in the table.
+The ``Generate`` action will check the database metadata for that layer and generate a feature attribute for each column in the table.
 
 .. figure:: images/fa02.png
 
     e.g. Feature attribute with generate feature types
 
-Whitin each feature type there is another ``Generate`` action that will generate the domain.
+Whitin each feature attribute there is another ``Generate`` action that will generate the domain. 
+
+.. figure:: images/generate_domain.png
+
+    e.g. Generate domain dialog
+
+There are two options to do this:
+  - Using the existing data in the database for this attribute.
+  - Using data from a look-up table in the same database. In this case you must specify the table, an attribute from which to take values and an attribute from which to take definitions.
+
 
 .. figure:: images/fa03.png
 
@@ -452,6 +461,8 @@ e.g.
 
 Drop-down labels can be translated too, in the same properties file, using the key ``metadata.generated.form.[attributeKey].[value]=[label]``. 
 The value that will be internally stored for this field stays the same.
+
+.. _community_metadata_uiconfiguration_hidden_fields:
 
 Hidden Fields
 -------------
