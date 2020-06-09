@@ -470,7 +470,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
         return restManager
                 .getPublisher()
                 .removeStore(
-                        store.getWorkspace().getName(), storeName, storeType, false, Purge.NONE);
+                        store.getWorkspace().getName(), storeName, storeType, true, Purge.NONE);
     }
 
     protected void postProcess(
