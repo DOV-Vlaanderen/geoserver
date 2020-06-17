@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.IModelComparator;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
@@ -60,12 +59,12 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         container.setOutputMarkupId(true);
         add(container);
 
+        UniqueResourceIdentifiersProvider provider =
+                new UniqueResourceIdentifiersProvider(identifiersModel.getObject());
+
         // the link list
         identifiers =
-                new GeoServerTablePanel<UniqueResourceIdentifier>(
-                        "identifiers",
-                        new UniqueResourceIdentifiersProvider(identifiersModel),
-                        false) {
+                new GeoServerTablePanel<UniqueResourceIdentifier>("identifiers", provider, false) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -139,7 +138,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                         protected void onClick(
                                                 AjaxRequestTarget target, Form form) {
                                             UniqueResourceIdentifiers identifiers =
-                                                    identifiersModel.getObject();
+                                                    provider.getItems();
                                             UniqueResourceIdentifier sdi =
                                                     (UniqueResourceIdentifier)
                                                             itemModel.getObject();
@@ -165,8 +164,9 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
-                        identifiers.add(new UniqueResourceIdentifier());
+                        UniqueResourceIdentifiersProvider provider =
+                                (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
+                        provider.getItems().add(new UniqueResourceIdentifier());
 
                         target.add(container);
                     }
@@ -191,7 +191,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
 
                     @Override
                     public void validate(IValidatable<UniqueResourceIdentifiers> validatable) {
-                        UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
+                        UniqueResourceIdentifiers identifiers = provider.getItems();
                         if (identifiers.size() == 0) {
                             ValidationError error = new ValidationError();
                             String message =
@@ -210,20 +210,6 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
     public void convertInput() {
         UniqueResourceIdentifiersProvider provider =
                 (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
-        UniqueResourceIdentifiers ids = provider.model.getObject();
-        setConvertedInput(ids);
-    }
-
-    @Override
-    public IModelComparator getModelComparator() {
-        // if we don't use this one, the call to setObject won't be made, and the metadata
-        // map won't be updated
-        return new IModelComparator() {
-
-            @Override
-            public boolean compare(Component component, Object newObject) {
-                return false;
-            }
-        };
+        setConvertedInput(provider.getItems());
     }
 }
