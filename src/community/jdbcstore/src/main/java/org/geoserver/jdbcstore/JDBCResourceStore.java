@@ -100,31 +100,35 @@ public class JDBCResourceStore implements ResourceStore {
 
     public void addCachingEvents(Resource resource, boolean forceAsDir) {
         if (forceAsDir || resource.getType() == Type.DIRECTORY) {
-            resource.addListener(new ResourceListener() {
-                @Override
-                public void changed(ResourceNotification notify) {
-                    if (notify.getKind() == Kind.ENTRY_MODIFY || 
-                            notify.getKind() == Kind.ENTRY_CREATE) {
-                        for (Event event : notify.events()) {
-                            if (event.getKind() == Kind.ENTRY_CREATE) {
-                                addCachingEvents((JDBCResource) resource.get(event.getPath()), false);
+            resource.addListener(
+                    new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            if (notify.getKind() == Kind.ENTRY_MODIFY
+                                    || notify.getKind() == Kind.ENTRY_CREATE) {
+                                for (Event event : notify.events()) {
+                                    if (event.getKind() == Kind.ENTRY_CREATE) {
+                                        addCachingEvents(
+                                                (JDBCResource) resource.get(event.getPath()),
+                                                false);
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-            });
+                    });
             for (Resource child : resource.list()) {
                 addCachingEvents(child, false);
             }
         } else if (resource.getType() == Type.RESOURCE) {
-            resource.addListener(new ResourceListener() {
-                @Override
-                public void changed(ResourceNotification notify) {
-                    if (notify.getKind() == Kind.ENTRY_MODIFY) {
-                        resource.file();
-                    }
-                }
-            });
+            resource.addListener(
+                    new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            if (notify.getKind() == Kind.ENTRY_MODIFY) {
+                                resource.file();
+                            }
+                        }
+                    });
         }
     }
 
