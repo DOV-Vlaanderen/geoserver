@@ -4,14 +4,13 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
@@ -21,6 +20,8 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.ExternalGS;
+import org.geoserver.taskmanager.external.impl.DbTableImpl;
+import org.geoserver.taskmanager.schedule.BatchContext.Dependency;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
@@ -49,30 +50,77 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
         paramInfo.put(PARAM_DB, new ParameterInfo(PARAM_DB, extTypes.dbName, true));
     }
 
-    @Override
-    protected List<Resource> process(Resource res, ExternalGS extGS, TaskContext ctx)
-            throws TaskException {
+    private PlaceHolderUtil.ObjectTransform getTableTransform(
+            Resource res,
+            String locationKey,
+            String content,
+            DbSource db,
+            GeoServerRESTManager restManager,
+            TaskContext ctx) {
+        return tableName ->
+                ((DbTableImpl)
+                                ctx.getBatchContext()
+                                        .get(
+                                                new DbTableImpl(db, tableName),
+                                                new Dependency() {
+                                                    @Override
+                                                    public void revert() throws TaskException {
+                                                        String newContent =
+                                                                PlaceHolderUtil
+                                                                        .replaceObjectPlaceHolder(
+                                                                                content,
+                                                                                tableName ->
+                                                                                        tableName);
+                                                        try {
+                                                            try (OutputStream os = res.out()) {
+                                                                os.write(newContent.getBytes());
+                                                            }
+                                                            upload(restManager, locationKey, res);
+                                                        } catch (IOException e) {
+                                                            throw new TaskException(e);
+                                                        }
+                                                    }
+                                                }))
+                        .getTableName();
+    }
 
-        final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
+    @Override
+    protected List<Resource> process(
+            Resource res,
+            String locationKey,
+            ExternalGS extGS,
+            GeoServerRESTManager restManager,
+            TaskContext ctx)
+            throws TaskException {
 
         try {
             if (res.name().toUpperCase().endsWith(".ZIP")) {
-                return processZip(res, db.getParameters(extGS));
+                return processZip(res, locationKey, extGS, restManager, ctx);
             } else {
-                return Collections.singletonList(processSingle(res, db.getParameters(extGS)));
+                return Collections.singletonList(
+                        processSingle(res, locationKey, extGS, restManager, ctx));
             }
         } catch (IOException e) {
             throw new TaskException(e);
         }
     }
 
-    private Resource processSingle(Resource res, Map<String, Serializable> parameters)
-            throws IOException {
+    private Resource processSingle(
+            Resource res,
+            String locationKey,
+            ExternalGS extGS,
+            GeoServerRESTManager restManager,
+            TaskContext ctx)
+            throws IOException, TaskException {
+        final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
         Resource newRes = dataDirectory.get("/tmp").get(res.name());
 
         try (InputStream is = res.in()) {
             String template = IOUtils.toString(is, "UTF-8");
-            String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
+            String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters(extGS));
+            pub =
+                    PlaceHolderUtil.replaceObjectPlaceHolder(
+                            pub, getTableTransform(newRes, locationKey, pub, db, restManager, ctx));
 
             try (OutputStream os = newRes.out()) {
                 os.write(pub.getBytes());
@@ -82,17 +130,28 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
         return newRes;
     }
 
-    private List<Resource> processZip(Resource res, Map<String, Serializable> parameters)
-            throws IOException {
+    private List<Resource> processZip(
+            Resource res,
+            String locationKey,
+            ExternalGS extGS,
+            GeoServerRESTManager restManager,
+            TaskContext ctx)
+            throws IOException, TaskException {
+
+        final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
         List<Resource> resources = new ArrayList<>();
 
         try (ZipInputStream is = new ZipInputStream(res.in())) {
             for (ZipEntry entry = is.getNextEntry(); entry != null; entry = is.getNextEntry()) {
                 String template = IOUtils.toString(is, "UTF-8");
-                String pub = PlaceHolderUtil.replacePlaceHolders(template, parameters);
+                String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters(extGS));
 
                 Resource newRes = dataDirectory.get("/tmp").get(entry.getName());
 
+                pub =
+                        PlaceHolderUtil.replaceObjectPlaceHolder(
+                                pub,
+                                getTableTransform(newRes, locationKey, pub, db, restManager, ctx));
                 try (OutputStream os = newRes.out()) {
                     os.write(pub.getBytes());
                 }
@@ -107,5 +166,9 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
         }
 
         return resources;
+    }
+
+    protected boolean isSimpleUpload() {
+        return false;
     }
 }
