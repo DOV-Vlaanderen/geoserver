@@ -193,12 +193,14 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
         SortedSet<String> workspaces = new TreeSet<String>();
         for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
-            if (wi.getName().equals(configurationModel.getObject().getWorkspace())
-                    || TaskManagerBeans.get()
-                            .getSecUtil()
-                            .isAdminable(getSession().getAuthentication(), wi)) {
+            if (TaskManagerBeans.get()
+                    .getSecUtil()
+                    .isAdminable(getSession().getAuthentication(), wi)) {
                 workspaces.add(wi.getName());
             }
+        }
+        if (configurationModel.getObject().getWorkspace() != null) {
+            workspaces.add(configurationModel.getObject().getWorkspace());
         }
         boolean canBeNull =
                 GeoServerApplication.get().getCatalog().getDefaultWorkspace() != null
