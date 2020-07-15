@@ -11,7 +11,9 @@ import org.geoserver.taskmanager.external.impl.AWSFileServiceImpl;
 import org.geotools.util.logging.Logging;
 import org.junit.Assume;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
+@Ignore
 public class AWSFileServiceDataTest extends AbstractS3FileServiceDataTest {
 
     private static final Logger LOGGER = Logging.getLogger(AWSFileServiceDataTest.class);
