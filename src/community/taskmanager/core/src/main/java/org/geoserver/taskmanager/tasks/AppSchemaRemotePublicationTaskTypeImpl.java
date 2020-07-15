@@ -26,6 +26,7 @@ import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.util.PlaceHolderUtil;
+import org.geoserver.taskmanager.util.SqlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,30 +59,38 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
             GeoServerRESTManager restManager,
             TaskContext ctx) {
         return tableName ->
-                ((DbTableImpl)
-                                ctx.getBatchContext()
-                                        .get(
-                                                new DbTableImpl(db, tableName),
-                                                new Dependency() {
-                                                    @Override
-                                                    public void revert() throws TaskException {
-                                                        String newContent =
-                                                                PlaceHolderUtil
-                                                                        .replaceObjectPlaceHolder(
-                                                                                content,
-                                                                                tableName ->
-                                                                                        tableName);
-                                                        try {
-                                                            try (OutputStream os = res.out()) {
-                                                                os.write(newContent.getBytes());
+                SqlUtil.notQualified(
+                        ((DbTableImpl)
+                                        ctx.getBatchContext()
+                                                .get(
+                                                        new DbTableImpl(db, tableName),
+                                                        new Dependency() {
+                                                            @Override
+                                                            public void revert()
+                                                                    throws TaskException {
+                                                                String newContent =
+                                                                        PlaceHolderUtil
+                                                                                .replaceObjectPlaceHolder(
+                                                                                        content,
+                                                                                        tableName ->
+                                                                                                tableName);
+                                                                try {
+                                                                    try (OutputStream os =
+                                                                            res.out()) {
+                                                                        os.write(
+                                                                                newContent
+                                                                                        .getBytes());
+                                                                    }
+                                                                    upload(
+                                                                            restManager,
+                                                                            locationKey,
+                                                                            res);
+                                                                } catch (IOException e) {
+                                                                    throw new TaskException(e);
+                                                                }
                                                             }
-                                                            upload(restManager, locationKey, res);
-                                                        } catch (IOException e) {
-                                                            throw new TaskException(e);
-                                                        }
-                                                    }
-                                                }))
-                        .getTableName();
+                                                        }))
+                                .getTableName());
     }
 
     @Override

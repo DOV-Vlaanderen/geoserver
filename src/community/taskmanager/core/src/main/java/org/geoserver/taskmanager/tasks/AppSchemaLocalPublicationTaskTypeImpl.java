@@ -24,6 +24,7 @@ import org.geoserver.taskmanager.schedule.ParameterInfo;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.util.PlaceHolderUtil;
+import org.geoserver.taskmanager.util.SqlUtil;
 import org.opengis.feature.type.Name;
 import org.springframework.stereotype.Component;
 
@@ -51,38 +52,43 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
         final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
 
         return tableName ->
-                ((DbTableImpl)
-                                ctx.getBatchContext()
-                                        .get(
-                                                new DbTableImpl(db, tableName),
-                                                new Dependency() {
-                                                    @Override
-                                                    public void revert() throws TaskException {
-                                                        String newContent =
-                                                                PlaceHolderUtil
-                                                                        .replaceObjectPlaceHolder(
-                                                                                content,
-                                                                                tableName ->
-                                                                                        tableName);
-                                                        try (OutputStream os = res.out()) {
-                                                            os.write(newContent.getBytes());
-                                                        } catch (IOException e) {
-                                                            throw new TaskException(e);
-                                                        }
-                                                        DataStoreInfo store =
-                                                                catalog.getStoreByName(
-                                                                        catalog.getNamespaceByURI(
-                                                                                        layerName
-                                                                                                .getNamespaceURI())
-                                                                                .getName(),
-                                                                        layerName.getLocalPart(),
-                                                                        DataStoreInfo.class);
-                                                        if (store != null) {
-                                                            catalog.getResourcePool().clear(store);
-                                                        }
-                                                    }
-                                                }))
-                        .getTableName();
+                SqlUtil.notQualified(
+                        ((DbTableImpl)
+                                        ctx.getBatchContext()
+                                                .get(
+                                                        new DbTableImpl(db, tableName),
+                                                        new Dependency() {
+                                                            @Override
+                                                            public void revert()
+                                                                    throws TaskException {
+                                                                String newContent =
+                                                                        PlaceHolderUtil
+                                                                                .replaceObjectPlaceHolder(
+                                                                                        content,
+                                                                                        tableName ->
+                                                                                                tableName);
+                                                                try (OutputStream os = res.out()) {
+                                                                    os.write(newContent.getBytes());
+                                                                } catch (IOException e) {
+                                                                    throw new TaskException(e);
+                                                                }
+                                                                DataStoreInfo store =
+                                                                        catalog.getStoreByName(
+                                                                                catalog.getNamespaceByURI(
+                                                                                                layerName
+                                                                                                        .getNamespaceURI())
+                                                                                        .getName(),
+                                                                                layerName
+                                                                                        .getLocalPart(),
+                                                                                DataStoreInfo
+                                                                                        .class);
+                                                                if (store != null) {
+                                                                    catalog.getResourcePool()
+                                                                            .clear(store);
+                                                                }
+                                                            }
+                                                        }))
+                                .getTableName());
     }
 
     @Override
