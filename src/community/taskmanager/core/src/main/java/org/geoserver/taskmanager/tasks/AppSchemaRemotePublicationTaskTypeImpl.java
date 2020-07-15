@@ -73,7 +73,9 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
                                                                                 .replaceObjectPlaceHolder(
                                                                                         content,
                                                                                         tableName ->
-                                                                                                tableName);
+                                                                                                SqlUtil
+                                                                                                        .notQualified(
+                                                                                                                tableName));
                                                                 try {
                                                                     try (OutputStream os =
                                                                             res.out()) {

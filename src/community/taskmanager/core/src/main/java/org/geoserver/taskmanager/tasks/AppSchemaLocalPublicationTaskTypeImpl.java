@@ -66,7 +66,9 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
                                                                                 .replaceObjectPlaceHolder(
                                                                                         content,
                                                                                         tableName ->
-                                                                                                tableName);
+                                                                                                SqlUtil
+                                                                                                        .notQualified(
+                                                                                                                tableName));
                                                                 try (OutputStream os = res.out()) {
                                                                     os.write(newContent.getBytes());
                                                                 } catch (IOException e) {
