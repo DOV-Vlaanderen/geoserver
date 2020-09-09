@@ -1596,7 +1596,21 @@ public class ConfigDatabase {
     }
 
     private void releaseWriteLock(String id) {
-        locks.get(id).release();
+        Semaphore lock = locks.get(id);
+        if (lock.availablePermits() < 1) {
+            // we never give more than one permit
+            lock.release();
+        }
+    }
+
+    /** Only intended for testing purposes */
+    public void lock(String id, long millis) {
+        acquireWriteLock(id);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+        releaseWriteLock(id);
     }
 
     /** Listens to catalog events clearing cache entires when resources are modified. */
