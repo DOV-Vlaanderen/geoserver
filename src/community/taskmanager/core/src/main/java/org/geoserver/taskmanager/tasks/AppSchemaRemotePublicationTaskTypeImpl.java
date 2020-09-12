@@ -5,6 +5,8 @@
 package org.geoserver.taskmanager.tasks;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.StoreType;
+import it.geosolutions.geoserver.rest.encoder.GSGenericStoreEncoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +18,9 @@ import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.taskmanager.external.DbSource;
@@ -57,7 +62,14 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
             String content,
             DbSource db,
             GeoServerRESTManager restManager,
-            TaskContext ctx) {
+            TaskContext ctx)
+            throws TaskException {
+        final LayerInfo layer = (LayerInfo) ctx.getParameterValues().get(PARAM_LAYER);
+        final StoreInfo store = layer.getResource().getStore();
+        final StoreType storeType =
+                store instanceof CoverageStoreInfo
+                        ? StoreType.COVERAGESTORES
+                        : StoreType.DATASTORES;
         return tableName ->
                 SqlUtil.notQualified(
                         ((DbTableImpl)
@@ -87,6 +99,21 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
                                                                             restManager,
                                                                             locationKey,
                                                                             res);
+
+                                                                    restManager
+                                                                            .getStoreManager()
+                                                                            .update(
+                                                                                    store.getWorkspace()
+                                                                                            .getName(),
+                                                                                    new GSGenericStoreEncoder(
+                                                                                            storeType,
+                                                                                            null,
+                                                                                            null,
+                                                                                            store
+                                                                                                    .getName(),
+                                                                                            null,
+                                                                                            null,
+                                                                                            null));
                                                                 } catch (IOException e) {
                                                                     throw new TaskException(e);
                                                                 }
