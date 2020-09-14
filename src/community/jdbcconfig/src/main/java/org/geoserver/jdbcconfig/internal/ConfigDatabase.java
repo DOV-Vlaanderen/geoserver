@@ -1597,9 +1597,13 @@ public class ConfigDatabase {
 
     private void releaseWriteLock(String id) {
         Semaphore lock = locks.get(id);
-        if (lock.availablePermits() < 1) {
-            // we never give more than one permit
-            lock.release();
+        // while semaphores are thread safe by nature,
+        // the if-condition below isn't
+        synchronized (lock) {
+            if (lock.availablePermits() < 1) {
+                // we never give more than one permit
+                lock.release();
+            }
         }
     }
 
