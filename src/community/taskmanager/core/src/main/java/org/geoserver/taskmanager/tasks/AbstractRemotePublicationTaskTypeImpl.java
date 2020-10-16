@@ -188,6 +188,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             re.setAdvertised(false);
             postProcess(
                     storeType,
+                    resource,
                     re,
                     ctx,
                     new TaskRunnable<GSResourceEncoder>() {
@@ -475,6 +476,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
 
     protected void postProcess(
             StoreType storeType,
+            ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
             TaskRunnable<GSResourceEncoder> update)

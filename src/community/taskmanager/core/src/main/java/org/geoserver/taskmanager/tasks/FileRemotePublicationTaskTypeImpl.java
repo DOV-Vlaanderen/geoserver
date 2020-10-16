@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -205,6 +206,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     @Override
     protected void postProcess(
             StoreType storeType,
+            ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
             TaskRunnable<GSResourceEncoder> update)
