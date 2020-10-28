@@ -20,7 +20,6 @@ public class UniqueResourceIdentifiersProvider
 
     public UniqueResourceIdentifiersProvider(IModel<UniqueResourceIdentifiers> model) {
         this.model = model;
-        setEditable(true);
     }
 
     @Override
