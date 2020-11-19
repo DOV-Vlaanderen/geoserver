@@ -323,6 +323,7 @@ public class ConfigDatabase {
                         .limit(limit)
                         .sortOrder(sortOrder);
         final StringBuilder sql = sqlBuilder.build();
+        System.out.println(sql);
 
         List<String> ids = null;
 
@@ -433,6 +434,7 @@ public class ConfigDatabase {
             LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
             LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
         }
+        System.out.println(sql);
         logStatement(sql, namedParameters);
 
         Stopwatch sw = Stopwatch.createStarted();

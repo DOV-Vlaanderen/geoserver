@@ -10,13 +10,13 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>extension</artifactId>
-  <version>2.15.0-dov-4.9-SNAPSHOT</version>
+  <version>2.15.0-dov-4.9</version>
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-inspire</artifactId>
  <packaging>jar</packaging>
- <version>2.15.0-dov-4.9-SNAPSHOT</version>
+ <version>2.15.0-dov-4.9</version>
  <name>GeoServer INSPIRE Extensions</name>
 
  <dependencies>
