@@ -323,7 +323,6 @@ public class ConfigDatabase {
                         .limit(limit)
                         .sortOrder(sortOrder);
         final StringBuilder sql = sqlBuilder.build();
-        System.out.println(sql);
 
         List<String> ids = null;
 
@@ -434,7 +433,6 @@ public class ConfigDatabase {
             LOGGER.finer("Supported filter: " + sqlBuilder.getSupportedFilter());
             LOGGER.finer("Unsupported filter: " + sqlBuilder.getUnsupportedFilter());
         }
-        System.out.println(sql);
         logStatement(sql, namedParameters);
 
         Stopwatch sw = Stopwatch.createStarted();
@@ -1159,6 +1157,18 @@ public class ConfigDatabase {
         resolveTransient(info);
 
         return info;
+    }
+
+    @Nullable
+    public List<ServiceInfo> getServices(final WorkspaceInfo ws) {
+
+        List<ServiceInfo> result = new ArrayList<>();
+        for (ServiceInfo info : serviceCache.asMap().values()) {
+            if (ws.equals(info.getWorkspace())) {
+                result.add(info);
+            }
+        }
+        return result;
     }
 
     @Nullable
