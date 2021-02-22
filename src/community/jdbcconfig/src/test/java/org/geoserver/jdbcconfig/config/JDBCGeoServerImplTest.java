@@ -15,6 +15,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServerImplTest;
@@ -129,6 +135,44 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
         s3 = geoServer.getService(ServiceInfo.class);
         assertNull(s3);
+    }
+
+    @Test
+    public void testGlobalIsProperlyLocked() throws Exception {
+
+        GeoServerInfo global = geoServer.getFactory().createGlobal();
+        geoServer.setGlobal(global);
+
+        Executors.newSingleThreadExecutor()
+                .execute(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                testSupport
+                                        .getFacade()
+                                        .getConfigDatabase()
+                                        .lock(geoServer.getGlobal().getId(), 60000);
+                            }
+                        });
+
+        RunnableFuture<Void> future =
+                new FutureTask<Void>(
+                        new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                geoServer.save(geoServer.getGlobal());
+                                return null;
+                            }
+                        });
+        Executors.newSingleThreadExecutor().execute(future);
+        try {
+            future.get(5, TimeUnit.SECONDS);
+        } catch (TimeoutException ex) {
+            // this is what should happen
+            return;
+        }
+        // this is what shouldn't happen
+        assertTrue(false);
     }
 
     // Would have put this on GeoServerImplTest, but it depends on WMS and WFS InfoImpl classes
