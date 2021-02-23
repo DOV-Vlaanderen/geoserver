@@ -630,7 +630,20 @@ public class ConfigDatabase implements ApplicationContextAware {
                 propValue = values.get(index);
                 final String storedValue = marshalValue(propValue);
 
-                addAttribute(info, infoPk, prop, colIndex, storedValue);
+                Integer relatedOid;
+                Integer relatedPropertyType;
+                if (prop.isRelationship()) {
+                    final Info relatedObject = lookUpRelatedObject(info, prop, colIndex);
+                    relatedOid = relatedObject == null ? null : findObjectId(relatedObject);
+                    relatedPropertyType =
+                            relatedOid == null ? null : getRelatedPropertyType(prop, relatedObject);
+                } else {
+                    // it's a self property, lets update the value on the property table
+                    relatedOid = null;
+                    relatedPropertyType = null;
+                }
+                addAttribute(
+                        info, infoPk, prop, colIndex, storedValue, relatedOid, relatedPropertyType);
             }
         }
     }
@@ -640,49 +653,15 @@ public class ConfigDatabase implements ApplicationContextAware {
             final Number infoPk,
             Property prop,
             Integer colIndex,
-            final String storedValue) {
+            final String storedValue,
+            Integer relatedOid,
+            Integer relatedPropertyType) {
         Map<String, ?> params = params("value", storedValue);
 
         final String insertPropertySQL =
                 "insert into object_property " //
                         + "(oid, property_type, related_oid, related_property_type, colindex, value, id) " //
                         + "values (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
-
-        final boolean isRelationShip = prop.isRelationship();
-
-        Integer relatedObjectId = null;
-        final Integer concreteTargetPropertyOid;
-
-        if (isRelationShip) {
-            Info relatedObject = lookUpRelatedObject(info, prop, colIndex);
-            if (relatedObject == null) {
-                concreteTargetPropertyOid = null;
-            } else {
-                // the related property may refer to an abstract type (e.g.
-                // LayerInfo.resource.name), so we need to find out the actual property type id (for
-                // example, whether it belongs to FeatureTypeInfo or CoverageInfo)
-                relatedObject = ModificationProxy.unwrap(relatedObject);
-                relatedObjectId = this.findObjectId(relatedObject);
-
-                Integer targetPropertyOid = prop.getPropertyType().getTargetPropertyOid();
-                PropertyType targetProperty;
-                String targetPropertyName;
-
-                Class<?> targetQueryType;
-                ClassMappings classMappings = ClassMappings.fromImpl(relatedObject.getClass());
-                targetQueryType = classMappings.getInterface();
-                targetProperty = dbMappings.getPropertyType(targetPropertyOid);
-                targetPropertyName = targetProperty.getPropertyName();
-
-                Set<Integer> propertyTypeIds;
-                propertyTypeIds =
-                        dbMappings.getPropertyTypeIds(targetQueryType, targetPropertyName);
-                checkState(propertyTypeIds.size() == 1);
-                concreteTargetPropertyOid = propertyTypeIds.iterator().next();
-            }
-        } else {
-            concreteTargetPropertyOid = null;
-        }
 
         final Number propertyType = prop.getPropertyType().getOid();
         final String id = info.getId();
@@ -696,9 +675,9 @@ public class ConfigDatabase implements ApplicationContextAware {
                         "id",
                         id, //
                         "related_oid",
-                        relatedObjectId, //
+                        relatedOid, //
                         "related_property_type",
-                        concreteTargetPropertyOid, //
+                        relatedPropertyType, //
                         "colindex",
                         colIndex, //
                         "value",
@@ -766,7 +745,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                     }
                 }
                 if (targetType.isAssignableFrom(backProp.getClass())) {
-                    return (Info) backProp;
+                    return ModificationProxy.unwrap((Info) backProp);
                 }
             }
         }
@@ -1008,7 +987,10 @@ public class ConfigDatabase implements ApplicationContextAware {
                 if (isRelationship) {
                     final Info relatedObject = lookUpRelatedObject(info, changedProp, colIndex);
                     relatedOid = relatedObject == null ? null : findObjectId(relatedObject);
-                    relatedPropertyType = changedProp.getPropertyType().getTargetPropertyOid();
+                    relatedPropertyType =
+                            relatedOid == null
+                                    ? null
+                                    : getRelatedPropertyType(changedProp, relatedObject);
                 } else {
                     // it's a self property, lets update the value on the property table
                     relatedOid = null;
@@ -1039,7 +1021,14 @@ public class ConfigDatabase implements ApplicationContextAware {
                 final int updateCnt = template.update(sql, params);
 
                 if (updateCnt == 0) {
-                    addAttribute(info, oid, changedProp, colIndex, storedValue);
+                    addAttribute(
+                            info,
+                            oid,
+                            changedProp,
+                            colIndex,
+                            storedValue,
+                            relatedOid,
+                            relatedPropertyType);
                 } else {
                     // prop existed already, lets update any related property that points to its old
                     // value
@@ -1083,6 +1072,27 @@ public class ConfigDatabase implements ApplicationContextAware {
                 template.update(sql, params);
             }
         }
+    }
+
+    private Integer getRelatedPropertyType(Property changedProp, final Info relatedObject) {
+        // the related property may refer to an abstract type (e.g.
+        // LayerInfo.resource.name), so we need to find out the actual property type id (for
+        // example, whether it belongs to FeatureTypeInfo or CoverageInfo)
+
+        Integer targetPropertyOid = changedProp.getPropertyType().getTargetPropertyOid();
+        PropertyType targetProperty;
+        String targetPropertyName;
+
+        Class<?> targetQueryType;
+        ClassMappings classMappings = ClassMappings.fromImpl(relatedObject.getClass());
+        targetQueryType = classMappings.getInterface();
+        targetProperty = dbMappings.getPropertyType(targetPropertyOid);
+        targetPropertyName = targetProperty.getPropertyName();
+
+        Set<Integer> propertyTypeIds;
+        propertyTypeIds = dbMappings.getPropertyTypeIds(targetQueryType, targetPropertyName);
+        checkState(propertyTypeIds.size() == 1);
+        return propertyTypeIds.iterator().next();
     }
 
     @Nullable
