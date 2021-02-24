@@ -151,7 +151,7 @@ public class GeoServerTablePanelTest {
         // verify filter text field is empty after clicking Clear
         tester.assertModelValue("form:panel:filterForm:filter", "");
         dv = (DataView) tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
-        assertEquals(25, dv.size());
+        assertEquals(40, dv.size());
     }
 
     static class IntegerTable extends GeoServerTablePanel<Integer> {
