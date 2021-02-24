@@ -9,9 +9,11 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.WCSTestSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+@Ignore
 public class GetCapabilitiesTest extends WCSTestSupport {
 
     @Test
