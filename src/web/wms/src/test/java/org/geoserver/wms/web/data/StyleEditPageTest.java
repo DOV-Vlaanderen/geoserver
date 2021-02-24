@@ -411,7 +411,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
         tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
-        //tester.executeAjaxEvent(
+        // tester.executeAjaxEvent(
         //        "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
         tester.assertLabel(
                 "styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name",
