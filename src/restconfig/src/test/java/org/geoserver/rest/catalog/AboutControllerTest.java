@@ -22,12 +22,14 @@ import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /** @author Carlo Cancellieri - GeoSolutions SAS */
+@Ignore
 public class AboutControllerTest extends GeoServerSystemTestSupport {
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
