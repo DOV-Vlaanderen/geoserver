@@ -1907,18 +1907,15 @@
 
  <distributionManagement>
     <repository>
-      <id>nexus</id>
-      <name>OSGeo Release Repository</name>
-      <url>https://repo.osgeo.org/repository/Geoserver-releases/</url>
-      <uniqueVersion>false</uniqueVersion>
+  <id>release</id>
+  <url>${acd.repository.release.url}</url>
     </repository>
     <snapshotRepository>
-      <id>nexus</id>
-      <uniqueVersion>false</uniqueVersion>
-      <name>OSGeo Snapshot Repository</name>
-      <url>https://repo.osgeo.org/repository/geoserver-snapshots/</url>
+  <id>snapshot</id>
+  <url>${acd.repository.snapshot.url}</url>
     </snapshotRepository>
  </distributionManagement>
+
 
  <modules>
   <module>platform</module>
@@ -2005,13 +2002,20 @@
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>
   <errorProneFlags></errorProneFlags>
-  <errorProne.version>2.3.4</errorProne.version>
+  <acd.issueManagement.url>https://www.milieuinfo.be/jira</acd.issueManagement.url>
+  <acd.ciManagement.system>Bamboo</acd.ciManagement.system>
+  <acd.ciManagement.url>https://www.milieuinfo.be/bamboo</acd.ciManagement.url>
+  <acd.repository.url>https://www.milieuinfo.be/artifactory</acd.repository.url>
+  <acd.repository.snapshot.url>${acd.repository.url}/snapshot</acd.repository.snapshot.url>
+  <acd.repository.release.url>${acd.repository.url}/release</acd.repository.release.url>
+  <acd.scm.maven-url>scm:svn:https://svn.milieuinfo.be/productie/svn</acd.scm.maven-url>
+
   <javac.version>9+181-r4173-1</javac.version>
   <pmd.version>6.20.0</pmd.version>
   <checkstyle.skip>false</checkstyle.skip>
   <qa>false</qa>
   <lint>deprecation</lint>
- </properties>
+</properties>
 
  <profiles>
   <!-- uml graphing -->
