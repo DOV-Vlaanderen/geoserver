@@ -29,7 +29,7 @@ public class GeoServerTablePanelTest {
     WicketTester tester;
 
     static final int TOTAL_ITEMS = 40;
-    static final int DEFAULT_ITEMS_PER_PAGE = 25;
+    static final int DEFAULT_ITEMS_PER_PAGE = 40;
 
     @Before
     public void setUp() throws Exception {
@@ -125,11 +125,11 @@ public class GeoServerTablePanelTest {
         DataView dv =
                 (DataView)
                         tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
-        assertEquals(25, dv.size());
+        assertEquals(40, dv.size());
 
         String filterLabelPath = "form:panel:filterForm:navigatorTop:filterMatch";
         tester.assertComponent(filterLabelPath, Label.class);
-        tester.assertLabel(filterLabelPath, "1 -&gt; 25 of 40");
+        tester.assertLabel(filterLabelPath, "1 -&gt; 40 of 40");
 
         // search by "5"
         FormTester ft = tester.newFormTester("form:panel:filterForm");

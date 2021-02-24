@@ -66,7 +66,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         GeoServerTablePanel table =
                 (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         // System.out.println(table.getDataProvider().size());
-        tester.clickLink("table:navigatorBottom:navigator:next", true);
+        //tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         DataView data =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");

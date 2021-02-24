@@ -55,7 +55,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     private static final long serialVersionUID = -5275268446479549108L;
 
-    private static final int DEFAULT_ITEMS_PER_PAGE = 25;
+    private static final int DEFAULT_ITEMS_PER_PAGE = 200;
 
     public static final String FILTER_PARAM = "filter";
 

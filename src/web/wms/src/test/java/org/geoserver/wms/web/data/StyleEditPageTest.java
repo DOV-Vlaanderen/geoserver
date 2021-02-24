@@ -411,8 +411,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
         tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
-        tester.executeAjaxEvent(
-                "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
+        //tester.executeAjaxEvent(
+        //        "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
         tester.assertLabel(
                 "styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name",
                 "unlayer");
@@ -430,9 +430,9 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         // 31 layers total, 25 layers per page; foo should not appear on page 1 or 2.
         tester.assertContainsNot("wmsstore");
-        tester.executeAjaxEvent(
+        /*tester.executeAjaxEvent(
                 "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
-        tester.assertContainsNot("wmsstore");
+        tester.assertContainsNot("wmsstore");*/
     }
 
     @Test
