@@ -772,5 +772,19 @@
         <module>imagemosaic-jdbc</module>
       </modules>
     </profile>
+    <profile>
+      <id>dov</id>
+      <modules>
+        <module>jdbcconfig</module>
+        <module>hz-cluster</module>
+        <module>jdbcstore</module>
+        <module>taskmanager</module>      
+        <module>s3-geotiff</module>
+        <module>gwc-s3</module>
+        <module>csw-iso</module>
+	<module>metadata</module>
+     </modules>
+    </profile>
+
   </profiles>  
 </project>

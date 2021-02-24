@@ -362,6 +362,15 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>dov</id>
+      <modules>
+         <module>csw</module>
+         <module>inspire</module>
+         <module>web-resource</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
