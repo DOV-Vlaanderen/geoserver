@@ -15,6 +15,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.wcs2_0.response.WCS20CoverageMetadataProvider;
 import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,11 @@ public class WCSCustomCoverageMetadataProvider implements WCS20CoverageMetadataP
 
     static final Logger LOGGER = Logging.getLogger(WCSCustomCoverageMetadataProvider.class);
 
-    public WCSCustomCoverageMetadataProvider(GeoServer gs) {}
+    private GeoServer gs;
+
+    public WCSCustomCoverageMetadataProvider(GeoServer gs) {
+        this.gs = gs;
+    }
 
     @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
@@ -41,11 +46,19 @@ public class WCSCustomCoverageMetadataProvider implements WCS20CoverageMetadataP
 
     @Override
     public void encode(Translator tx, Object context) throws IOException {
-        if (!(context instanceof CoverageInfo)) {
+        CoverageInfo ci;
+        if (context == null) {
+            // hack hack, get it straight from the request
+            String coverageId = (String) Dispatcher.REQUEST.get().getKvp().get("CoverageId");
+            ci = gs.getCatalog().getCoverageByName(coverageId);
+            if (ci == null) {
+                return;
+            }
+        } else if (!(context instanceof CoverageInfo)) {
             return;
+        } else {
+            ci = (CoverageInfo) context;
         }
-
-        CoverageInfo ci = (CoverageInfo) context;
 
         Serializable custom = ci.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         if (custom == null) {
