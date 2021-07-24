@@ -122,7 +122,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
                         featureTypeRegistry.getAttributeType(
                                 new NameImpl(NAMESPACE_GMD, "MD_Metadata_Type"));
         METADATA_DESCRIPTOR =
-                featureTypeRegistry.getDescriptor(new NameImpl(NAMESPACE_GMD, "MD_Metadata"), null);
+                featureTypeRegistry.getDescriptor(new NameImpl(NAMESPACE_GMD, "MD_Metadata"));
 
         BRIEF_ELEMENTS =
                 createNameList(

@@ -82,7 +82,7 @@ public class FeatureCatalogueTest extends MDTestSupport {
 
         assertFeatureCatalogue(d);
     }
-    
+
     @Test
     public void testGetRecordsSummary() throws Exception {
         String request =

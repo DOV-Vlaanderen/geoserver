@@ -167,7 +167,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
                                 new NameImpl(CSW.NAMESPACE, "RecordType"));
 
         RECORD_DESCRIPTOR =
-                featureTypeRegistry.getDescriptor(new NameImpl(CSW.NAMESPACE, "Record"), null);
+                featureTypeRegistry.getDescriptor(new NameImpl(CSW.NAMESPACE, "Record"));
 
         RECORD_BBOX_DESCRIPTOR = (AttributeDescriptor) RECORD_TYPE.getDescriptor(RECORD_BBOX_NAME);
         DC_ELEMENT = (AttributeDescriptor) RECORD_TYPE.getDescriptor(DC_ELEMENT_NAME);
