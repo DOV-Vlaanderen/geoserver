@@ -83,5 +83,14 @@ public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
                 "52.31400393 -1.2 52.41418008 -1.2 52.41418008 -1.1 52.31400393 -1.1 52.31400393 -1.2",
                 "//ex:geomContainer[@gml:id='mf1']/ex:nestedFeature/ex:nestedGeom/ex:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                 doc);
+
+        assertXpathEvaluatesTo(
+                "urn:x-ogc:def:crs:EPSG:4052",
+                "//ex:geomContainer[@gml:id='mf1']/ex:location/gml:Point/@srsName",
+                doc);
+        assertXpathEvaluatesTo(
+                "4.96649296 -1",
+                "//ex:geomContainer[@gml:id='mf1']/ex:location/gml:Point/gml:pos",
+                doc);
     }
 }
