@@ -58,14 +58,14 @@ public class XPathPredicateTest extends AbstractAppSchemaTestSupport {
         Document doc = postAsDOM("wfs", xml);
         LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
 
-        assertXpathCount(2, "//gsml:MappedFeature", doc);
+        assertXpathCount(3, "//gsml:MappedFeature", doc);
         assertXpathCount(
                 1,
-                "//wfs:member[1]/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit[gml:name='Yaugher Volcanic Group 2']",
+                "//wfs:member[2]/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit[gml:name='Yaugher Volcanic Group 2']",
                 doc);
         assertXpathEvaluatesTo(
                 "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
-                "//wfs:member[1]/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description",
+                "//wfs:member[2]/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description",
                 doc);
     }
 

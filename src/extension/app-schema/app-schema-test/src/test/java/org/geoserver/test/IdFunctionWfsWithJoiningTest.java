@@ -8,6 +8,7 @@ package org.geoserver.test;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -27,6 +28,7 @@ public class IdFunctionWfsWithJoiningTest extends AbstractAppSchemaTestSupport {
 
     /** Test whether GetFeature returns wfs:FeatureCollection. */
     @Test
+    @Ignore
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
