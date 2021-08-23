@@ -67,7 +67,8 @@ public class FeatureCatalogueDescriptor extends AbstractRecordDescriptor {
                                         "FC_FeatureCatalogue_Type"));
         FEATURECATALOGUE_DESCRIPTOR =
                 featureTypeRegistry.getDescriptor(
-                        new NameImpl(MetaDataDescriptor.NAMESPACE_GFC, "FC_FeatureCatalogue"));
+                        new NameImpl(MetaDataDescriptor.NAMESPACE_GFC, "FC_FeatureCatalogue"),
+                        null);
     }
 
     @Override
