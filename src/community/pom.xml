@@ -728,5 +728,18 @@
         <module>web-service-auth</module>
       </modules>
     </profile>
+    <profile>
+      <id>mercator</id>
+      <modules>
+        <module>jdbcconfig</module>
+        <module>hz-cluster</module>
+        <module>jdbcstore</module>
+        <module>taskmanager</module>      
+        <module>s3-geotiff</module>
+        <module>csw-iso</module>
+        <module>metadata</module>
+     </modules>
+    </profile>
+
   </profiles>
 </project>

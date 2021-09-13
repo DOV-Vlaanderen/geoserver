@@ -507,5 +507,14 @@
         <module>mapml</module>
       </modules>
     </profile>
+    <profile>
+      <id>mercator</id>
+      <modules>
+         <module>csw</module>
+         <module>inspire</module>
+         <module>web-resource</module>
+         <module>gwc-s3</module>
+      </modules>
+    </profile>
   </profiles>
 </project>
