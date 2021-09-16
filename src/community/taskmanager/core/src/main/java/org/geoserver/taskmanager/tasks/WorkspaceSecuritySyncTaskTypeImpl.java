@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class WorkspaceSecuritySyncTaskTypeImpl implements TaskType {
 
-    public static final String NAME = "LayerSecuritySync";
+    public static final String NAME = "WorkspaceSecuritySync";
 
     public static final String PARAM_EXT_GS = "external-geoserver";
 
