@@ -187,7 +187,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             re.setNativeName(resource.getNativeName());
             if (re instanceof GSCoverageEncoder) {
                 ((GSCoverageEncoder) re)
-                        .setNativeCoverageName(((CoverageInfo) re).getNativeCoverageName());
+                        .setNativeCoverageName(((CoverageInfo) resource).getNativeCoverageName());
             }
             re.setAdvertised(false);
             postProcess(
