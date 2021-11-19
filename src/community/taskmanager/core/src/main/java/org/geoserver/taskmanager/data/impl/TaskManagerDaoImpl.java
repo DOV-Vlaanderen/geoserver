@@ -10,6 +10,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -671,9 +672,10 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<BatchRun> query = cb.createQuery(BatchRun.class);
         Root<RunImpl> root = query.from(RunImpl.class);
-        root.join("batchRun").join("batch");
+        Join<Object, Object> batchRun = root.join("batchRun");
+        batchRun.join("batch");
         query.select(root.get("batchRun"));
-        query.groupBy(root.get("batchRun"));
+        query.groupBy(batchRun.get("id"));
         query.where(
                 cb.equal(root.get("batchRun").get("batch").get("id"), batch.getId()),
                 root.get("status")
@@ -704,9 +706,10 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<BatchRun> query = cb.createQuery(BatchRun.class);
         Root<RunImpl> root = query.from(RunImpl.class);
-        root.join("batchRun").join("batch");
+        Join<Object, Object> batchRun = root.join("batchRun");
+        batchRun.join("batch");
         query.select(root.get("batchRun"));
-        query.groupBy(root.get("batchRun"));
+        query.groupBy(batchRun.get("id"));
         query.where(
                 root.get("status")
                         .in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
