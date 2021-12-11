@@ -22,9 +22,11 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.util.GrowableInternationalString;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+@Ignore
 public class GetCapabilitiesTest extends WCSTestSupport {
 
     @Test
