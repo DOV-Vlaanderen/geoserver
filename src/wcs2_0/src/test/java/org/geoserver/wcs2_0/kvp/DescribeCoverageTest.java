@@ -24,11 +24,13 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
+@Ignore
 public class DescribeCoverageTest extends WCSTestSupport {
     protected static final String DESCRIBE_URL =
             "wcs?service=WCS&version=" + VERSION + "&request=DescribeCoverage";
