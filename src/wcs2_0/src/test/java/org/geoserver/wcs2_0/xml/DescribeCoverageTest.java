@@ -18,9 +18,11 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.PreventLocalEntityResolver;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+@Ignore
 public class DescribeCoverageTest extends WCSTestSupport {
 
     public static QName WORLD = new QName(MockData.CITE_URI, "world", MockData.CITE_PREFIX);
