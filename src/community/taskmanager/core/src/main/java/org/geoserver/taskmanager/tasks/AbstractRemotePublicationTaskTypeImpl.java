@@ -269,6 +269,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
 
             // config layer
             final GSLayerEncoder layerEncoder = new GSLayerEncoder();
+            catalogUtil.syncMetadata(layer, layerEncoder);
             if (layer.getDefaultStyle() != null) {
                 layerEncoder.setDefaultStyle(
                         CatalogUtil.wsName(layer.getDefaultStyle().getWorkspace()),
