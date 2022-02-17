@@ -79,6 +79,7 @@
     <profile>
      <id>mercator</id>
      <modules>
+       <module>oauth2-core</module>
        <module>keycloak</module>
      </modules>
     </profile>
