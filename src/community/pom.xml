@@ -738,7 +738,9 @@
         <module>s3-geotiff</module>
         <module>csw-iso</module>
         <module>metadata</module>
-     </modules>
+        <module>security</module>
+        <module>cog</module>     
+      </modules>
     </profile>
 
   </profiles>

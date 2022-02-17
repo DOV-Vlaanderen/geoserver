@@ -514,7 +514,11 @@
          <module>inspire</module>
          <module>web-resource</module>
          <module>gwc-s3</module>
-      </modules>
+         <module>vectortiles</module>
+	 <module>jp2k</module>
+         <module>authkey</module>
+         <module>css</module>
+	</modules>
     </profile>
   </profiles>
 </project>

@@ -76,5 +76,12 @@
       </modules>
     </profile>
 
+    <profile>
+     <id>mercator</id>
+     <modules>
+       <module>keycloak</module>
+     </modules>
+    </profile>
+
   </profiles>
 </project>
