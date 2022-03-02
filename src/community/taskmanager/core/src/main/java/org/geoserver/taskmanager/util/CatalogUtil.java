@@ -151,7 +151,7 @@ public class CatalogUtil {
                     resource.getNativeBoundingBox().getMinY(),
                     resource.getNativeBoundingBox().getMaxX(),
                     resource.getNativeBoundingBox().getMaxY(),
-                    resource.getSRS());
+                    CRS.toSRS(resource.getNativeBoundingBox().getCoordinateReferenceSystem()));
         }
         if (resource.getLatLonBoundingBox() != null) {
             re.setLatLonBoundingBox(
@@ -159,7 +159,7 @@ public class CatalogUtil {
                     resource.getLatLonBoundingBox().getMinY(),
                     resource.getLatLonBoundingBox().getMaxX(),
                     resource.getLatLonBoundingBox().getMaxY(),
-                    resource.getSRS());
+                    CRS.toSRS(resource.getLatLonBoundingBox().getCoordinateReferenceSystem()));
         }
 
         // dimensions, must happen after setName or strange things happen (gs-man bug)
