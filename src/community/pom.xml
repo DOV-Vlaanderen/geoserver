@@ -727,11 +727,11 @@
         <module>jdbcconfig</module>
         <module>hz-cluster</module>
         <module>jdbcstore</module>
-        <module>taskmanager</module>      
+        <module>taskmanager</module>
         <module>s3-geotiff</module>
         <module>csw-iso</module>
-	<module>metadata</module>
-     </modules>
+        <module>metadata</module>
+      </modules>
     </profile>
 
   </profiles>

@@ -65,7 +65,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         // move to next page
-        //tester.clickLink("table:navigatorBottom:navigator:next", true);
+        // tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         @SuppressWarnings("unchecked")
         DataView<Component> data =
