@@ -390,6 +390,7 @@
         <module>mbstyle</module>
         <module>css</module>
         <module>app-schema</module>
+        <module>vectortiles</module>
       </modules>
     </profile>
     <profile>
