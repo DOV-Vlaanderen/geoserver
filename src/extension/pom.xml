@@ -389,6 +389,7 @@
         <module>gwc-s3</module>
         <module>mbstyle</module>
         <module>css</module>
+        <module>app-schema</module>
       </modules>
     </profile>
     <profile>
