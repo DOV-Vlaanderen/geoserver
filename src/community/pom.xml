@@ -731,6 +731,7 @@
         <module>s3-geotiff</module>
         <module>csw-iso</module>
         <module>metadata</module>
+        <module>ogcapi</module>
       </modules>
     </profile>
 
