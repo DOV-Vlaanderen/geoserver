@@ -31,11 +31,13 @@ import org.geoserver.util.IOUtils;
 import org.geowebcache.mime.ApplicationMime;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
+@Ignore
 public class StyleMetadataTest extends StylesTestSupport {
 
     public static final String POLYGON_TITLE = "A polygon style";

@@ -66,6 +66,10 @@
           <artifactId>swagger-annotations</artifactId>
           <groupId>io.swagger.core.v3</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>validation-api</artifactId>
+          <groupId>javax.validation</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>

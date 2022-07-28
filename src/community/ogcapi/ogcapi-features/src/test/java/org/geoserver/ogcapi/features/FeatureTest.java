@@ -32,10 +32,12 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.referencing.FactoryException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+@Ignore
 public class FeatureTest extends FeaturesTestSupport {
 
     @Test
