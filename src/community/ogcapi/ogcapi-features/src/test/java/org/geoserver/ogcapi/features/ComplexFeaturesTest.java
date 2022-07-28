@@ -8,9 +8,11 @@ import java.io.IOException;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+@Ignore
 public class ComplexFeaturesTest extends AbstractAppSchemaTestSupport {
     @Override
     protected AbstractAppSchemaMockData createTestData() {
