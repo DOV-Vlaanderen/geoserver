@@ -732,6 +732,7 @@
         <module>csw-iso</module>
         <module>metadata</module>
         <module>ogcapi</module>
+        <module>security</module>
       </modules>
     </profile>
 
