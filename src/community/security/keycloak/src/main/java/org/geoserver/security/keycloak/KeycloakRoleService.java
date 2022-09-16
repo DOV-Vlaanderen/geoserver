@@ -28,7 +28,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -141,7 +141,8 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
     public synchronized void load() throws IOException {
         LOGGER.info("Start reloading roles for service named " + getName());
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        try (CloseableHttpClient httpClient =
+                HttpClientBuilder.create().useSystemProperties().build()) {
             Gson gson = new Gson();
             LOGGER.info("Obtaining access token for Keycloak");
             String accessToken = getAccessToken(httpClient, gson);
