@@ -5,7 +5,9 @@
 package org.geoserver.security.keycloak;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.Filter;
@@ -17,12 +19,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AuthenticationCachingFilter;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.RoleCalculator;
 import org.geotools.util.logging.Logging;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.AdapterDeploymentContext;
@@ -38,7 +43,9 @@ import org.keycloak.adapters.springsecurity.authentication.SpringSecurityRequest
 import org.keycloak.adapters.springsecurity.facade.SimpleHttpFacade;
 import org.keycloak.adapters.springsecurity.token.SpringSecurityAdapterTokenStoreFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -182,7 +189,8 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
      * @param response the HTTP response that will be returned
      * @return the credentials or challenge for credentials
      */
-    protected AuthResults getNewAuthn(HttpServletRequest request, HttpServletResponse response) {
+    protected AuthResults getNewAuthn(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.getNewAuthn ENTRY");
         // do some setup and create the authenticator
         request =
@@ -210,12 +218,10 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         AuthOutcome result = authenticator.authenticate();
         AuthChallenge challenge = authenticator.getChallenge();
         LOG.log(Level.FINE, () -> "auth result is " + result.toString());
-        Authentication authn = null;
         switch (result) {
             case AUTHENTICATED:
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                authn = authenticationMapper.authenticate(auth);
-                return new AuthResults(authn);
+                return new AuthResults(authenticate(auth));
             case NOT_ATTEMPTED:
                 if (deployment.isBearerOnly()) {
                     // if bearer-only, then missing auth means you are forbidden
@@ -227,6 +233,35 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
                 return new AuthResults();
             default:
                 return new AuthResults(challenge);
+        }
+    }
+
+    protected Authentication authenticate(Authentication auth) throws IOException {
+        // keycloak authentication
+        auth = authenticationMapper.authenticate(auth);
+
+        // add geoserver roles
+        if (getSecurityManager() != null) {
+            GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
+
+            Collection<GeoServerRole> roles = new HashSet<>();
+            for (GrantedAuthority authoritity : auth.getAuthorities()) {
+                GeoServerRole role = roleService.getRoleByName(authoritity.getAuthority());
+                if (role != null) {
+                    roles.add(role);
+                }
+            }
+            RoleCalculator calc = new RoleCalculator(roleService);
+            calc.addInheritedRoles(roles);
+            calc.addMappedSystemRoles(roles);
+            UsernamePasswordAuthenticationToken newAuth =
+                    new UsernamePasswordAuthenticationToken(
+                            auth.getPrincipal(), auth.getCredentials(), roles);
+            newAuth.setDetails(auth.getDetails());
+            return newAuth;
+
+        } else {
+            return auth;
         }
     }
 
