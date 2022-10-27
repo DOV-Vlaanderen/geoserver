@@ -5,12 +5,14 @@
 package org.geoserver.ogcapi;
 
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Map;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -127,12 +129,15 @@ public class FreemarkerTemplateSupport {
             String templateName,
             Class<?> referenceClass,
             Map<String, Object> model,
-            Writer writer)
+            Writer writer,
+            Charset charset)
             throws IOException {
         Template template = getTemplate(resource, templateName, referenceClass);
 
         try {
-            template.process(model, writer);
+            Environment env = template.createProcessingEnvironment(model, writer, null);
+            env.setOutputEncoding(charset.name());
+            env.process();
         } catch (TemplateException e) {
             throw new IOException("Error occured processing template " + templateName, e);
         }
@@ -150,10 +155,11 @@ public class FreemarkerTemplateSupport {
             ResourceInfo resource,
             String templateName,
             Class<?> referenceClass,
-            Map<String, Object> model)
+            Map<String, Object> model,
+            Charset charset)
             throws IOException {
         StringWriter sw = new StringWriter();
-        processTemplate(resource, templateName, referenceClass, model, sw);
+        processTemplate(resource, templateName, referenceClass, model, sw, charset);
         return sw.toString();
     }
 }

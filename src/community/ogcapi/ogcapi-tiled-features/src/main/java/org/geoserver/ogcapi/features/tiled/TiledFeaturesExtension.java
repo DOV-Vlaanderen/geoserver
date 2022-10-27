@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,12 +60,12 @@ public class TiledFeaturesExtension
     }
 
     @Override
-    public String getExtension(Request dr, Map model, List htmlExtensionArguments)
+    public String getExtension(Request dr, Map model, Charset charset, List htmlExtensionArguments)
             throws IOException {
         if (dr.getService().equals(FEATURES)) {
             if (dr.getRequest().equals(REQ_LANDING)) {
                 return templateSupport.processTemplate(
-                        null, "landingPageTileMatrixExtension.ftl", getClass(), model);
+                        null, "landingPageTileMatrixExtension.ftl", getClass(), model, charset);
             } else if (dr.getRequest().equals(REQ_COLLECTION)) {
                 // get the collection provided by the function call and replace the model
                 Map clonedModel = new HashMap(model);
@@ -72,7 +73,7 @@ public class TiledFeaturesExtension
                 if (tiledFeatures.isTiledVectorLayer(collection.getId())) {
                     clonedModel.put("collection", collection);
                     return templateSupport.processTemplate(
-                            null, "collectionExtension.ftl", getClass(), clonedModel);
+                            null, "collectionExtension.ftl", getClass(), clonedModel, charset);
                 }
             } else if (dr.getRequest().equals(REQ_COLLECTIONS)) {
                 // get the collection provided by the function call and replace the model
@@ -81,7 +82,7 @@ public class TiledFeaturesExtension
                 if (tiledFeatures.isTiledVectorLayer(collection.getId())) {
                     clonedModel.put("collection", collection);
                     return templateSupport.processTemplate(
-                            null, "collectionExtension.ftl", getClass(), clonedModel);
+                            null, "collectionExtension.ftl", getClass(), clonedModel, charset);
                 }
             }
         }

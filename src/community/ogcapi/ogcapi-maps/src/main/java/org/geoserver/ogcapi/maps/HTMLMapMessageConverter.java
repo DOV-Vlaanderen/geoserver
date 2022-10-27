@@ -45,7 +45,8 @@ public class HTMLMapMessageConverter extends AbstractHTMLMessageConverter<HTMLMa
                 "htmlmap.ftl",
                 MapsService.class,
                 model,
-                new OutputStreamWriter(outputMessage.getBody()));
+                new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset()),
+                getDefaultCharset());
     }
 
     /**

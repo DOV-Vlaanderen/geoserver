@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+      <meta http-equiv="content-type" content="text/html; charset=${.output_encoding}">
       <#if pagetitle?? && pagetitle?has_content>
         <title>${pagetitle}</title> 
       <#elseif model?? && model.htmlTitle?has_content>
