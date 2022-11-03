@@ -20,7 +20,8 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.PropertyType;
 
 public class QueryablesBuilder {
 
@@ -38,13 +39,13 @@ public class QueryablesBuilder {
         return forType((SimpleFeatureType) ft.getFeatureType());
     }
 
-    public QueryablesBuilder forType(SimpleFeatureType ft) {
+    public QueryablesBuilder forType(FeatureType ft) {
         Map<String, Schema> properties =
-                ft.getAttributeDescriptors()
+                ft.getDescriptors()
                         .stream()
                         .collect(
                                 Collectors.toMap(
-                                        ad -> ad.getLocalName(),
+                                        ad -> ad.getName().getLocalPart(),
                                         ad -> getSchema(ad.getType()),
                                         (u, v) -> {
                                             throw new IllegalStateException(
@@ -55,7 +56,7 @@ public class QueryablesBuilder {
         return this;
     }
 
-    private Schema<?> getSchema(AttributeType type) {
+    private Schema<?> getSchema(PropertyType type) {
         Class<?> binding = type.getBinding();
         return getSchema(binding);
     }
