@@ -19,7 +19,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyType;
 
@@ -36,7 +35,7 @@ public class QueryablesBuilder {
         this.queryables.setCollectionId(ft.prefixedName());
         this.queryables.setTitle(Optional.of(ft.getTitle()).orElse(ft.prefixedName()));
         this.queryables.setDescription(ft.getDescription());
-        return forType((SimpleFeatureType) ft.getFeatureType());
+        return forType(ft.getFeatureType());
     }
 
     public QueryablesBuilder forType(FeatureType ft) {
