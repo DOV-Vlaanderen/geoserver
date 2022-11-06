@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.data.complex.util.ComplexFeatureConstants;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
@@ -42,6 +43,12 @@ public class QueryablesBuilder {
         Map<String, Schema> properties =
                 ft.getDescriptors()
                         .stream()
+                        .filter(
+                                ad -> // ignore feature chaining links, they might be duplicated
+                                !ad.getName()
+                                                .equals(
+                                                        ComplexFeatureConstants
+                                                                .FEATURE_CHAINING_LINK_NAME))
                         .collect(
                                 Collectors.toMap(
                                         ad -> ad.getName().getLocalPart(),
