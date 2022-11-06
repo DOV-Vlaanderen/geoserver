@@ -125,6 +125,27 @@ public class FreemarkerTemplateSupport {
      * @param writer The writer receiving the template output
      */
     public void processTemplate(
+            Template template, Map<String, Object> model, Writer writer, Charset charset)
+            throws IOException {
+        try {
+            Environment env = template.createProcessingEnvironment(model, writer, null);
+            env.setOutputEncoding(charset.name());
+            env.process();
+        } catch (TemplateException e) {
+            throw new IOException("Error occured processing template " + template.getName(), e);
+        }
+    }
+
+    /**
+     * Processes a template and returns the result as a string
+     *
+     * @param resource The resource reference used to lookup templates in the data dir
+     * @param templateName The template name
+     * @param referenceClass The reference class for classpath template loading
+     * @param model The model to be applied
+     * @param writer The writer receiving the template output
+     */
+    public void processTemplate(
             ResourceInfo resource,
             String templateName,
             Class<?> referenceClass,
@@ -133,14 +154,7 @@ public class FreemarkerTemplateSupport {
             Charset charset)
             throws IOException {
         Template template = getTemplate(resource, templateName, referenceClass);
-
-        try {
-            Environment env = template.createProcessingEnvironment(model, writer, null);
-            env.setOutputEncoding(charset.name());
-            env.process();
-        } catch (TemplateException e) {
-            throw new IOException("Error occured processing template " + templateName, e);
-        }
+        processTemplate(template, model, writer, charset);
     }
 
     /**
