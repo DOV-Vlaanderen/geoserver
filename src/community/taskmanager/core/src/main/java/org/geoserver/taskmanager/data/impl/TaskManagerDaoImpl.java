@@ -87,12 +87,12 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public Run save(final Run run) {
-        return saveObject(run);
+        return initInternal(saveObject(run));
     }
 
     @Override
     public BatchRun save(final BatchRun br) {
-        return saveObject(br);
+        return initInternal(saveObject(br));
     }
 
     @Override
@@ -167,7 +167,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     public void loadLatestBatchRuns(Configuration config) {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<LatestBatchRun> query = cb.createQuery(LatestBatchRun.class);
-        Root<LatestBatchRun> root = query.from(LatestBatchRun.class);
+        Root<LatestBatchRunImpl> root = query.from(LatestBatchRunImpl.class);
         root.join("batch").join("configuration");
         root.fetch("batchrun");
         query.select(root);
@@ -568,6 +568,17 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     }
 
     /**
+     * Initialize lazy collection(s) in Batch Run
+     *
+     * @param be the Batch Run to be initialized
+     * @return return the initialized Batch
+     */
+    @Override
+    public BatchRun init(BatchRun br) {
+        return initInternal(reload(br));
+    }
+
+    /**
      * Initialize lazy collection(s) in Batch - not including run history
      *
      * @param be the Batch to be initialized
@@ -628,5 +639,17 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
             initInternal(b.getConfiguration());
         }
         return b;
+    }
+
+    protected BatchRun initInternal(BatchRun br) {
+        for (Run run : br.getRuns()) {
+            initInternal(run);
+        }
+        return br;
+    }
+
+    protected Run initInternal(Run run) {
+        Hibernate.initialize(run.getBatchElement());
+        return run;
     }
 }

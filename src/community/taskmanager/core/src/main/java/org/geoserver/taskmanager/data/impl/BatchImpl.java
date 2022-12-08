@@ -93,7 +93,7 @@ public class BatchImpl extends BaseImpl implements Batch {
     @XStreamOmitField
     private List<BatchRun> batchRuns = new ArrayList<BatchRun>();
 
-    @OneToOne(fetch = FetchType.EAGER, targetEntity = LatestBatchRunImpl.class, mappedBy = "batch")
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = LatestBatchRunImpl.class, mappedBy = "batch")
     @XStreamOmitField
     private LatestBatchRun latestBatchRun;
 
