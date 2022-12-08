@@ -169,7 +169,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         CriteriaQuery<LatestBatchRun> query = cb.createQuery(LatestBatchRun.class);
         Root<LatestBatchRunImpl> root = query.from(LatestBatchRunImpl.class);
         root.join("batch").join("configuration");
-        root.fetch("batchrun");
+        root.fetch("batchRun");
         query.select(root);
         query.where(cb.equal(root.get("batch").get("configuration").get("id"), config.getId()));
 
