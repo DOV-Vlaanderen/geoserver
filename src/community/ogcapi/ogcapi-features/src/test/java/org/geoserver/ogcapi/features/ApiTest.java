@@ -33,11 +33,13 @@ import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+@Ignore
 public class ApiTest extends FeaturesTestSupport {
 
     @Test

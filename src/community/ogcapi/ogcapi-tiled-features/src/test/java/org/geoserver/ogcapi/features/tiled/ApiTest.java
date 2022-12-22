@@ -19,12 +19,14 @@ import java.util.List;
 import java.util.logging.Level;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.hamcrest.CoreMatchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ApiTest extends TiledFeaturesTestSupport {
 
     @Test
+    @Ignore
     public void testApiJson() throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/api", 200);
         assertThat(
