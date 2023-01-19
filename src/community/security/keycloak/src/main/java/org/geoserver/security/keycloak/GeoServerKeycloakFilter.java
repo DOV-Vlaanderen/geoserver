@@ -58,6 +58,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         implements AuthenticationCachingFilter, GeoServerAuthenticationFilter, LogoutHandler {
 
+    private static final String ID_TOKEN_HINT = "id_token_hint";
+
     private static final Logger LOG = Logging.getLogger(GeoServerKeycloakFilter.class);
 
     // used to map keycloak roles to spring-security roles
@@ -152,6 +154,12 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
                 deployment
                         .getLogoutUrl()
                         .queryParam(OAuth2Constants.REDIRECT_URI, refererNoParams)
+                        .queryParam(
+                                ID_TOKEN_HINT,
+                                ((org.keycloak.adapters.OidcKeycloakAccount)
+                                                authentication.getDetails())
+                                        .getKeycloakSecurityContext()
+                                        .getIdTokenString())
                         .build()
                         .toString());
     }
