@@ -85,6 +85,7 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         GeoServerKeycloakFilterConfig keycloakConfig = (GeoServerKeycloakFilterConfig) config;
         KeycloakDeployment deployment =
                 KeycloakDeploymentBuilder.build(keycloakConfig.readAdapterConfig());
+        deployment.setScope("openid");
         this.keycloakContext = new AdapterDeploymentContext(deployment);
     }
 
