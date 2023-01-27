@@ -278,7 +278,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     /** capabilities output format string. */
     @Override
     public String getCapabilitiesElementName() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
