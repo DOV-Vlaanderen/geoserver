@@ -1934,7 +1934,9 @@ public class ConfigDatabase implements ApplicationContextAware {
                 resourceInfo.setNamespace(
                         getById(resourceInfo.getNamespace().getId(), NamespaceInfo.class));
             }
-            resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
+            if (resourceInfo.getStore().getId() != null) {
+                resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
+            }
         }
 
         @Override
