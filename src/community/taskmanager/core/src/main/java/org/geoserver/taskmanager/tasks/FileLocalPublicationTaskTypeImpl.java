@@ -92,8 +92,7 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
         CatalogFactory catalogFac = new CatalogFactoryImpl(catalog);
 
         final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
-        final NamespaceInfo ns = catalog.getNamespaceByURI(layerName.getNamespaceURI());
-        final WorkspaceInfo ws = catalog.getWorkspaceByName(ns.getName());
+        final WorkspaceInfo ws = (WorkspaceInfo) ctx.getParameterValues().get(PARAM_WORKSPACE);
 
         FileReference fileRef =
                 (FileReference)
@@ -279,11 +278,11 @@ public class FileLocalPublicationTaskTypeImpl implements TaskType {
     @Override
     public void cleanup(TaskContext ctx) throws TaskException {
         final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
-        final String workspace = catalog.getNamespaceByURI(layerName.getNamespaceURI()).getPrefix();
+        final WorkspaceInfo ws = (WorkspaceInfo) ctx.getParameterValues().get(PARAM_WORKSPACE);
 
         final LayerInfo layer = catalog.getLayerByName(layerName);
         final StoreInfo store =
-                catalog.getStoreByName(workspace, layerName.getLocalPart(), StoreInfo.class);
+                catalog.getStoreByName(ws.getName(), layerName.getLocalPart(), StoreInfo.class);
         final ResourceInfo resource = catalog.getResourceByName(layerName, ResourceInfo.class);
 
         catalog.remove(layer);
