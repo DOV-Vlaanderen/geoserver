@@ -1941,9 +1941,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                 resourceInfo.setNamespace(
                         getById(resourceInfo.getNamespace().getId(), NamespaceInfo.class));
             }
-            if (resourceInfo.getStore().getId() != null) {
-                resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
-            }
+            resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
         }
 
         @Override
