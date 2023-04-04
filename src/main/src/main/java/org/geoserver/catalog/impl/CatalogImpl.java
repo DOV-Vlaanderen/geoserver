@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -24,7 +23,6 @@ import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogCapabilities;
-import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CatalogInfo;
@@ -58,13 +56,8 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
-import org.geoserver.catalog.event.CatalogModifyEvent;
-import org.geoserver.catalog.event.CatalogPostModifyEvent;
-import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogBeforeAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
@@ -73,7 +66,6 @@ import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -98,11 +90,13 @@ public class CatalogImpl implements Catalog {
     /** logger */
     private static final Logger LOGGER = Logging.getLogger(CatalogImpl.class);
 
+    protected CatalogEventDispatcher dispatcher;
+
+    /** data access facade */
+    protected CatalogFacade rawFacade;
+
     /** data access facade */
     protected CatalogFacade facade;
-
-    /** listeners */
-    protected List<CatalogListener> listeners = new CopyOnWriteArrayList<>();
 
     /** resources */
     protected ResourcePool resourcePool;
@@ -112,9 +106,15 @@ public class CatalogImpl implements Catalog {
     /** extended validation switch */
     protected boolean extendedValidation = true;
 
+    protected CatalogImpl(CatalogImpl catalog) {
+        this.dispatcher = catalog.dispatcher;
+        this.resourcePool = catalog.resourcePool;
+    }
+
     public CatalogImpl() {
-        setFacade(new DefaultCatalogFacade(this));
+        dispatcher = new CatalogEventDispatcher();
         resourcePool = ResourcePool.create(this);
+        setFacade(new DefaultCatalogFacade(this));
     }
 
     @Override
@@ -143,14 +143,13 @@ public class CatalogImpl implements Catalog {
     public void setFacade(CatalogFacade facade) {
         final GeoServerConfigurationLock configurationLock =
                 GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        rawFacade = facade;
+        facade = new IsolatedCatalogFacade(facade);
         if (configurationLock != null) {
             facade = LockingCatalogFacade.create(facade, configurationLock);
         }
-        // wrap the default catalog facade with the facade capable of handling isolated workspaces
-        // behavior
-        this.facade = new IsolatedCatalogFacade(facade);
+        this.facade = facade;
         this.facade.setCatalog(this);
-        facade.setCatalog(this);
     }
 
     @Override
@@ -1746,26 +1745,22 @@ public class CatalogImpl implements Catalog {
     // Event methods
     @Override
     public Collection<CatalogListener> getListeners() {
-        return Collections.unmodifiableCollection(listeners);
+        return dispatcher.getListeners();
     }
 
     @Override
     public void addListener(CatalogListener listener) {
-        listeners.add(listener);
-        Collections.sort(listeners, ExtensionPriority.COMPARATOR);
+        dispatcher.addListener(listener);
     }
 
     @Override
     public void removeListener(CatalogListener listener) {
-        listeners.remove(listener);
+        dispatcher.removeListener(listener);
     }
 
     @Override
     public void removeListeners(Class<? extends CatalogListener> listenerClass) {
-        new ArrayList<>(listeners)
-                .stream()
-                .filter(l -> listenerClass.isInstance(l))
-                .forEach(l -> listeners.remove(l));
+        dispatcher.removeListeners(listenerClass);
     }
 
     public Iterator search(String cql) {
@@ -1864,34 +1859,7 @@ public class CatalogImpl implements Catalog {
     }
 
     protected void event(CatalogEvent event) {
-        CatalogException toThrow = null;
-
-        for (CatalogListener listener : listeners) {
-            try {
-                if (event instanceof CatalogAddEvent) {
-                    listener.handleAddEvent((CatalogAddEvent) event);
-                } else if (event instanceof CatalogRemoveEvent) {
-                    listener.handleRemoveEvent((CatalogRemoveEvent) event);
-                } else if (event instanceof CatalogModifyEvent) {
-                    listener.handleModifyEvent((CatalogModifyEvent) event);
-                } else if (event instanceof CatalogPostModifyEvent) {
-                    listener.handlePostModifyEvent((CatalogPostModifyEvent) event);
-                } else if (event instanceof CatalogBeforeAddEvent) {
-                    listener.handlePreAddEvent((CatalogBeforeAddEvent) event);
-                }
-            } catch (Throwable t) {
-                if (t instanceof CatalogException && toThrow == null) {
-                    toThrow = (CatalogException) t;
-                } else if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(
-                            Level.WARNING, "Catalog listener threw exception handling event.", t);
-                }
-            }
-        }
-
-        if (toThrow != null) {
-            throw toThrow;
-        }
+        dispatcher.dispatch(event);
     }
 
     public static Object unwrap(Object obj) {
@@ -1925,8 +1893,8 @@ public class CatalogImpl implements Catalog {
         facade.setCatalog(this);
         facade.resolve();
 
-        if (listeners == null) {
-            listeners = new ArrayList<>();
+        if (dispatcher == null) {
+            dispatcher = new CatalogEventDispatcher();
         }
 
         if (resourcePool == null) {
@@ -2143,7 +2111,7 @@ public class CatalogImpl implements Catalog {
 
     public void sync(CatalogImpl other) {
         other.facade.syncTo(facade);
-        listeners = other.listeners;
+        other.dispatcher.syncTo(dispatcher);
 
         if (resourcePool != other.resourcePool) {
             resourcePool.dispose();
@@ -2237,5 +2205,13 @@ public class CatalogImpl implements Catalog {
     @Override
     public CatalogCapabilities getCatalogCapabilities() {
         return facade.getCatalogCapabilities();
+    }
+
+    public CatalogImpl getRawCatalog() {
+        CatalogImpl rawCatalog = new CatalogImpl(this);
+        rawCatalog.setResourceLoader(resourceLoader);
+        rawCatalog.rawFacade = rawFacade;
+        rawCatalog.facade = rawFacade;
+        return rawCatalog;
     }
 }
