@@ -685,5 +685,16 @@
         <module>vector-mosaic</module>
       </modules>
     </profile>
+    <profile>
+      <id>dov</id>
+      <modules>
+        <module>jdbcconfig</module>
+        <module>hz-cluster</module>
+        <module>jdbcstore</module>
+        <module>taskmanager</module>
+        <module>s3-geotiff</module>
+      </modules>
+    </profile>
+
   </profiles>
 </project>
