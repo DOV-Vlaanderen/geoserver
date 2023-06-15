@@ -73,16 +73,15 @@
   </ciManagement>
 
   <distributionManagement>
-    <repository> 
-     <id>release</id>
-     <url>${acd.repository.release.url}</url>
+    <repository>
+      <id>release</id>
+      <url>${acd.repository.release.url}</url>
     </repository>
     <snapshotRepository>
       <id>snapshot</id>
       <url>${acd.repository.snapshot.url}</url>
     </snapshotRepository>
   </distributionManagement>
-
 
   <properties>
     <gs.version>2.23.1</gs.version>

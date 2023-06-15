@@ -380,6 +380,9 @@
         <module>web-resource</module>
         <module>gwc-s3</module>
         <module>metadata</module>
+        <module>mbstyle</module>
+        <module>css</module>
+        <module>app-schema</module>
       </modules>
     </profile>
     <profile>
