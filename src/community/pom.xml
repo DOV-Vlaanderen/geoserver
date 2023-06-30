@@ -694,6 +694,7 @@
         <module>taskmanager</module>
         <module>s3-geotiff</module>
         <module>ogcapi</module>
+        <module>security</module>
       </modules>
     </profile>
 

@@ -88,5 +88,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>dov</id>
+      <modules>
+        <module>oauth2-core</module>
+        <module>keycloak</module>
+      </modules>
+    </profile>
+
   </profiles>
 </project>
