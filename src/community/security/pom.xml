@@ -91,7 +91,7 @@
     <profile>
       <id>dov</id>
       <modules>
-        <module>oauth2-core</module>
+        <module>oauth2</module>
         <module>keycloak</module>
       </modules>
     </profile>
