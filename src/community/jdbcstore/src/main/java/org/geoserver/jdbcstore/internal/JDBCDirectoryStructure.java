@@ -336,6 +336,15 @@ public class JDBCDirectoryStructure {
             return true;
         }
 
+        public void verifyResource() {
+            EntryMetaData md = getMetadata(path);
+
+            if (!Boolean.FALSE.equals(md.dir)) {
+                throw new IllegalStateException(
+                        "Cannot read resource " + toString() + ": either directory or undefined.");
+            }
+        }
+
         @Override
         public String toString() {
             return mergePath(path);
@@ -453,8 +462,12 @@ public class JDBCDirectoryStructure {
         return new Entry(path);
     }
 
+    public Entry createEntry(List<String> path) {
+        return new Entry(new ArrayList<String>(path));
+    }
+
     public Entry createEntry(String pathStr) {
-        return new Entry(new ArrayList<String>(Paths.names(pathStr)));
+        return createEntry(pathNames(pathStr));
     }
 
     public JDBCResourceStoreProperties getConfig() {
@@ -551,6 +564,14 @@ public class JDBCDirectoryStructure {
             qb.addParameter(new Parameter<String>(TYPE_STRING, name));
             return qb;
         }
+    }
+
+    public static List<String> pathNames(String path) {
+        List<String> pathNames = Paths.names(path);
+        if (pathNames.size() > 0 && "/".equals(pathNames.get(0))) { // remove leading slash
+            pathNames.remove(0);
+        }
+        return pathNames;
     }
 
     public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceNotDis) {
