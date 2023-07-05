@@ -20,6 +20,7 @@ import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceTheoryTest;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theory;
@@ -149,5 +150,17 @@ public abstract class AbstractJDBCResourceTheoryTest extends ResourceTheoryTest 
         File file = new File(folder.getRoot(), "DirCached/test/file");
         assertTrue(file.exists());
         assertEquals(res.getContents().length, file.length());
+    }
+
+    @Ignore
+    @Override
+    public void theoryRootIsAbsolute(String path) throws Exception {}
+
+    @Theory
+    public void theoryRootSlashIsIgnored(String path) throws Exception {
+        final Resource res = getResource(path);
+        final Resource res2 = getResource("/" + path);
+        assertTrue(res.equals(res2));
+        assertTrue(res.path().equals(res2.path()));
     }
 }
