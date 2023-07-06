@@ -63,10 +63,11 @@ public class KeycloakLoginButtonTest extends GeoServerWicketTestSupport {
         String html = tester.getLastResponseAsString();
         LOGGER.log(Level.INFO, "Last HTML page output:\n" + html);
 
+        System.out.println(html);
         // the login form is there and has the link
         assertTrue(
                 html.contains(
-                        "<form style=\"display: inline-block;\" method=\"post\" action=\"http://localhost/context/web?j_spring_keycloak_login=true\">"));
+                        "<form class=\"d-inline-block\" method=\"post\" action=\"http://localhost/context/web?j_spring_keycloak_login=true\">"));
         // the img is there as well
         assertTrue(
                 html.contains(
