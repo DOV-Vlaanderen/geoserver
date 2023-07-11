@@ -236,6 +236,11 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
 
     private void enrichWithKeycloakRoles(
             Authentication keycloakAuth, Collection<GeoServerRole> roles) {
+        List<GeoServerRole> roleList =
+                keycloakAuth.getAuthorities().stream()
+                        .map(r -> new GeoServerRole(r.getAuthority()))
+                        .collect(Collectors.toList());
+
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
 
         for (GrantedAuthority authoritity : keycloakAuth.getAuthorities()) {
@@ -264,6 +269,8 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
                     e.getCause());
         }
         calc.addMappedSystemRoles(roles);
+
+        roles.addAll(roleList);
     }
 
     @Override
