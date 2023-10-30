@@ -126,6 +126,12 @@
       <artifactId>gt-app-schema</artifactId>
       <version>${gt.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools.schemas</groupId>
