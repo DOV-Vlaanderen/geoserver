@@ -150,14 +150,26 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
       <version>${gt.version}</version>
-      <scope>test</scope>
+      <scope>test</scope>      
+        <exclusions>
+            <exclusion>
+                <artifactId>xml-apis</artifactId>
+                <groupId>xml-apis</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
       <version>${gt.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
+      <scope>test</scope>      
+        <exclusions>
+            <exclusion>
+                <artifactId>xml-apis</artifactId>
+                <groupId>xml-apis</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
