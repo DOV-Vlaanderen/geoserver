@@ -197,7 +197,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
         }
 
         if (extGS.isSupportsMetadata()) {
-            catalogUtil.metadataNativeToCustom(restManager, resource.prefixedName());
+            catalogUtil.metadataCustomToNative(restManager, resource.prefixedName());
         }
 
         return new TaskResult() {
