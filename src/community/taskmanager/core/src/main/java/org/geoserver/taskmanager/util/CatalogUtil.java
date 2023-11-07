@@ -312,11 +312,11 @@ public class CatalogUtil {
         }
     }
 
-    public void metadataNativeToCustom(GeoServerRESTManager restMan, String layerName)
+    public void metadataCustomToNative(GeoServerRESTManager restMan, String layerName)
             throws TaskException {
-        GeoServerRESTCustomService metadataService = restMan.getCustomService("metadata");
-        if (metadataService.get("nativeToCustom", "layerName", layerName) == null) {
-            throw new TaskException("Failed to call nativeToCustom on target geoserver.");
+        GeoServerRESTCustomService metadataService = restMan.getCustomService("rest/metadata");
+        if (metadataService.get("customToNative", "layerName", layerName) == null) {
+            throw new TaskException("Failed to call customToNative on target geoserver.");
         }
     }
 }
