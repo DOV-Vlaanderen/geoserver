@@ -242,7 +242,9 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
             Thread.sleep(100);
             batch1 = dao.reload(batch1);
         } while (batch1 == null
-                || batch1.getLatestBatchRun().getBatchRun().getStatus() != Status.COMMITTED);
+                || batch1.getLatestBatchRun() != null
+                        && batch1.getLatestBatchRun().getBatchRun().getStatus()
+                                != Status.COMMITTED);
 
         Thread.sleep(100);
         config1 = dao.reload(config1);

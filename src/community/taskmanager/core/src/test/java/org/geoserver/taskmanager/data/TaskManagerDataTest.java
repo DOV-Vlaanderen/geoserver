@@ -148,6 +148,8 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         Batch batch2 = config2.getBatches().get("my_batch");
         assertEquals(0, batch2.getBatchRuns().size());
         assertNull(batch2.getLatestBatchRun());
+
+        dao.delete(config2);
     }
 
     @Test
