@@ -7,6 +7,7 @@ package org.geoserver.csw.store.internal;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -162,7 +163,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
     }
 
     @Override
-    public PropertyName translateProperty(RecordDescriptor rd, Name name) {
+    public List<PropertyName> translateToPropertyNames(RecordDescriptor rd, Name name) {
         return rd.translateProperty(name);
     }
 
