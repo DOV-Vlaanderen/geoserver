@@ -384,6 +384,7 @@
         <module>css</module>
         <module>app-schema</module>
         <module>vectortiles</module>
+        <module>control-flow</module>
       </modules>
     </profile>
     <profile>
