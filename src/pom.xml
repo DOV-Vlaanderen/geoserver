@@ -84,7 +84,7 @@
   </distributionManagement>
 
   <properties>
-    <gs.version>2.23.1-dov-7.2-SNAPSHOT</gs.version>
+    <gs.version>2.23.1-dov-7.3-SNAPSHOT</gs.version>
     <gt.version>29.1-dov-2-SNAPSHOT</gt.version>
     <gwc.version>1.23.0</gwc.version>
     <jts.version>1.19.0</jts.version>
