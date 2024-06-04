@@ -15,10 +15,11 @@ public interface ComplexMetadataAttribute<T extends Serializable> extends Serial
     Integer getIndex();
 
     default void init() {
-        if (getValue() == null) {
+        setValue(getValue());
+        /*if (getValue() == null) {
             // make sure that the null value is explicit
             // so that all sizes for nested attributes match up
             setValue(null);
-        }
+        }*/
     }
 }
