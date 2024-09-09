@@ -24,6 +24,7 @@ import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
+import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.SortByImpl;
 import org.geotools.util.logging.Logging;
@@ -151,15 +152,23 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
             outputMapping = outputMapping.subMapping(q.getProperties(), rdOutput);
         }
 
-        return new CatalogStoreFeatureCollection(
-                startIndex,
-                q.getMaxFeatures(),
-                unmappedSortBy,
-                unmapped,
-                geoServer.getCatalog(),
-                outputMapping,
-                rdOutput,
-                interpolationProperties);
+        CatalogStoreFeatureCollection collection =
+                new CatalogStoreFeatureCollection(
+                        startIndex,
+                        q.getMaxFeatures(),
+                        unmappedSortBy,
+                        unmapped,
+                        geoServer.getCatalog(),
+                        outputMapping,
+                        rdOutput,
+                        interpolationProperties);
+
+        if (unmapper.needsPostFilter()) {
+            // in case the unmaper ignored indexes or predicates
+            return new FilteringFeatureCollection<>(collection, q.getFilter());
+        } else {
+            return collection;
+        }
     }
 
     @Override

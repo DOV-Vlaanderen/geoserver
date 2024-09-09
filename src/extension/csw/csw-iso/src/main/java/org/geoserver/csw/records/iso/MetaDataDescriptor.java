@@ -12,7 +12,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordFeatureTypeRegistryConfiguration;
 import org.geoserver.csw.records.SpatialFilterChecker;
-import org.geoserver.csw.store.internal.CatalogStoreMapping;
+import org.geoserver.csw.util.PropertyPath;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.csw.CSW;
 import org.geotools.data.complex.feature.type.FeatureTypeRegistry;
@@ -216,7 +216,7 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
                         queryableMapping.get(QUERYABLE_BBOX).get(0).getPropertyName(),
                         getNamespaceSupport());
 
-        return CatalogStoreMapping.toDotPath(steps);
+        return PropertyPath.fromXPath(steps).toDothPath();
     }
 
     @Override
