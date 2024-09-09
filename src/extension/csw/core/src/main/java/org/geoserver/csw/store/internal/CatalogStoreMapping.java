@@ -6,17 +6,16 @@ package org.geoserver.csw.store.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geoserver.csw.util.PropertyPath;
 import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
@@ -40,7 +39,7 @@ public class CatalogStoreMapping {
      * @author Niels Charlier
      */
     public static class CatalogStoreMappingElement {
-        protected String key;
+        protected PropertyPath key;
 
         protected Expression content = null;
 
@@ -53,7 +52,7 @@ public class CatalogStoreMapping {
          *
          * @param key The Key to be mapped
          */
-        protected CatalogStoreMappingElement(String key) {
+        protected CatalogStoreMappingElement(PropertyPath key) {
             this.key = key;
         }
 
@@ -62,7 +61,7 @@ public class CatalogStoreMapping {
          *
          * @return Mapped Key
          */
-        public String getKey() {
+        public PropertyPath getKey() {
             return key;
         }
 
@@ -98,7 +97,7 @@ public class CatalogStoreMapping {
 
     protected static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
-    protected Map<String, CatalogStoreMappingElement> mappingElements = new HashMap<>();
+    protected List<CatalogStoreMappingElement> mappingElements = new ArrayList<>();
 
     protected CatalogStoreMappingElement identifier = null;
 
@@ -113,7 +112,7 @@ public class CatalogStoreMapping {
      * @return a Collection with all Mapping Elements
      */
     public final Collection<CatalogStoreMappingElement> elements() {
-        return mappingElements.values();
+        return mappingElements;
     }
 
     /**
@@ -122,8 +121,8 @@ public class CatalogStoreMapping {
      * @param key the mapped key
      * @return the element, null if key doesn't exist
      */
-    public CatalogStoreMappingElement getElement(String key) {
-        return mappingElements.get(key);
+    public Collection<CatalogStoreMappingElement> elements(PropertyPath pattern) {
+        return mappingElements.stream().filter(el -> el.getKey().matches(pattern)).toList();
     }
 
     /**
@@ -142,10 +141,10 @@ public class CatalogStoreMapping {
      * @param rd Record Descriptor
      */
     public CatalogStoreMapping subMapping(List<PropertyName> properties, RecordDescriptor rd) {
-        Set<String> paths = new HashSet<>();
+        Set<PropertyPath> patterns = new HashSet<>();
         for (PropertyName prop : properties) {
-            paths.add(
-                    toDotPath(
+            patterns.add(
+                    PropertyPath.fromXPath(
                             XPathUtil.steps(
                                     rd.getFeatureDescriptor(),
                                     prop.toString(),
@@ -154,16 +153,19 @@ public class CatalogStoreMapping {
 
         CatalogStoreMapping mapping = new CatalogStoreMapping();
 
-        for (Entry<String, CatalogStoreMappingElement> element : mappingElements.entrySet()) {
-            if (element.getValue().isRequired() || paths.contains(element.getKey())) {
-                mapping.mappingElements.put(element.getKey(), element.getValue());
+        for (CatalogStoreMappingElement element : mappingElements) {
+            if (element.isRequired()
+                    || patterns.stream().anyMatch(pattern -> element.getKey().matches(pattern))) {
+                mapping.mappingElements.add(element);
             }
         }
 
         mapping.identifier = identifier;
-
+        PropertyPath bboxPropName = PropertyPath.fromDotPath(rd.getBoundingBoxPropertyName());
         mapping.includeEnvelope =
-                includeEnvelope && paths.contains(rd.getBoundingBoxPropertyName());
+                includeEnvelope
+                        && bboxPropName != null
+                        && patterns.stream().anyMatch(pattern -> bboxPropName.matches(pattern));
 
         return mapping;
     }
@@ -212,11 +214,9 @@ public class CatalogStoreMapping {
                 key = key.replaceFirst(Pattern.quote("%."), ".");
             }
 
-            CatalogStoreMappingElement element = mapping.mappingElements.get(key);
-            if (element == null) {
-                element = new CatalogStoreMappingElement(key);
-                mapping.mappingElements.put(key, element);
-            }
+            CatalogStoreMappingElement element =
+                    new CatalogStoreMappingElement(PropertyPath.fromDotPath(key));
+            mapping.mappingElements.add(element);
 
             element.content = parseOgcCqlExpression(mappingEntry.getValue());
             element.required = required;
@@ -258,23 +258,5 @@ public class CatalogStoreMapping {
             }
         }
         return expression;
-    }
-
-    /**
-     * Helper method to convert StepList path to Dot path (separated by dots and no namespace
-     * prefixes, used for mapping)
-     *
-     * @param steps XPath steplist
-     * @return String with dot path
-     */
-    public static String toDotPath(XPathUtil.StepList steps) {
-
-        StringBuilder sb = new StringBuilder();
-        for (XPathUtil.Step step : steps) {
-            sb.append(step.getName().getLocalPart());
-            sb.append(".");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
     }
 }

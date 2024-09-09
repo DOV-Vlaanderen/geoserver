@@ -5,8 +5,8 @@
 package org.geoserver.csw.store.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.geoserver.csw.CSWTestSupport;
+import org.geoserver.csw.util.PropertyPath;
 import org.geoserver.security.PropertyFileWatcher;
 import org.junit.Test;
 
@@ -43,9 +44,15 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         assertTrue(record.exists());
 
         assertNotNull(store.getMapping("Record"));
-        assertNotNull(store.getMapping("Record").getElement("identifier.value"));
+        assertFalse(
+                store.getMapping("Record")
+                        .elements(PropertyPath.fromDotPath("identifier.value"))
+                        .isEmpty());
 
-        assertNull(store.getMapping("Record").getElement("format.value"));
+        assertTrue(
+                store.getMapping("Record")
+                        .elements(PropertyPath.fromDotPath("format.value"))
+                        .isEmpty());
 
         // On Linux and older versions of JDK last modification resolution is one second,
         // and we need the watcher to see the file as changed. Account for slow build servers too.
@@ -63,6 +70,11 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         // mapping should be automatically reloaded now
         assertEquals(
                 "img/jpeg",
-                store.getMapping("Record").getElement("format.value").getContent().toString());
+                store.getMapping("Record").elements(PropertyPath.fromDotPath("format.value"))
+                        .stream()
+                        .findFirst()
+                        .get()
+                        .getContent()
+                        .toString());
     }
 }

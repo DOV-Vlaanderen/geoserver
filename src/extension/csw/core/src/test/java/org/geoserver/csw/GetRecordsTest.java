@@ -280,6 +280,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         String request =
                 "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief";
         Document d = getAsDOM(request, "ISO-8859-1");
+        print(d);
         checkValidationErrors(d, new CSWConfiguration());
 
         // check we have the expected results

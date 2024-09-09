@@ -4,12 +4,14 @@
  */
 package org.geoserver.csw.store.internal;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import org.geoserver.csw.CSWTestSupport;
+import org.geoserver.csw.util.PropertyPath;
 import org.junit.Test;
 
 public class InternalCatalogStoreTest extends CSWTestSupport {
@@ -39,6 +41,9 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
 
         assertNotNull(store.getMapping("Record"));
         assertNotNull(store.getMapping("MD_Metadata"));
-        assertNotNull(store.getMapping("MD_Metadata").getElement("fileIdentifier.CharacterString"));
+        assertFalse(
+                store.getMapping("MD_Metadata")
+                        .elements(PropertyPath.fromDotPath("fileIdentifier.CharacterString"))
+                        .isEmpty());
     }
 }
