@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.geoserver.csw.util.PropertyPath;
 import org.geotools.data.complex.util.ComplexFeatureConstants;
 import org.geotools.feature.AttributeBuilder;
@@ -148,7 +149,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             if (nodes.isEmpty()) {
                 nodes.add(new TreeLeaf());
             }
-            return nodes.stream().map(node -> (TreeLeaf) node).toList();
+            return nodes.stream().map(node -> (TreeLeaf) node).collect(Collectors.toList());
         }
 
         public TreeLeaf getLeaf() {
@@ -159,7 +160,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             if (nodes.isEmpty()) {
                 nodes.add(new TreeBranch());
             }
-            return nodes.stream().map(node -> (TreeBranch) node).toList();
+            return nodes.stream().map(node -> (TreeBranch) node).collect(Collectors.toList());
         }
 
         public TreeBranch getBranch() {
