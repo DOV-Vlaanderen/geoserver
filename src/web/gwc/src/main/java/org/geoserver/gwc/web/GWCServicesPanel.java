@@ -7,6 +7,7 @@ package org.geoserver.gwc.web;
 
 import static org.geoserver.gwc.web.GWCSettingsPage.checkbox;
 
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -45,5 +46,10 @@ public class GWCServicesPanel extends Panel {
                         "enableSecurity",
                         securityEnabledModel,
                         "GWCSettingsPage.enableSecurity.title"));
+
+        add(
+                new TextField<String>(
+                        "cacheValidationProperty",
+                        new PropertyModel<>(gwcConfigModel, "cacheValidationProperty")));
     }
 }

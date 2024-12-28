@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -75,6 +77,7 @@ import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.config.legends.LegendInfoBuilder;
+import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterException;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -789,7 +792,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         int expireCache = this.getExpireCache((int) tile.getTileIndex()[2]);
         if (expireCache != GWCVars.CACHE_DISABLE_CACHE) {
             try {
-                return tile.retrieve(expireCache * 1000L);
+                return tile.retrieve(expireCache * 1000L) && validate(tile);
             } catch (GeoWebCacheException gwce) {
                 LOGGER.info(gwce.getMessage());
                 tile.setErrorMsg(gwce.getMessage());
@@ -1665,5 +1668,29 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         if (metadata != null) {
             metadataLayers.add(metadata);
         }
+    }
+
+    private boolean validate(ConveyorTile tile) {
+        String prop = GWC.get().getConfig().getCacheValidationProperty();
+        if (prop != null) {
+            Date timeStamp = null;
+            try {
+                timeStamp =
+                        (Date) PropertyUtils.getProperty(getPublishedInfo().getMetadata(), prop);
+            } catch (ClassCastException
+                    | ReflectiveOperationException
+                    | IllegalArgumentException e) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Failed to get cache validation timestamp property for layer "
+                                + getPublishedInfo().getName(),
+                        e);
+            }
+            if (timeStamp != null && tile.getStorageObject().getCreated() < timeStamp.getTime()) {
+                tile.setCacheResult(CacheResult.MISS);
+                return false;
+            }
+        }
+        return true;
     }
 }
