@@ -90,6 +90,8 @@ public class GWCConfig implements Cloneable, Serializable {
 
     private String lockProviderName;
 
+    private String cacheValidationProperty;
+
     // Set of cache warnings that would cause caching being skipped
     Set<DimensionWarning.WarningType> cacheWarningSkips;
 
@@ -543,5 +545,13 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setCacheWarningSkips(Set<DimensionWarning.WarningType> cacheWarningSkips) {
         this.cacheWarningSkips = new LinkedHashSet<>(cacheWarningSkips);
+    }
+
+    public String getCacheValidationProperty() {
+        return cacheValidationProperty;
+    }
+
+    public void setCacheValidationProperty(String cacheValidationProperty) {
+        this.cacheValidationProperty = cacheValidationProperty;
     }
 }
