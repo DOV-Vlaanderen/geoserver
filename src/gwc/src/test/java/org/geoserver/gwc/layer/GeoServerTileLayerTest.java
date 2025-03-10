@@ -1479,6 +1479,7 @@ public class GeoServerTileLayerTest {
         assertEquals(CacheResult.HIT, returned.getCacheResult());
 
         layerInfo
+                .getResource()
                 .getMetadata()
                 .put("gwc", (Serializable) Collections.singletonMap("timestamp", new Date()));
         returned = layerInfoTileLayer.getTile(tile);
