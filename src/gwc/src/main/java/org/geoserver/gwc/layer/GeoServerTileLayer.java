@@ -1675,8 +1675,13 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         if (prop != null) {
             Date timeStamp = null;
             try {
-                timeStamp =
-                        (Date) PropertyUtils.getProperty(getPublishedInfo().getMetadata(), prop);
+                MetadataMap metadata;
+                if (getPublishedInfo() instanceof LayerInfo) {
+                    metadata = ((LayerInfo) getPublishedInfo()).getResource().getMetadata();
+                } else {
+                    metadata = getPublishedInfo().getMetadata();
+                }
+                timeStamp = (Date) PropertyUtils.getProperty(metadata, prop);
             } catch (ClassCastException
                     | ReflectiveOperationException
                     | IllegalArgumentException e) {
