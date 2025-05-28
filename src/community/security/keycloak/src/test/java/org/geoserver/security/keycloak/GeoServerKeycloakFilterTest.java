@@ -22,6 +22,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +31,6 @@ import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
@@ -112,26 +111,50 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
         keycloackService = new WireMockServer(8080);
         keycloackService.start();
 
-        String openidConfig = "{\n" +
-                "  \"issuer\": \"" + OPENID_URL + "\",\n" +
-                "  \"authorization_endpoint\": \"" + OPENID_URL + "/protocol/openid-connect/auth\",\n" +
-                "  \"token_endpoint\": \"" + OPENID_URL + "/protocol/openid-connect/token\",\n" +
-                "  \"token_introspection_endpoint\": \"" + OPENID_URL + "/protocol/openid-connect/token/introspect\",\n" +
-                "  \"userinfo_endpoint\": \"" + OPENID_URL + "/protocol/openid-connect/userinfo\",\n" +
-                "  \"end_session_endpoint\": \"" + OPENID_URL + "/protocol/openid-connect/logout\",\n" +
-                "  \"jwks_uri\": \"" + OPENID_URL + "/protocol/openid-connect/certs\",\n" +
-                "  \"check_session_iframe\": \"" + OPENID_URL + "/protocol/openid-connect/login-status-iframe.html\",\n" +
-                "  \"registration_endpoint\": \"" + OPENID_URL + "/clients-registrations/openid-connect\",\n" +
-                "  \"introspection_endpoint\": \"" + OPENID_URL + "/protocol/openid-connect/token/introspect\"\n" +
-                "}";
+        String openidConfig =
+                "{\n"
+                        + "  \"issuer\": \""
+                        + OPENID_URL
+                        + "\",\n"
+                        + "  \"authorization_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/auth\",\n"
+                        + "  \"token_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/token\",\n"
+                        + "  \"token_introspection_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/token/introspect\",\n"
+                        + "  \"userinfo_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/userinfo\",\n"
+                        + "  \"end_session_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/logout\",\n"
+                        + "  \"jwks_uri\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/certs\",\n"
+                        + "  \"check_session_iframe\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/login-status-iframe.html\",\n"
+                        + "  \"registration_endpoint\": \""
+                        + OPENID_URL
+                        + "/clients-registrations/openid-connect\",\n"
+                        + "  \"introspection_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/token/introspect\"\n"
+                        + "}";
 
-        keycloackService.stubFor(WireMock.get(urlEqualTo(String.format("/auth/realms/%s/.well-known/openid-configuration",
-                        REALM)))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(openidConfig)
-                )
-        );
+        keycloackService.stubFor(
+                WireMock.get(
+                                urlEqualTo(
+                                        String.format(
+                                                "/auth/realms/%s/.well-known/openid-configuration",
+                                                REALM)))
+                        .willReturn(
+                                aResponse()
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody(openidConfig)));
 
         AdapterConfig aConfig = new AdapterConfig();
         aConfig.setRealm(REALM);
