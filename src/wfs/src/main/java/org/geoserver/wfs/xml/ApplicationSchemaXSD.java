@@ -49,11 +49,11 @@ import org.geotools.xsd.SchemaIndex;
 import org.geotools.xsd.Schemas;
 import org.geotools.xsd.XSD;
 import org.geotools.xsd.impl.SchemaIndexImpl;
-import org.xml.sax.EntityResolver;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.Schema;
+import org.xml.sax.EntityResolver;
 
 /**
  * XSD for an application schema of a geoserver feature type.
@@ -290,8 +290,13 @@ public class ApplicationSchemaXSD extends XSD {
 
             try {
                 EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
-                ftSchema = Schemas.parse(
-                        schemaFile.file().getAbsolutePath(), locators, emptyList(), emptyList(), entityResolver);
+                ftSchema =
+                        Schemas.parse(
+                                schemaFile.file().getAbsolutePath(),
+                                locators,
+                                emptyList(),
+                                emptyList(),
+                                entityResolver);
             } catch (IOException e) {
                 LOGGER.log(
                         Level.WARNING,

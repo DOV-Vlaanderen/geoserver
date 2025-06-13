@@ -650,12 +650,13 @@ public abstract class FeatureTypeSchemaBuilder {
 
             XSDSchema ftSchema = null;
             try {
-                ftSchema = Schemas.parse(
-                        schemaFile.file().getAbsolutePath(),
-                        locators,
-                        resolvers,
-                        emptyList(),
-                        catalog.getResourcePool().getEntityResolver());
+                ftSchema =
+                        Schemas.parse(
+                                schemaFile.file().getAbsolutePath(),
+                                locators,
+                                resolvers,
+                                emptyList(),
+                                catalog.getResourcePool().getEntityResolver());
             } catch (IOException e) {
                 logger.log(
                         Level.WARNING,

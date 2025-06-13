@@ -891,8 +891,13 @@ public class ResourcePool {
                     Arrays.asList(GML.getInstance().createSchemaLocator());
             XSDSchema schema = null;
             try {
-                schema = Schemas.parse(
-                        schemaFile.getAbsolutePath(), locators, emptyList(), emptyList(), getEntityResolver());
+                schema =
+                        Schemas.parse(
+                                schemaFile.getAbsolutePath(),
+                                locators,
+                                emptyList(),
+                                emptyList(),
+                                getEntityResolver());
             } catch (Exception e) {
                 LOGGER.warning(
                         "Unable to parse "
