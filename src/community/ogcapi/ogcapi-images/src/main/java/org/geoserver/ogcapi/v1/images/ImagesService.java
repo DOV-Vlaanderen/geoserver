@@ -237,7 +237,7 @@ public class ImagesService implements ApplicationContextAware {
         org.geotools.api.data.Query gtQuery = new org.geotools.api.data.Query(nativeName, filter);
         gtQuery.setStartIndex(startIndex);
         if (limit == null) {
-            limit = getService().getMaxImages();
+            limit = getService() == null ? Integer.MAX_VALUE : getService().getMaxImages();
         }
         int maxFeatures = limit.intValue();
         gtQuery.setMaxFeatures(maxFeatures);
