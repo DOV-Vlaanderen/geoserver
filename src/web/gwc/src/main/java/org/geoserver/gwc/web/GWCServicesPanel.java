@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.gwc.config.GWCConfig;
 
 public class GWCServicesPanel extends Panel {
@@ -36,15 +35,9 @@ public class GWCServicesPanel extends Panel {
                 "GWCSettingsPage.requireTiledParameter.title"));
         add(checkbox("enableWMSC", wmsCEnabledModel, "GWCSettingsPage.enableWMSC.title"));
         add(checkbox("enableTMS", tmsEnabledModel, "GWCSettingsPage.enableTMS.title"));
-        add(
-                checkbox(
-                        "enableSecurity",
-                        securityEnabledModel,
-                        "GWCSettingsPage.enableSecurity.title"));
+        add(checkbox("enableSecurity", securityEnabledModel, "GWCSettingsPage.enableSecurity.title"));
 
-        add(
-                new TextField<String>(
-                        "cacheValidationProperty",
-                        new PropertyModel<>(gwcConfigModel, "cacheValidationProperty")));
+        add(new TextField<String>(
+                "cacheValidationProperty", new PropertyModel<>(gwcConfigModel, "cacheValidationProperty")));
     }
 }

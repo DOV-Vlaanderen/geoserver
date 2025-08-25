@@ -1861,9 +1861,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     metadata = getPublishedInfo().getMetadata();
                 }
                 timeStamp = (Date) PropertyUtils.getProperty(metadata, prop);
-            } catch (ClassCastException
-                    | ReflectiveOperationException
-                    | IllegalArgumentException e) {
+            } catch (ClassCastException | ReflectiveOperationException | IllegalArgumentException e) {
                 LOGGER.log(
                         Level.WARNING,
                         "Failed to get cache validation timestamp property for layer "
