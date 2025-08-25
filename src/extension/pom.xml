@@ -359,6 +359,21 @@
       </modules>
     </profile>
     <profile>
+      <id>dov</id>
+      <modules>
+        <module>csw</module>
+        <module>inspire</module>
+        <module>web-resource</module>
+        <module>gwc-s3</module>
+        <module>metadata</module>
+        <module>mbstyle</module>
+        <module>css</module>
+        <module>app-schema</module>
+        <module>vectortiles</module>
+        <module>control-flow</module>
+      </modules>
+    </profile>
+    <profile>
       <id>gwc-s3</id>
       <modules>
         <module>gwc-s3</module>

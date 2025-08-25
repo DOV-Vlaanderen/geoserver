@@ -545,35 +545,18 @@
       </modules>
     </profile>
     <profile>
-      <id>graticule</id>
+      <id>dov</id>
       <modules>
-        <module>graticule</module>
+        <module>jdbcconfig</module>
+        <module>hz-cluster</module>
+        <module>jdbcstore</module>
+        <module>taskmanager</module>
+        <module>s3-geotiff</module>
+        <module>ogcapi</module>
+        <module>security</module>
       </modules>
     </profile>
-    <profile>
-      <id>wfs-freemarker</id>
-      <modules>
-        <module>wfs-freemarker</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>geoparquet</id>
-      <modules>
-        <module>geoparquet</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wps-download-netcdf</id>
-      <modules>
-        <module>wps-download-netcdf</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>singlestore</id>
-      <modules>
-        <module>singlestore</module>
-      </modules>
-    </profile>
+
     <profile>
       <id>assembly</id>
       <build>
@@ -692,5 +675,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
