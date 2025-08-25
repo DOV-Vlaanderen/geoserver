@@ -120,9 +120,7 @@ public class GeoServerTablePanelTest {
         // verify the initial state
         tester.assertComponent("form:panel", IntegerTable.class);
 
-        DataView dv =
-                (DataView)
-                        tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
         assertEquals(40, dv.size());
 
         String filterLabelPath = "form:panel:filterForm:navigatorTop:filterMatch";

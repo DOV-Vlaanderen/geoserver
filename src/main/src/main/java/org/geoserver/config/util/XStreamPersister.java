@@ -831,8 +831,7 @@ public class XStreamPersister {
                         complexTypeId = mapper().serializedClass(value.getClass());
                         try {
                             // verify permission and support
-                            mapper().lookupMapperOfType(SecurityMapper.class)
-                                    .realClass(complexTypeId);
+                            mapper().lookupMapperOfType(SecurityMapper.class).realClass(complexTypeId);
                         } catch (XStreamException e) {
                             complexTypeId = null;
                         }
