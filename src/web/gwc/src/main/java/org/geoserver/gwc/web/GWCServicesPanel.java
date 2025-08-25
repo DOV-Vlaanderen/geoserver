@@ -36,12 +36,15 @@ public class GWCServicesPanel extends Panel {
                 "GWCSettingsPage.requireTiledParameter.title"));
         add(checkbox("enableWMSC", wmsCEnabledModel, "GWCSettingsPage.enableWMSC.title"));
         add(checkbox("enableTMS", tmsEnabledModel, "GWCSettingsPage.enableTMS.title"));
-        add(checkbox("enableSecurity", securityEnabledModel, "GWCSettingsPage.enableSecurity.title"));
+        add(
+                checkbox(
+                        "enableSecurity",
+                        securityEnabledModel,
+                        "GWCSettingsPage.enableSecurity.title"));
 
-        IModel<Integer> metaTilingThreads = new PropertyModel<>(gwcConfigModel, "metaTilingThreads");
-        TextField<Integer> metaTilingThreadsTextField = new TextField<>("metaTilingThreads", metaTilingThreads);
-        metaTilingThreadsTextField.setRequired(false);
-        metaTilingThreadsTextField.add(RangeValidator.minimum(0));
-        add(metaTilingThreadsTextField);
+        add(
+                new TextField<String>(
+                        "cacheValidationProperty",
+                        new PropertyModel<>(gwcConfigModel, "cacheValidationProperty")));
     }
 }

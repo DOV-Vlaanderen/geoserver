@@ -524,34 +524,16 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testEditMetatilingThreads() {
+    public void testCacheValidationProperty() throws IOException {
+        // enable in memory caching
         GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setCacheValidationProperty("mytimestamp");
+        gwc.saveConfig(config);
 
-        // set it to a fixed value
-        testEditMetatilingThreads("3");
-        tester.assertNoErrorMessage();
-        assertEquals(3, ((ThreadPoolExecutor) gwc.getMetaTilingExecutor()).getCorePoolSize());
-
-        // set it an invalid value, error message and no change
-        testEditMetatilingThreads("-1");
-        tester.assertErrorMessages(
-                "The value of 'Metatiling threads count (unset for automatic detection)' must be at least 0.");
-        assertEquals(3, ((ThreadPoolExecutor) gwc.getMetaTilingExecutor()).getCorePoolSize());
-
-        // default is 2 * cores
-        testEditMetatilingThreads("");
-        tester.assertNoErrorMessage();
-        int cores = Runtime.getRuntime().availableProcessors();
-        assertEquals(cores * 2, ((ThreadPoolExecutor) gwc.getMetaTilingExecutor()).getCorePoolSize());
-    }
-
-    private void testEditMetatilingThreads(String threadCount) {
-        tester.startPage(GWCSettingsPage.class);
-        // print(page, true, true);
-        tester.assertRenderedPage(GWCSettingsPage.class);
-
-        FormTester form = tester.newFormTester("form");
-        form.setValue("gwcServicesPanel:metaTilingThreads", threadCount);
-        form.submit("submit");
+        // used to blow because an unused label element was added in the code but not in HTML
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+        tester.assertModelValue("form:gwcServicesPanel:cacheValidationProperty", "mytimestamp");
     }
 }
