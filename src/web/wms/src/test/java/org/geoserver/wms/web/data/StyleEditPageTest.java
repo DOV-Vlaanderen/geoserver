@@ -415,7 +415,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testLayerAttributesUnreachableLayer() throws Exception {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
-        tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
+        tester.assertComponent(
+                "styleForm:popup:modal:overlay:dialog:content:content:layer.table", GeoServerTablePanel.class);
         // tester.executeAjaxEvent(
         //        "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
         tester.assertLabel(
