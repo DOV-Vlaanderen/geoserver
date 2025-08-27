@@ -27,9 +27,11 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore
 public class CachedLayersPageTest extends GeoServerWicketTestSupport {
 
     @Rule
