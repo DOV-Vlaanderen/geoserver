@@ -371,6 +371,8 @@
         <module>app-schema</module>
         <module>vectortiles</module>
         <module>control-flow</module>
+        <module>wps</module>
+	<module>ogcapi</module>
       </modules>
     </profile>
     <profile>
