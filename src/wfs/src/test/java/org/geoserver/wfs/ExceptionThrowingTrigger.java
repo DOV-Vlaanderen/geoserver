@@ -22,4 +22,14 @@ public class ExceptionThrowingTrigger implements Trigger {
     public void fire(Connection conn, Object[] oldRow, Object[] newRow) throws SQLException {
         throw new SQLException(STATIC_CAUSE);
     }
+
+    @Override
+    public void close() throws SQLException {
+        // N/A
+    }
+
+    @Override
+    public void remove() throws SQLException {
+        // N/A
+    }
 }
