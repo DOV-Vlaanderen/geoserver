@@ -5,6 +5,7 @@
  */
 package org.geoserver.cluster.hazelcast.web;
 
+import java.io.Serializable;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.geoserver.cluster.hazelcast.HzCluster;
@@ -13,7 +14,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 
-public class HazelcastHomePageContentProvider implements GeoServerHomePageContentProvider {
+public class HazelcastHomePageContentProvider implements GeoServerHomePageContentProvider, Serializable {
 
     @Override
     public Component getPageBodyComponent(String id) {
