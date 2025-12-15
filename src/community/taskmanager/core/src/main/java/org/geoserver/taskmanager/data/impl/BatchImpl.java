@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -35,7 +36,8 @@ import org.hibernate.annotations.FilterDef;
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"}),
             @UniqueConstraint(columnNames = {"nameNoConfig", "removeStamp"})
-        })
+        },
+        indexes = {@Index(name = "idx_batchimpl_configuration", columnList = "configuration", unique = false)})
 @FilterDef(name = "activeElementFilter", defaultCondition = "removeStamp = 0")
 public class BatchImpl extends BaseImpl implements Batch {
 

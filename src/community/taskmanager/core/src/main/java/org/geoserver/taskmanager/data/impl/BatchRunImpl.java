@@ -27,7 +27,11 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity
-@Table(indexes = {@Index(name = "schedulerReferenceIndex", columnList = "schedulerReference")})
+@Table(
+        indexes = {
+            @Index(name = "schedulerReferenceIndex", columnList = "schedulerReference"),
+            @Index(name = "idx_batchrunimpl_batch", columnList = "batch", unique = false)
+        })
 public class BatchRunImpl extends BaseImpl implements BatchRun {
 
     private static final long serialVersionUID = 2468505054020768482L;

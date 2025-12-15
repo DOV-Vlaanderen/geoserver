@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,7 +18,9 @@ import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "task"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "task"})},
+        indexes = {@Index(name = "idx_parameterimpl_task", columnList = "task", unique = false)})
 public class ParameterImpl extends BaseImpl implements Parameter {
 
     private static final long serialVersionUID = 2728548577251702332L;

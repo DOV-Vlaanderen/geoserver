@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,7 +21,7 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Run;
 
 @Entity
-@Table
+@Table(indexes = {@Index(name = "idx_runimpl_batchrun", columnList = "batchrun", unique = false)})
 public class RunImpl extends BaseImpl implements Run {
 
     private static final long serialVersionUID = -4539522553695926319L;

@@ -16,6 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
@@ -31,7 +32,9 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"})},
+        indexes = {@Index(name = "idx_taskimpl_configuration", columnList = "configuration", unique = false)})
 @FilterDef(name = "activeTaskElementFilter", defaultCondition = "removeStamp = 0")
 // TODO: need alias support for filters, for now need to filter this out manually
 // @FilterDef(name="activeTaskElementFilter", defaultCondition="removeStamp = 0 and

@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -26,7 +27,12 @@ import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Task;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})},
+        indexes = {
+            @Index(name = "idx_batchelementimpl_batch", columnList = "batch", unique = false),
+            @Index(name = "idx_batchelementimpl_task", columnList = "task", unique = false)
+        })
 public class BatchElementImpl extends BaseImpl implements BatchElement {
 
     private static final long serialVersionUID = 7690398584400545752L;

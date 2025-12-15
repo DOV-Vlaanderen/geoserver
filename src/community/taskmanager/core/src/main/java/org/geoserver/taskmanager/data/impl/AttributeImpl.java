@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -18,7 +19,9 @@ import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Configuration;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration"})},
+        indexes = {@Index(name = "idx_attributeimpl_configuration", columnList = "configuration", unique = false)})
 public class AttributeImpl extends BaseImpl implements Attribute {
 
     private static final long serialVersionUID = 7379737906910394714L;
