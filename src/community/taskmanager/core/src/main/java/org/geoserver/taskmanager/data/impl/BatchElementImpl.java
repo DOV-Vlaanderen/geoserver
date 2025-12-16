@@ -120,4 +120,9 @@ public class BatchElementImpl extends BaseImpl implements BatchElement {
     public long getRemoveStamp() {
         return removeStamp;
     }
+
+    @Override
+    public void setRuns(ArrayList<Run> runs) {
+        this.runs = runs;
+    }
 }
