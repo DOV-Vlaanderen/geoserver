@@ -85,7 +85,7 @@
 
   <properties>
     <gs.version>2.27.2-dov-9.3-SNAPSHOT</gs.version>
-    <gt.version>33.2-dov-3-SNAPSHOT</gt.version>
+    <gt.version>33.6-dov-1-SNAPSHOT</gt.version>
     <gwc.version>1.27.2</gwc.version>
     <jts.version>1.20.0</jts.version>
     <spring.version>5.3.39</spring.version>
