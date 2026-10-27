@@ -61,6 +61,8 @@ import org.geoserver.wps.process.RawData;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.util.ProgressListener;
+import org.geotools.data.ows.URLCheckerException;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -274,8 +276,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         icon.setViewBoundScale(0.75);
 
         LatLonBox gobox = go.createAndSetLatLonBox();
-        gobox.setEast(bbox.getMinX());
-        gobox.setWest(bbox.getMaxX());
+        gobox.setWest(bbox.getMinX());
+        gobox.setEast(bbox.getMaxX());
         gobox.setNorth(bbox.getMaxY());
         gobox.setSouth(bbox.getMinY());
 
@@ -577,6 +579,11 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         String capabilitiesUrl = layer.getCapabilities();
         WebMapServer server = cache.get(capabilitiesUrl);
         if (server == null) {
+            try {
+                URLCheckers.confirm(capabilitiesUrl);
+            } catch (URLCheckerException e) {
+                throw new WPSException("URL Check denied: " + capabilitiesUrl, e);
+            }
             HTTPClient client = httpClientSupplier.get();
             server = new WebMapServer(new URL(layer.getCapabilities()), client);
             cache.put(capabilitiesUrl, server);
@@ -654,7 +661,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             RenderedImage alpha =
                     new ImageWorker(image).retainBands(new int[] {1}).getRenderedImage();
             image = new ImageWorker(gray)
-                    .addBands(new RenderedImage[] {gray, gray, gray, alpha}, true, null)
+                    .addBands(new RenderedImage[] {gray, gray, alpha}, true, null)
                     .getRenderedImage();
         }
         graphics.drawRenderedImage(image, AffineTransform.getScaleInstance(1, 1));

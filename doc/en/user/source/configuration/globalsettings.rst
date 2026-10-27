@@ -88,20 +88,6 @@ Allow Per-Workspace Stored Queries
 
 When enabled, allows to persist Stored queries per workspace, making queries created inside a workspace available in the workspace virtual service only.
 
-Service Request Settings
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _config_globalsettings_external_entities:
-
-Unrestricted XML External Entity Resolution
-'''''''''''''''''''''''''''''''''''''''''''
-
-XML Requests sent to GeoServer can include references to other XML documents. Since these files are processed by GeoServer the facility could be used to access files on the server, which is a security concern.
-
-* Enable the :guilabel:`Unrestricted XML External Entity Resolution` option when using the application schema extension to allow use of local XSD definition.
-
-  This option disables all other External Entity Resolution restrictions (see :ref:`production_config_external_entities`)
-
 Service Response Settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -344,4 +330,9 @@ Match URLs with trailing slash
 This setting determine whether GeoServer matches URLs whether or not the request has a trailing slash. If enabled a request mapped to "/ogc/collections" also matches "/ogc/collections/".  A restart is required for a change to this setting to take effect.
 
 Note that trailing slash matches may be removed entirely in future versions of GeoServer due to introduced ambiguities that can lead to security vulnerabilities.  Discussion of the issue can be found in `this Spring issue <https://github.com/spring-projects/spring-framework/issues/28552>`_.
+
+Display the user who performed last modification
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+These check boxes can be used to toggle displaying user that performed last modification on Workspaces, Styles, Stores, Layers, Layer Groups administration list pages
 

@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import org.geoserver.rest.security.AuthenticationFilterChainRestController.CannotMakeChain;
+import org.geoserver.rest.security.AuthenticationFilterChainRestController;
 import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
 
-@XStreamAlias("filterChain")
+@XStreamAlias("filterchain")
 public class AuthFilterChain {
     private String name;
     private String className;
@@ -77,11 +77,11 @@ public class AuthFilterChain {
                 return (RequestFilterChain)
                         possibleConstructor.get().newInstance(new Object[] {patterns.toArray(new String[0])});
             }
-            throw new CannotMakeChain(
+            throw new AuthenticationFilterChainRestController.CannotMakeChain(
                     className,
                     new InstantiationException("Cannot find a constructor with a single String[] parameter"));
         } catch (ReflectiveOperationException e) {
-            throw new CannotMakeChain(className, e);
+            throw new AuthenticationFilterChainRestController.CannotMakeChain(className, e);
         }
     }
 

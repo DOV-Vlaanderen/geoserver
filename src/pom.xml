@@ -99,7 +99,7 @@
     <wicket.version>9.21.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.14</httpclient.version>
-    <imageio-ext.version>1.4.15</imageio-ext.version>
+    <imageio-ext.version>1.4.16</imageio-ext.version>
     <jaiext.version>1.1.31</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
@@ -119,8 +119,8 @@
     <image.tests>true</image.tests>
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
-    <gf.version>3.8.1</gf.version>
-    <mf.version>2.3.3</mf.version>
+    <gf.version>3.8.2</gf.version>
+    <mf.version>2.3.7</mf.version>
     <jasypt.version>1.9.3</jasypt.version>
     <hibernate-version>5.6.15.Final</hibernate-version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
@@ -1388,7 +1388,11 @@
         <artifactId>wicketstuff-select2</artifactId>
         <version>${wicket.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-core</artifactId>
+        <version>3.3.0</version>
+      </dependency>
       <dependency>
         <groupId>org.mapfish.print</groupId>
         <artifactId>print-lib</artifactId>
@@ -2169,6 +2173,7 @@
             <descriptor>release/ext-web-resource.xml</descriptor>
             <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor>
             <descriptor>release/ext-wps-download.xml</descriptor>
+            <descriptor>release/ext-wps-excel.xml</descriptor>
             <descriptor>release/ext-wps-hazelcast.xml</descriptor>
             <descriptor>release/ext-wps-jdbc.xml</descriptor>
             <descriptor>release/ext-wps.xml</descriptor>
@@ -3014,6 +3019,60 @@
         </plugins>
       </build>
     </profile>
+    <!-- GitHub build profiles enabled by Github actions. Can be used to turn off tests that
+        are unreliable in a Github build-->
+    <profile>
+      <id>macos-github-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <macos-github-build>true</macos-github-build>
+                <github-build>true</github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>windows-github-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <windows-github-build>true</windows-github-build>
+                <github-build>true</github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>linux-github-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <linux-github-build>true</linux-github-build>
+                <github-build>true</github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>

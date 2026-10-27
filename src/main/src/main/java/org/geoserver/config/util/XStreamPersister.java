@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
@@ -270,6 +271,12 @@ public class XStreamPersister {
 
     Map<Class<?>, String> backwardBreifMap = new HashMap<>();
 
+    /**
+     * List containing classes that should be ignored by XStream. This is required because sometimes generic converter
+     * may be registered in XStream, which will be used instead of dedicated converter from GeoTools
+     */
+    List<Class<?>> backwardBriefIgnored = new ArrayList<>();
+
     private Level forceLevel = LOGGER.getLevel() == null ? Level.INFO : LOGGER.getLevel();
 
     /** Flag controlling whether the persister should perform encryption on password fields */
@@ -285,12 +292,6 @@ public class XStreamPersister {
 
         // control the order in which fields are sorted
         SortableFieldKeySorter sorter = new SortableFieldKeySorter();
-        // sorter.registerFieldOrder( DefaultCatalogDAO.class, new String[]{ "workspaces",
-        // "namespaces", "stores", "styles",
-        /* these we actually omit, but the sorter needs them specified */
-        //    "layerGroups", "resources", "maps", "defaultStores", "listeners", "layers",
-        // "resourcePool", "resourceLoader", "LOGGER" } );
-
         ReflectionProvider reflectionProvider = new CustomReflectionProvider(new FieldDictionary(sorter));
         // new Sun14ReflectionProvider( new FieldDictionary( sorter  ) );
         if (streamDriver != null) {
@@ -423,9 +424,6 @@ public class XStreamPersister {
         // For compatibility with JTS 1.15 and older bindings
         bindingAliasingMapper.addPackageAlias("com.vividsolutions.jts.geom", "org.locationtech.jts.geom");
 
-        xs.registerLocalConverter(impl(AttributeTypeInfo.class), "binding", (SingleValueConverter)
-                new SingleValueConverterWrapper(new JavaClassConverter(bindingAliasingMapper) {}));
-
         // CoverageInfo
         xs.registerLocalConverter(
                 impl(CoverageInfo.class), "supportedFormats", new LaxCollectionConverter(xs.getMapper()));
@@ -441,7 +439,12 @@ public class XStreamPersister {
         // AttributeTypeInfo
         xs.omitField(impl(AttributeTypeInfo.class), "featureType");
         xs.omitField(impl(AttributeTypeInfo.class), "attribute");
+        xs.registerLocalConverter(impl(AttributeTypeInfo.class), "binding", (SingleValueConverter)
+                new SingleValueConverterWrapper(new JavaClassConverter(bindingAliasingMapper) {}));
         xs.registerLocalConverter(impl(AttributeTypeInfo.class), "description", new InternationalStringConverter());
+        xs.registerLocalConverter(impl(AttributeTypeInfo.class), "range", new NumberRangeConverter());
+        xs.registerConverter(
+                new AttributeTypeInfoConverter(xs.getMapper(), xs.getReflectionProvider(), xs.getConverterLookup()));
 
         // LayerInfo
         // xs.omitField( LayerInfo.class), "resource");
@@ -449,6 +452,8 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerInfo.class), "defaultStyle", new ReferenceConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "styles", new ReferenceCollectionConverter(StyleInfo.class));
         xs.registerLocalConverter(impl(LayerInfo.class), "metadata", new MetadataMapConverter());
+
+        xs.registerLocalConverter(impl(WMSLayerInfo.class), "vendorParameters", new BreifMapConverter());
 
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
@@ -534,6 +539,7 @@ public class XStreamPersister {
         xs.allowTypeHierarchy(JAIInfo.class);
         xs.allowTypeHierarchy(JAIEXTInfo.class);
         xs.allowTypeHierarchy(CoverageAccessInfo.class);
+        xs.allowTypeHierarchy(NumberRange.class);
         xs.allowTypes(new Class[] {DynamicProxyMapper.DynamicProxy.class});
         xs.allowTypes(new String[] {"java.util.Collections$SingletonList"});
         xs.allowTypesByWildcard(new String[] {"org.geoserver.catalog.**"});
@@ -549,6 +555,10 @@ public class XStreamPersister {
         forwardBreifMap.put(typeId, clazz);
         backwardBreifMap.put(clazz, typeId);
         xs.allowTypes(new Class[] {clazz});
+    }
+
+    public void addBackwardsBriefIgnored(Class<?> clazz) {
+        backwardBriefIgnored.add(clazz);
     }
 
     public XStream getXStream() {
@@ -788,7 +798,7 @@ public class XStreamPersister {
     //
 
     // simple object converters
-    /** Map converter which encodes a map more breifly than the standard map converter. */
+    /** Map converter which encodes a map more briefly than the standard map converter. */
     public class BreifMapConverter extends MapConverter {
 
         static final String ENCRYPTED_FIELDS_KEY = "org.geoserver.config.encryptedFields";
@@ -939,6 +949,9 @@ public class XStreamPersister {
         }
 
         protected String getComplexTypeId(Class<?> clazz) {
+            if (backwardBriefIgnored.contains(clazz)) {
+                return null;
+            }
             String typeId = backwardBreifMap.get(clazz);
             if (typeId == null) {
                 List<Class<?>> matches = new ArrayList<>();
@@ -2737,6 +2750,59 @@ public class XStreamPersister {
 
             groupStyleName.setName(reader.getValue());
             return groupStyleName;
+        }
+    }
+
+    static class AttributeTypeInfoConverter extends ReflectionConverter {
+
+        private final ConverterLookup converterLookup;
+
+        public AttributeTypeInfoConverter(
+                Mapper mapper, ReflectionProvider reflectionProvider, ConverterLookup converterLookup) {
+            super(mapper, reflectionProvider);
+            this.converterLookup = converterLookup;
+        }
+
+        @Override
+        public boolean canConvert(Class type) {
+            return AttributeTypeInfo.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void marshal(Object original, HierarchicalStreamWriter writer, MarshallingContext context) {
+
+            AttributeTypeInfo attributeTypeInfo = (AttributeTypeInfo) original;
+            List<Object> options = attributeTypeInfo.getOptions();
+
+            if (options != null && !options.isEmpty()) {
+                Class<?> binding = attributeTypeInfo.getBinding();
+                attributeTypeInfo.setOptions(convertOptionsToBinding(options, binding));
+            }
+
+            super.marshal(original, writer, context);
+        }
+
+        private List<Object> convertOptionsToBinding(List<Object> options, Class<?> binding) {
+            Converter typeConverter = converterLookup.lookupConverterForType(binding);
+            if (!(typeConverter instanceof SingleValueConverter)) {
+                throw new ConversionException("converter for " + binding.getSimpleName() + " not found");
+            }
+            SingleValueConverter singleValueConverter = (SingleValueConverter) typeConverter;
+
+            List<Object> typedOptions = new ArrayList<>();
+            for (Object option : options) {
+                try {
+                    Object convertedOption = singleValueConverter.fromString(String.valueOf(option));
+                    typedOptions.add(convertedOption);
+                } catch (Exception e) {
+                    throw new ConversionException(
+                            String.format(
+                                    "option '%s' cannot be converted to attribute binding %s",
+                                    option, binding.getSimpleName()),
+                            e);
+                }
+            }
+            return typedOptions;
         }
     }
 }

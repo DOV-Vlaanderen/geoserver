@@ -8,7 +8,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +26,7 @@ import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.config.GWCInitializer;
@@ -171,8 +174,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                             dd.get(Paths.path("workspaces", ws.getName())).dir());
                     backupRestoreAdditionalResources(wsDd.getResourceStore(), targetWorkspacesFolder.get(ws.getName()));
 
-                    // Backup Style SLDs
+                    // Backup Workspace Style XMLs and SLDs
                     for (StyleInfo sty : getCatalog().getStylesByWorkspace(ws)) {
+                        // Write the style.xml metadata file
+                        Resource wsStyleFolder = BackupUtils.dir(targetWorkspacesFolder.get(ws.getName()), "styles");
+                        doWrite(sty, wsStyleFolder, sty.getName() + ".xml");
+
+                        // Copy the SLD file
                         Resource styResource = wsDd.get(Paths.path("styles", sty.getFilename()));
                         if (Resources.exists(styResource)) {
                             Resources.copy(
@@ -227,22 +235,11 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             Assert.notNull(gwcConfig, "gwcConfig is NULL");
 
-            // Store GWC Layers Configurations
-            final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
-
-            if (gwcCatalog != null) {
-                final XMLConfiguration gwcXmlPersisterFactory =
-                        (XMLConfiguration) GeoServerExtensions.bean("gwcXmlConfig");
-                final GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(targetBackupFolder.dir());
-
-                final DefaultTileLayerCatalog gwcBackupCatalog =
-                        new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
-                gwcBackupCatalog.initialize();
-
-                for (String layerName : gwcCatalog.getLayerNames()) {
-                    backupGwcLayer(gwcCatalog, gwcBackupCatalog, layerName);
-                }
-            }
+            // Store GWC Layers Configurations by copying files directly.
+            // This avoids creating a DefaultTileLayerCatalog which registers a
+            // FileSystemWatcher that causes lock contention and deadlocks on
+            // subsequent backup operations.
+            backupGwcLayersDirect(targetBackupFolder, true);
 
         } catch (Exception e) {
             logValidationExceptions(null, e);
@@ -687,7 +684,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     sty.setWorkspace(ws);
                     Resource wsLocalStyleFolder =
                             BackupUtils.dir(dd.get(Paths.path("workspaces", ws.getName())), "styles");
-                    doWrite(sty, wsLocalStyleFolder, sty.getName() + ".xml");
+                    // Use referenceByName=false so GeoServer can load the style from disk
+                    doWriteStyleForRestore(sty, wsLocalStyleFolder, sty.getName() + ".xml");
 
                     Resource styResource = sourceRestoreFolder.get(
                             Paths.path("workspaces", ws.getName(), "styles", sty.getFilename()));
@@ -1001,67 +999,68 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 }
             }
 
-            // Store GWC Layers Configurations
-            // TODO: This should be done using the spring-batch item reader/writer, since it is not
-            // safe to save tons of single XML files.
-            //       Nonetheless, given the default implementation of GWC Catalog does not have much
-            // sense to refactor this code now.
-            final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
-
-            if (gwcCatalog != null) {
-                final XMLConfiguration gwcXmlPersisterFactory =
-                        (XMLConfiguration) GeoServerExtensions.bean("gwcXmlConfig");
-                final GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(targetBackupFolder.dir());
-
-                final DefaultTileLayerCatalog gwcBackupCatalog =
-                        new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
-                gwcBackupCatalog.initialize();
-
-                for (String layerName : gwcCatalog.getLayerNames()) {
-                    backupGwcLayer(gwcCatalog, gwcBackupCatalog, layerName);
-                }
-            }
+            // Store GWC Layers Configurations by copying files directly
+            backupGwcLayersDirect(targetBackupFolder, true);
 
         } catch (Exception e) {
             logValidationExceptions(null, e);
         }
     }
 
-    private void backupGwcLayer(
-            final TileLayerCatalog gwcCatalog, final DefaultTileLayerCatalog gwcBackupCatalog, String layerName) {
-        GeoServerTileLayerInfo gwcLayerInfo = gwcCatalog.getLayerByName(layerName);
+    /**
+     * Copy GWC layer XML files directly to the target backup folder. This avoids creating a DefaultTileLayerCatalog
+     * which registers a FileSystemWatcher that causes lock contention and deadlocks on subsequent backup operations.
+     *
+     * @param targetBackupFolder the target folder for the backup
+     * @param applyFilter whether to apply workspace/layer filters
+     */
+    private void backupGwcLayersDirect(Resource targetBackupFolder, boolean applyFilter) throws Exception {
+        final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
+        if (gwcCatalog == null) return;
 
-        // Persist the GWC Layer Info into the backup folder
-        boolean persistResource = false;
+        GeoServerDataDirectory dd = (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
+        Resource gwcLayersDir = dd.get("gwc-layers");
+        Resource targetGwcLayersDir = BackupUtils.dir(targetBackupFolder, "gwc-layers");
 
+        for (String layerName : gwcCatalog.getLayerNames()) {
+            GeoServerTileLayerInfo layerInfo = gwcCatalog.getLayerByName(layerName);
+            if (layerInfo == null) continue;
+
+            if (applyFilter && !shouldBackupGwcLayer(layerName)) {
+                continue;
+            }
+
+            String layerId = layerInfo.getId();
+            if (layerId == null) continue;
+            Resource sourceFile = gwcLayersDir.get(layerId + ".xml");
+            if (Resources.exists(sourceFile)) {
+                try (FileInputStream fis = new FileInputStream(sourceFile.file())) {
+                    Resources.copy(fis, targetGwcLayersDir, layerId + ".xml");
+                }
+            }
+        }
+    }
+
+    /** Determines if a GWC layer should be backed up based on filter settings. */
+    private boolean shouldBackupGwcLayer(String layerName) {
         LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
-
         if (layerInfo != null) {
             WorkspaceInfo ws = getLayerWorkspace(layerInfo);
-
-            if (!filteredResource(layerInfo, ws, true, LayerInfo.class)) {
-                persistResource = true;
-            }
-        } else {
-            try {
-                LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
-                if (layerGroupInfo != null) {
-                    WorkspaceInfo ws = getLayerGroupWorkspace(layerGroupInfo);
-
-                    if (!filteredResource(ws, false)) {
-                        persistResource = true;
-                    }
-                }
-            } catch (NullPointerException e) {
-                if (getCurrentJobExecution() != null) {
-                    getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
-                }
-            }
+            return !filteredResource(layerInfo, ws, true, LayerInfo.class);
         }
 
-        if (persistResource) {
-            gwcBackupCatalog.save(gwcLayerInfo);
+        try {
+            LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
+            if (layerGroupInfo != null) {
+                WorkspaceInfo ws = getLayerGroupWorkspace(layerGroupInfo);
+                return !filteredResource(ws, false);
+            }
+        } catch (NullPointerException e) {
+            if (getCurrentJobExecution() != null) {
+                getCurrentJobExecution().addWarningExceptions(List.of(e));
+            }
         }
+        return false;
     }
 
     private WorkspaceInfo getLayerGroupWorkspace(LayerGroupInfo layerGroupInfo) {
@@ -1208,6 +1207,27 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 throw new IllegalArgumentException(
                         "TileLayer with same name already exists: " + layerName + ": <" + layerID + ">");
             }
+        }
+    }
+
+    /**
+     * Write a StyleInfo to disk with referenceByName=false.
+     *
+     * <p>This is needed because GeoServer's catalog loader expects workspace references to be written as
+     * <workspace><id>...</id></workspace> rather than <workspace><name>...</name></workspace>.
+     *
+     * <p>The standard doWrite() method uses referenceByName=true (set in BackupRestoreItem) which is correct for
+     * portable backups, but not for writing styles that need to be loaded by GeoServer's catalog.
+     */
+    private void doWriteStyleForRestore(StyleInfo style, Resource directory, String fileName) throws Exception {
+        try (OutputStream out = Resources.fromPath(fileName, directory).out()) {
+            XStreamPersister xp = getxStreamPersisterFactory().createXMLPersister();
+            xp.setCatalog(getCatalog());
+            xp.setReferenceByName(false); // Use ID references, not name references
+            Object item = xp.unwrapProxies(style);
+            xp.getXStream().toXML(item, out);
+        } catch (Exception e) {
+            logValidationExceptions(style, e);
         }
     }
 }

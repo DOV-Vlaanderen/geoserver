@@ -17,6 +17,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.filters.LoggingFilter;
 
 public class GeoServerInfoImpl implements GeoServerInfo {
@@ -44,13 +45,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected Boolean globalServices = true;
 
+    @PatchProperty("useHeadersProxyURLRaw")
     protected Boolean useHeadersProxyURL = false;
 
     protected transient GeoServer geoServer;
 
     protected Integer xmlPostRequestLogBufferSize = LoggingFilter.REQUEST_LOG_BUFFER_SIZE_DEFAULT;
-
-    protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
 
     protected Boolean trailingSlashMatch = getDefaultTrailingSlashMatch();
 
@@ -270,19 +270,25 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated
     @Override
     public void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled) {
-        this.xmlExternalEntitiesEnabled = xmlExternalEntitiesEnabled;
+        // do nothing
     }
 
     /**
      * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
      * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated
     @Override
     public Boolean isXmlExternalEntitiesEnabled() {
-        return this.xmlExternalEntitiesEnabled;
+        return null;
     }
 
     @Override

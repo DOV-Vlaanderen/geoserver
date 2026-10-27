@@ -4,25 +4,44 @@
  */
 package org.geoserver.util;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServerFacade;
+import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.impl.GeoServerInfoImpl;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.After;
 import org.junit.Test;
+import org.vfny.geoserver.util.Requests;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class EntityResolverProviderTest {
+
     @After
     public void after() {
         EntityResolverProvider.setEntityResolver(null);
+        System.clearProperty(AllowListEntityResolver.ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL);
     }
 
     @Test
@@ -90,8 +109,10 @@ public class EntityResolverProviderTest {
      */
     @Test
     public void testEntityResolverDefaultBehaviour() throws Exception {
+        System.setProperty(AllowListEntityResolver.ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL, "true");
         EntityResolverProvider provider = new EntityResolverProvider(null);
-        provider.setEntityResolver(new AllowListEntityResolver(null));
+        GeoServerImpl geoserver = initTestGeoServer();
+        provider.setEntityResolver(new AllowListEntityResolver(geoserver));
         EntityResolver resolver = provider.getEntityResolver();
 
         // Confirm schema is available from public location
@@ -101,13 +122,13 @@ public class EntityResolverProviderTest {
 
         // Confirm schema is available from jars, as is the case for those included in GeoTools
         InputSource filterJar =
-                resolver.resolveEntity(null, "jar:file:/some/path/gs-main.jar!schemas/filter/1.1.0/filter.xsd");
+                resolver.resolveEntity(null, "jar:file:/some/path/gs-main.jar!/schemas/filter/1.1.0/filter.xsd");
         assertNull("JAR Filter 1.1.0 connection allowed", filterJar);
 
         // Confirm schema is available when war is unpacked into JBoss virtual filesystem
         InputSource filterJBoss = resolver.resolveEntity(
                 null,
-                "vfsfile:/home/userone/jboss-eap-5.1/jboss-as/server/default_WAR/deploy/geoserver.war/WEB-INF/lib/gs-main.jar!/filter/1.1.0/filter.xsd");
+                "vfs:/home/userone/jboss-eap-5.1/jboss-as/server/default_WAR/deploy/geoserver.war/WEB-INF/lib/gs-main.jar/filter/1.1.0/filter.xsd");
         assertNull("JBoss Virtual File System Filter 1.1.0 connection allowed", filterJBoss);
 
         // confirm schema CANNOT be accessed from a random website http address
@@ -126,6 +147,40 @@ public class EntityResolverProviderTest {
                     e.getMessage().contains("https://how2map.geocat.live/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd"));
         }
 
+        System.setProperty(Requests.PROXY_PARAM, "https://how2map.geocat.live/geoserver");
+        try {
+            InputSource proxy1 = resolver.resolveEntity(
+                    null, "https://how2map.geocat.live/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd");
+            assertNull("Proxy base url property connection allowed", proxy1);
+        } finally {
+            System.clearProperty(Requests.PROXY_PARAM);
+        }
+
+        geoserver.getSettings().setProxyBaseUrl("https://how2map.geocat.live/geoserver");
+        InputSource proxy2 =
+                resolver.resolveEntity(null, "https://how2map.geocat.live/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd");
+        assertNull("Proxy base url setting connection allowed", proxy2);
+
+        geoserver.getSettings().setProxyBaseUrl("https://how2map.geocat.live");
+        try {
+            resolver.resolveEntity(
+                    null, "https://how2map.geocat.live:foo@somesite.com/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd");
+            fail("Bypassing proxy base should not be allowed");
+        } catch (SAXException e) {
+            assertTrue("Proxy base bypass not allowed", e.getMessage().startsWith("Entity resolution disallowed for"));
+            assertTrue(
+                    "Proxy base bypass not allowed",
+                    e.getMessage()
+                            .contains(
+                                    "https://how2map.geocat.live:foo@somesite.com/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd"));
+        }
+        geoserver.getSettings().setProxyBaseUrl(null);
+
+        // Confirm schema is available from workspaces data directory
+        InputSource workspaces =
+                resolver.resolveEntity(null, "file:/var/opt/geoserver/data/workspaces/schemas/WFS-basic.xsd");
+        assertNull("Workspaces data directory connection allowed", workspaces);
+
         // not allowed to access local file system
         try {
             InputSource filesystem =
@@ -142,6 +197,22 @@ public class EntityResolverProviderTest {
         }
     }
 
+    private static GeoServerImpl initTestGeoServer() {
+        GeoServerImpl geoserver = new GeoServerImpl();
+        GeoServerFacade facade = mock(GeoServerFacade.class);
+        geoserver.setFacade(facade);
+        GeoServerInfoImpl info = new GeoServerInfoImpl();
+        when(facade.getGlobal()).thenReturn(info);
+        Catalog catalog = mock(Catalog.class);
+        geoserver.setCatalog(catalog);
+        GeoServerResourceLoader resourceLoader = mock(GeoServerResourceLoader.class);
+        when(catalog.getResourceLoader()).thenReturn(resourceLoader);
+        Resource resource = mock(Resource.class);
+        when(resourceLoader.get("workspaces")).thenReturn(resource);
+        when(resource.dir()).thenReturn(new File("/var/opt/geoserver/data/workspaces"));
+        return geoserver;
+    }
+
     /**
      * Test behaviour of EntityResolveProvider in response to configuration to prevent local filesystem access (as done
      * with ENTITY_RESOLUTION_ALLOWLIST=*)
@@ -151,44 +222,55 @@ public class EntityResolverProviderTest {
      */
     @Test
     public void testEntityResolverPreventLocal() throws Exception {
-        EntityResolverProvider provider = new EntityResolverProvider(null);
-        provider.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
-        EntityResolver resolver = provider.getEntityResolver();
-
-        // Confirm schema is available from public location
-        // (this is a default from AllowListEntiryResolver)
-        InputSource filter = resolver.resolveEntity(null, "http://schemas.opengis.net/filter/1.1.0/filter.xsd");
-        assertNull("Public Filter 1.1.0 connection allowed", filter);
-
-        // Confirm schema is available from jars, as is the case for those included in GeoTools
-        InputSource filterJar =
-                resolver.resolveEntity(null, "jar:file:/some/path/gs-main.jar!schemas/filter/1.1.0/filter.xsd");
-        assertNull("JAR Filter 1.1.0 connection allowed", filterJar);
-
-        // Confirm schema is available when war is unpacked into JBoss virtual filesystem
-        InputSource filterJBoss = resolver.resolveEntity(
-                null,
-                "vfsfile:/home/userone/jboss-eap-5.1/jboss-as/server/default_WAR/deploy/geoserver.war/WEB-INF/lib/gs-main.jar!/filter/1.1.0/filter.xsd");
-        assertNull("JBoss Virtual File System Filter 1.1.0 connection allowed", filterJBoss);
-
-        // confirm that by default can access any random website http address
-        InputSource external =
-                resolver.resolveEntity(null, "https://how2map.geocat.live/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd");
-        assertNull("Website Filter 1.1.0 allowed", external);
-
-        // not allowed to access local file system
+        // The resolver fetches allow-listed schemas (GEOT-7938), so serve them locally instead of live hosts.
+        WireMockServer wiremock = new WireMockServer(wireMockConfig().dynamicPort());
+        wiremock.start();
         try {
-            InputSource filesystem =
-                    resolver.resolveEntity(null, "file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd");
-            assertNotNull("Filesystem Filter 1.1.0 not allowed", filesystem);
-            fail("Filter 1.1.0 is should not avalable as a file reference");
+            String schema = "<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'/>";
+            wiremock.stubFor(get(urlEqualTo("/filter/1.1.0/filter.xsd"))
+                    .willReturn(aResponse().withStatus(200).withBody(schema)));
+            wiremock.stubFor(get(urlEqualTo("/wfs/1.0.0/WFS-basic.xsd"))
+                    .willReturn(aResponse().withStatus(200).withBody(schema)));
+            String base = "http://localhost:" + wiremock.port();
+
+            EntityResolverProvider provider = new EntityResolverProvider(null);
+            provider.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
+            EntityResolver resolver = provider.getEntityResolver();
+
+            // Schema available from a public location (an AllowListEntityResolver default)
+            assertResolutionAllowed(resolver, base + "/filter/1.1.0/filter.xsd");
+
+            // Schema available from jars, as for those included in GeoTools
+            assertResolutionAllowed(resolver, "jar:file:/some/path/gs-main.jar!schemas/filter/1.1.0/filter.xsd");
+
+            // Schema available when the war is unpacked into the JBoss virtual filesystem
+            assertResolutionAllowed(
+                    resolver,
+                    "vfs:/home/userone/jboss-eap-5.1/jboss-as/server/default_WAR/deploy/geoserver.war/WEB-INF/lib/gs-main.jar/filter/1.1.0/filter.xsd");
+
+            // Any public http(s) schema address is allowed by default
+            assertResolutionAllowed(resolver, base + "/wfs/1.0.0/WFS-basic.xsd");
+
+            // Local filesystem references are rejected
+            String localFile = "file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd";
+            SAXException rejected = assertThrows(SAXException.class, () -> resolver.resolveEntity(null, localFile));
+            assertTrue(rejected.getMessage().startsWith("Entity resolution disallowed for"));
+            assertTrue(rejected.getMessage().contains(localFile));
+        } finally {
+            wiremock.stop();
+        }
+    }
+
+    /** An allow-listed location resolves without error; the resolver may return the content or defer to the parser. */
+    private static void assertResolutionAllowed(EntityResolver resolver, String systemId) throws IOException {
+        try {
+            InputSource source = resolver.resolveEntity(null, systemId);
+            // Non-null means the content was supplied; close it. Null means the parser will load it.
+            if (source != null && source.getByteStream() != null) {
+                source.getByteStream().close();
+            }
         } catch (SAXException e) {
-            // Confirm the exception is clear, and contains the URI for folks to troubleshoot their
-            // xml document
-            assertTrue("Filesystem XSD not allowed", e.getMessage().startsWith("Entity resolution disallowed for"));
-            assertTrue(
-                    "Filesystem XSD not allowed",
-                    e.getMessage().contains("file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd"));
+            throw new AssertionError("Resolution should be allowed for " + systemId, e);
         }
     }
 }

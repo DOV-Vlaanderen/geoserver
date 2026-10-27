@@ -30,6 +30,19 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Client address behind a reverse proxy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GeoServer now resolves the client address in one place, in the same way as the Tomcat remote IP valve, and only trusts a reverse proxy on the local host by default. If the proxy runs on another host, set the ``GEOSERVER_TRUSTED_PROXIES`` :ref:`application property <application_properties>` to its address or address range. Otherwise logs, monitoring, control flow and IP-based security rules see the proxy address for every request. GeoServer logs a warning the first time a request carries ``X-Forwarded-For`` from a host that is not listed.
+
+Docker and Kubernetes often run the proxy in another container, so GeoServer sees a bridge or pod address such as ``172.17.0.1``, which must be listed too. Until it is, an ``ip=`` control flow limit acts as one limit for the whole server, and a blacklist entry for that address blocks everyone.
+
+The proxy must overwrite ``X-Forwarded-For`` or append the client address to it. A proxy that passes the header on unchanged lets the client choose its own address, for example to skip the brute force delay with a whitelisted IP. Nginx does this unless ``proxy_set_header X-Forwarded-For`` is configured.
+
+On Kubernetes, list the address range of the ingress controller pods. To see the real client address, the Service in front of the ingress controller needs ``externalTrafficPolicy: Local``.
+
+A customized ``web.xml`` needs the new ``Remote IP Resolution`` filter, mapped right after the character encoding filter, as in the ``web.xml`` shipped with GeoServer.
+
 MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -107,6 +120,20 @@ Configuration:
   `GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property.
 
 For additional information see :ref:`datadir-loader` documentation.
+
+Keystore password link (GeoServer 2.26 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :guilabel:`Password` page link to :guilabel:`Keystore password forgotten` now :ref:`directly links <security_webadmin_masterpasswordprovider>` to the :ref:`REST API <rest_security_keystore>` endpoint, allowing the value to be read in your browser.
+
+With this change it is no longer necessary to generate a :file:`masterpw.info` when upgrading an older data directory. If this file is present from an earlier upgrade it is still considering a security warning noted on the welcome page.
+
+ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The global setting :guilabel:`Unrestricted XML External Entity Resolution` has been repalced with the ``ENTITY_RESOLUTION_UNRESTRICTED`` application property.
+
+For more information see :ref:`production_config_external_entities`.
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

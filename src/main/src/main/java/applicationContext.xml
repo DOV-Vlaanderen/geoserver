@@ -56,6 +56,10 @@
     <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
        <constructor-arg ref="resourceLoader"/>
     </bean>
+
+    <bean id="customCRSAuthorityLoader" class="org.vfny.geoserver.crs.CustomCRSAuthorityLoader">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
     
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
@@ -105,7 +109,8 @@
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
       <property name="catalog" ref="catalog"/>
     </bean>
-    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy" depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock">
+    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy"
+          depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock,customCRSAuthorityLoader">
       <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -244,6 +249,8 @@
         to: GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS -->
     <bean id="methodFilter" class="org.geoserver.filters.HTTPMethodFilter" />
 
+    <bean class="org.geoserver.filters.GeoServerHeaderFilterPostProcessor" />
+
   
   <!-- the proxyfing URL mangler, along with machinery to support headers expansion usage in asynch requests -->
   <bean id="proxyfier" class="org.geoserver.ows.ProxifyingURLMangler">
@@ -338,6 +345,11 @@
   	<constructor-arg ref="catalog"/>
   </bean>
 
+  <bean id="catalogModificationUserUpdater" class="org.geoserver.config.CatalogModificationUserUpdater">
+    <constructor-arg ref="catalog"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
   <bean id="httpWarningAppender" class="org.geoserver.util.HTTPWarningAppender"/>
 
   <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">
@@ -362,5 +374,4 @@
   <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
     <constructor-arg value="1000"/>
   </bean>
-
 </beans>

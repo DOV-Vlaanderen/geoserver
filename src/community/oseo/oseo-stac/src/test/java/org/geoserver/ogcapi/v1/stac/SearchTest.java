@@ -22,9 +22,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minidev.json.JSONArray;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
+import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfoImpl;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Literal;
 import org.geotools.filter.IsGreaterThanImpl;
@@ -112,7 +116,7 @@ public class SearchTest extends STACTestSupport {
                 "ogc/stac/v1/search?collections=SENTINEL2,LANDSAT8"
                         + "&filter=constellation='landsat8'&filter-lang=cql2-text",
                 200);
-        assertEquals(new Integer(2), doc.read("numberMatched", Integer.class));
+        assertEquals(Integer.valueOf(2), doc.read("numberMatched", Integer.class));
     }
 
     @Test
@@ -328,11 +332,21 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksFirstSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksFirst(null);
+    }
+
+    @Test
     public void testPagingLinksFirst() throws Exception {
+        checkPagingLinksFirst(4);
+    }
+
+    private void checkPagingLinksFirst(Integer expectedNumberMatched) throws Exception {
         String requestPath = "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
                 + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, self and next
@@ -352,11 +366,21 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksSecondSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksSecond(null);
+    }
+
+    @Test
     public void testPagingLinksSecond() throws Exception {
+        checkPagingLinksSecond(4);
+    }
+
+    private void checkPagingLinksSecond(Integer expectedNumberMatched) throws Exception {
         String requestPath = "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
                 + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // three links expected, prev, self and next
@@ -383,11 +407,21 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksLastSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksLast(null);
+    }
+
+    @Test
     public void testPagingLinksLast() throws Exception {
+        checkPagingLinksPostSecond(4);
+    }
+
+    private void checkPagingLinksLast(Integer expectedNumberMatched) throws Exception {
         String requestPath = "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
                 + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=2";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, prev, self
@@ -407,7 +441,17 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksPostFirstSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksPostFirst(null);
+    }
+
+    @Test
     public void testPagingLinksPostFirst() throws Exception {
+        checkPagingLinksPostFirst(4);
+    }
+
+    private void checkPagingLinksPostFirst(Integer expectedNumberMatched) throws Exception {
         String request = "{\n"
                 + "  \"collections\": [\n"
                 + "    \"SAS1\",\n"
@@ -418,7 +462,7 @@ public class SearchTest extends STACTestSupport {
                 + "  \"limit\": 1\n"
                 + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, self and next
@@ -441,7 +485,17 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksPostSecondSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksPostSecond(null);
+    }
+
+    @Test
     public void testPagingLinksPostSecond() throws Exception {
+        checkPagingLinksPostSecond(4);
+    }
+
+    private void checkPagingLinksPostSecond(Integer expectedNumberMatched) throws Exception {
         String request = "{\n"
                 + "  \"collections\": [\n"
                 + "    \"SAS1\",\n"
@@ -453,7 +507,7 @@ public class SearchTest extends STACTestSupport {
                 + "  \"startIndex\": 1\n"
                 + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // three links expected, prev, self and next
@@ -484,7 +538,17 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testPagingLinksPostLastSkipMatched() throws Exception {
+        enableSkipNumberMatched();
+        checkPagingLinksPostLast(null);
+    }
+
+    @Test
     public void testPagingLinksPostLast() throws Exception {
+        checkPagingLinksPostLast(4);
+    }
+
+    private void checkPagingLinksPostLast(Integer expectedNumberMatched) throws Exception {
         String request = "{\n"
                 + "  \"collections\": [\n"
                 + "    \"SAS1\",\n"
@@ -496,7 +560,7 @@ public class SearchTest extends STACTestSupport {
                 + "  \"startIndex\": 2\n"
                 + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
-        assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+        assertEquals(expectedNumberMatched, doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
 
         // two links expected, prev, self
@@ -788,5 +852,62 @@ public class SearchTest extends STACTestSupport {
             global.getSettings().setProxyBaseUrl(null);
             getGeoServer().save(global);
         }
+    }
+
+    @Test
+    public void testCollectionSecurity() throws Exception {
+        // set a collection limit on proprietary collections
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.setRecordsPerPage(10000); // avoid paging hiding items
+        service.setMaximumRecordsPerPage(10000);
+        List<EOCollectionAccessLimitInfo> collectionLimits = service.getCollectionLimits();
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("license = 'proprietary'", List.of(ROLE_PROPRIETARY)));
+        // the sensor type is not exposed in JSON, will have to use the collection identifiers for JSON tests
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("eo:sensorType = 'ATMOSPHERIC'", List.of(ROLE_ATM)));
+        gs.save(service);
+
+        // warning about test data oddity, SAS1 and SAS9 are the eoIdentifiers of the two atm collections
+        // also, SAS9 has no items inside, so we cannot test its presence in results, only SAS1
+
+        // try to get everything as the anonymous user, should filter out proprietary and atm products
+        DocumentContext jsAnonymous = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsAnonymous, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSize(jsAnonymous, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSize(jsAnonymous, "features[?(@.collection == 'SAS1')]", 0);
+        assertJsonListSize(jsAnonymous, "features[?(@.collection == 'SAS9')]", 0);
+
+        // with role, non-disabled proprietary collections show up too (landsat8)
+        login("propuser", "secret", ROLE_PROPRIETARY);
+        DocumentContext jsProp = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsProp, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSizeGreater(jsProp, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSize(jsProp, "features[?(@.collection == 'SAS1')]", 0);
+
+        // with atm role, atm collections show up (sas1, sas9) but not proprietary ones (landsat8)
+        login("atmuser", "secret", ROLE_ATM);
+        DocumentContext jsAtm = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsAtm, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSize(jsAtm, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSizeGreater(jsAtm, "features[?(@.collection == 'SAS1')]", 0);
+
+        // now use both roles, should get both proprietary and atm collections
+        login("bothuser", "secret", ROLE_ATM, ROLE_PROPRIETARY);
+        DocumentContext jsBoth = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsBoth, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSizeGreater(jsBoth, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSizeGreater(jsBoth, "features[?(@.collection == 'SAS1')]", 0);
+
+        // finally, become all powerful admin and get them all
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        DocumentContext jsAdmin = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsAdmin, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSizeGreater(jsAdmin, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSizeGreater(jsAdmin, "features[?(@.collection == 'SAS1')]", 0);
+    }
+
+    protected void assertJsonListSizeGreater(DocumentContext json, String jsonPath, int minimumSize) {
+        List<?> list = json.read(jsonPath, List.class);
+        assertThat(list.size(), Matchers.greaterThan(minimumSize));
     }
 }

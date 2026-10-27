@@ -35,11 +35,15 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -693,6 +697,48 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPutNullifyTitleAbstract() throws Exception {
+        LayerGroupInfo lg = catalog.getLayerGroupByName("sfLayerGroup");
+        lg.setAbstract("the abstract");
+        lg.setTitle("the title");
+        catalog.save(lg);
+
+        String xml = "<layerGroup>" + "  <name>sfLayerGroup</name>\n"
+                + "  <abstract xsi:nil=\"true\"/>\n"
+                + "  <title xsi:nil=\"true\"/>\n"
+                + "</layerGroup>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        lg = catalog.getLayerGroupByName("sfLayerGroup");
+        assertNull(lg.getTitle());
+        assertNull(lg.getAbstract());
+    }
+
+    @Test
+    public void testPutNullifyAbstractI18N() throws Exception {
+        LayerGroupInfo lg = catalog.getLayerGroupByName("sfLayerGroup");
+        GrowableInternationalString abstractI18N = new GrowableInternationalString();
+        abstractI18N.add(Locale.ENGLISH, "The abstract");
+        abstractI18N.add(Locale.ITALIAN, "Il riassunto");
+        lg.setInternationalAbstract(abstractI18N);
+        catalog.save(lg);
+
+        String xml = "<layerGroup>\n" + "  <name>sfLayerGroup</name>\n"
+                + "  <internationalAbstract xsi:nil=\"true\"/>\n"
+                + "</layerGroup>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        lg = catalog.getLayerGroupByName("sfLayerGroup");
+        assertNull(lg.getInternationalAbstract());
+    }
+
+    @Test
     public void testPutToWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -978,6 +1024,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
                     + "    \"styles\": null"
                     + "  }\n"
                     + "}";
+
             MockHttpServletResponse response =
                     postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", json, "application/json");
             assertEquals(201, response.getStatus());
@@ -1030,5 +1077,85 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         } finally {
             if (lg != null) catalog.remove(lg);
         }
+    }
+
+    @Test
+    public void testPostWithModifiedUserWithTrackUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(false);
+        getGeoServer().save(info);
+        String xml = "<layerGroup>"
+                + "    <name>newLayerGroup</name>"
+                + "    <layers>"
+                + "        <layer>Ponds</layer>"
+                + "        <layer>Forests</layer>"
+                + "    </layers>"
+                + "    <styles>"
+                + "        <style>polygon</style>"
+                + "        <style>point</style>"
+                + "    </styles>"
+                + "    <keywords>"
+                + "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>"
+                + "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>"
+                + "    </keywords>"
+                + "</layerGroup>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml);
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroup");
+        assertNotNull(lg.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostWithModifiedUserWithTrackUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<layerGroup>"
+                + "    <name>newLayerGroup</name>"
+                + "    <layers>"
+                + "        <layer>Ponds</layer>"
+                + "        <layer>Forests</layer>"
+                + "    </layers>"
+                + "    <styles>"
+                + "        <style>polygon</style>"
+                + "        <style>point</style>"
+                + "    </styles>"
+                + "    <keywords>"
+                + "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>"
+                + "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>"
+                + "    </keywords>"
+                + "</layerGroup>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml);
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroup");
+        assertNull(lg.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostWithModifiedUserWithoutTrackUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        String xml = "<layerGroup>"
+                + "    <name>newLayerGroup</name>"
+                + "    <layers>"
+                + "        <layer>Ponds</layer>"
+                + "        <layer>Forests</layer>"
+                + "    </layers>"
+                + "    <styles>"
+                + "        <style>polygon</style>"
+                + "        <style>point</style>"
+                + "    </styles>"
+                + "    <keywords>"
+                + "        <string>keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;</string>"
+                + "        <string>keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;</string>"
+                + "    </keywords>"
+                + "</layerGroup>";
+        postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml);
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroup");
+        assertNotNull(lg.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
     }
 }

@@ -38,6 +38,20 @@ public abstract class AbstractFlowControllerTest {
     }
 
     /**
+     * Like {@link #waitBlocked}, but also accepts the thread having already timed out.
+     *
+     * <p>Use this for threads with short flow-controller timeouts, where the timeout may expire before polling can
+     * detect the WAITING state.
+     */
+    void waitBlockedOrTimedOut(FlowControllerTestingThread fct, long maxWait) {
+        await().atMost(maxWait, MILLISECONDS)
+                .pollDelay(10, MILLISECONDS)
+                .until(() -> fct.getState() == State.WAITING
+                        || fct.getState() == State.TIMED_WAITING
+                        || fct.state == ThreadState.TIMED_OUT);
+    }
+
+    /**
      * Waits until the thread is terminated
      *
      * @param t the thread
@@ -83,14 +97,11 @@ public abstract class AbstractFlowControllerTest {
         request.setHttpRequest(httpRequest);
         request.setHttpResponse(new MockHttpServletResponse());
 
-        if (ipAddress != null && !ipAddress.equals("")) {
-            httpRequest.setRemoteAddr(ipAddress);
-        } else {
-            httpRequest.setRemoteAddr("127.0.0.1");
+        String client = proxyIp != null && !proxyIp.isEmpty() ? proxyIp : ipAddress;
+        if (client == null || client.isEmpty()) {
+            client = "127.0.0.1";
         }
-        if (!proxyIp.equals("")) {
-            httpRequest.addHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
-        }
+        httpRequest.setRemoteAddr(client);
         return request;
     }
 

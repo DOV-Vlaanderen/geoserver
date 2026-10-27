@@ -3,13 +3,15 @@
 Application Properties
 ----------------------
 
-While many configuration and setup options are available through the Web Administration application :menuselection:`Settings > Global` page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by:
+While many configuration and setup options are available through the Web Administration application :menuselection:`Settings > Global` page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by (in order of priority):
 
-* Java System Properties
-* Web Application context parameters
-* System Environmental Variable
+  1. Java System Properties
+  2. Web Application context parameters
+  3. System Environmental Variables
 
 As part of the operating environment GeoServer application properties, unlike settings, cannot be changed at runtime.
+
+For more information see :ref:`production_config`.
 
 GeoServer Property Reference
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -101,6 +103,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_REMEMBERME_KEY
+       
+       Shared key that signs remember-me cookies across a cluster. See :ref:`security_webadmin_rememberme`.
+     - x
+     - x
+     - x
    * - org.geoserver.web.csp.strict
        
        :ref:`csp_strict`, default true.
@@ -128,6 +136,24 @@ GeoServer Property Reference
    * - GEOSERVER_XSTREAM_WHITELIST
        
        Used to restrict catalogue persistence.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_UNRESTRICTED
+       
+       :doc:`/production/config`, default false.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL
+       
+       :doc:`/production/config`, default false.
+     - x
+     - x
+     - x
+   * - ENTITY_RESOLUTION_ALLOWLIST
+       
+       :doc:`/production/config`.
      - x
      - x
      - x
@@ -233,6 +259,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GS_FILETYPES_UNRESTRICTED
+
+       If true, do not validate uploaded file type, default false
+     -
+     -
+     - x
    * - ows10.exception.xml.responsetype
        
        :doc:`/production/config`
@@ -308,6 +340,12 @@ GeoServer Property Reference
    * - PROXY_BASE_URL_HEADER
        
        Enables PROXY_BASE_URL to use headers variables if set to true, overriding GeoServer datadir settings.  Default false.
+     - x
+     - x
+     - x
+   * - GEOSERVER_TRUSTED_PROXIES
+       
+       Comma separated list of reverse proxy IP addresses or CIDR blocks. GeoServer reads the client address from the ``X-Forwarded-For`` header only for requests arriving from one of these proxies, otherwise it uses the direct connection address. The default is loopback only (``127.0.0.0/8``, ``::1``), so a reverse proxy on another host must be listed, otherwise every request appears to come from the proxy address.
      - x
      - x
      - x
@@ -422,13 +460,46 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_ROOT_LOGIN_ENABLED
 
+       :ref:`security_root`
+     - x
+     - x
+     - x
+   * - GEOSERVER_JDBC_EXTRA_PARAMETERS
+
+       Extra connection URL parameters accepted for JDBC user/group services, role services and authentication providers. GeoServer accepts only a known list of parameters for each driver. Format is ``driverClass:param1,param2;driverClass2:param3``, for example ``com.ibm.db2.jcc.DB2Driver:currentSchema``. Use it to allow a parameter, or a driver, that is not known. A legacy driver class name, such as ``org.hsqldb.jdbcDriver``, shares the parameters of its current name. Each parameter added this way is passed to the driver unchecked, so add only parameters that cannot read or write files or load classes.
+     - x
+     - x
+     - x
    * - WORKSPACE_ADMIN_SERVICE_ACCESS
 
        :ref:`Workspaces <data_webadmin_workspaces_service_settings>`
      - x
      - x
      - x
+
+   * - GEOSERVER_DATA_DIR_LOADER_ENABLED
+
+       :doc:`/datadirectory/setting`
+     - x
+     -
+     - x
+
+   * - GEOSERVER_DATA_DIR_LOADER_THREADS
+
+       :doc:`/datadirectory/setting`
+     - x
+     -
+     - x
+
+   * - TRACK_USER
+
+       Flag to enable user tracking in GeoServer.
+       Allows to store the username of user that performed creation/modification of layer, layergroup, store, style, workspace. Has precedence over "Display the user who performed last modification" option in global settings.
+     - x
+     -
+     -
 
 .. _application_properties_setting:
 
